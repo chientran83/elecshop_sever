@@ -2,16 +2,6 @@
 
 namespace App\Http\Controllers\api\v1;
 
-$http_origin = $_SERVER['HTTP_ORIGIN'];
-$allowed_domains = array(
-  'http://localhost:8081/#/category'
-);
-
-if (in_array($http_origin, $allowed_domains))
-{
-    header("Access-Control-Allow-Origin: $http_origin");
-}
-
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\category_product_desc_Resource;
 use App\Http\Resources\v1\categoryCollection;

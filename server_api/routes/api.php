@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
      });
      Route::resource('product',productController::class)->except(['edit','create']);
      //router category
-     Route::get('category/paginate',[categoryController::class,'paginate'])->name('category_paginate');
+     Route::get('category/paginate',[categoryController::class,'paginate'])->name('category_paginate')->middleware('allowed_domains');
      Route::resource('category',categoryController::class)->except(['edit','create']);
      //router slider
      Route::resource('slider',sliderController::class)->except(['edit','create']);
