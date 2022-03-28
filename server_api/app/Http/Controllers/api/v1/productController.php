@@ -7,6 +7,8 @@ use App\Http\Resources\v1\productCollection;
 use App\Models\product;
 use Illuminate\Http\Request;
 use App\Http\Resources\v1\productResource;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -39,42 +41,59 @@ class productController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|min:1|max:30|unique:tbl_product',
-            'current_price' => 'required',
-            'origin_price' => 'required',
-            'memory' => 'required',
-            'ram' => 'required',
-            'sale_date' => 'required',
-            'desc' => 'required|min:1',
-            'coupon_number' => 'required',
-            'quantity' => 'required',
-            'user_id' => 'required',
-        ]);
-        $data = array(
-            'name' => $request->name,
-            'current_price' => $request->current_price,
-            'origin_price' => $request->origin_price,
-            'memory' => $request->memory,
-            'ram' => $request->ram,
-            'sale_date' => $request->sale_date,
-            'desc' => $request->desc,
-            'coupon_number' => $request->coupon_number,
-            'quantity' => $request->quantity,
-            'user_id' => '1',
-            'image_name' => 'test ten anh',
-            'image_path' => 'test duong dan anh',
-        );
-        /* if($request->hasFile('image')){
-            $file = $request->file('image');
-            $image_origin_name = $file->getClientOriginalName();
-            $image_hash_name = Str::random(20).'.'.$file->extension();
-            $store = $file->storeAs('public/product/1',$image_hash_name);            
-            $data['image_name'] = $image_origin_name;
-            $data['image_path'] = Storage::url('file.jpg');
-        }   */
-        $product_new = $this->product->create($data);
-        return new productResource($product_new);
+        $token = $request->header('token');
+        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
+        if(empty($token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token not send !'
+            ],500);
+        }elseif(empty($get_session_token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token incorrect !'
+            ],500);
+        }else{
+            $request->validate([
+                'name' => 'required|min:1|max:30|unique:tbl_product',
+                'current_price' => 'required',
+                'previous_price' => 'required',
+                'origin_price' => 'required',
+                'ram' => 'required',
+                'desc' => 'required|min:1',
+                'isOnSale' => 'required',
+                'quantity' => 'required',
+                'user_id' => 'required',
+            ]);
+            $data = array(
+                'name' => $request->name,
+                'current_price' => $request->current_price,
+                'previous_price' => $request->previous_price,
+                'origin_price' => $request->origin_price,
+                'ram' => $request->ram,
+                'desc' => $request->desc,
+                'isOnSale' => $request->isOnSale,
+                'quantity' => $request->quantity,
+                'user_id' => '1',
+                
+                'image_path' => 'test duong dan anh',
+            );
+            /* if($request->hasFile('image')){
+                $file = $request->file('image');
+                $image_origin_name = $file->getClientOriginalName();
+                $image_hash_name = Str::random(20).'.'.$file->extension();
+                $store = $file->storeAs('public/product/1',$image_hash_name);            
+                $data['image_name'] = $image_origin_name;
+                $data['image_path'] = Storage::url('file.jpg');
+            }   */
+            $product_new = $this->product->create($data);
+
+            return response()->json([
+                'code' => 201,
+                'data' => new productResource($product_new)
+            ],201);
+        }
+        
     }
 
     /**
@@ -83,9 +102,26 @@ class productController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
-        return new productResource($this->product->find($id));
+        $token = $request->header('token');
+        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
+        if(empty($token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token not send !'
+            ],500);
+        }elseif(empty($get_session_token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token incorrect !'
+            ],500);
+        }else{
+            return response()->json([
+                'code' => 201,
+                'data' => new productResource(User::find($id))
+            ],201);
+        }
     }
     /**
      * Update the specified resource in storage.
@@ -96,45 +132,60 @@ class productController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|min:1|max:30|unique:tbl_product',
-            'current_price' => 'required',
-            'origin_price' => 'required',
-            'memory' => 'required',
-            'ram' => 'required',
-            'sale_date' => 'required',
-            'desc' => 'required|min:1',
-            'coupon_number' => 'required',
-            'quantity' => 'required',
-            'user_id' => 'required',
-        ]);
-
-        $data = array(
-            'name' => $request->name,
-            'current_price' => $request->current_price,
-            'origin_price' => $request->origin_price,
-            'memory' => $request->memory,
-            'ram' => $request->ram,
-            'sale_date' => $request->sale_date,
-            'desc' => $request->desc,
-            'coupon_number' => $request->coupon_number,
-            'quantity' => $request->quantity,
-            'user_id' => '1',
-            'image_name' => 'test ten anh',
-            'image_path' => 'test duong dan anh',
-        );
-        /* if($request->hasFile('image')){
-            $file = $request->file('image');
-            $image_origin_name = $file->getClientOriginalName();
-            $image_hash_name = Str::random(20).'.'.$file->extension();
-            $store = $file->storeAs('public/product/1',$image_hash_name);            
-            $data['image_name'] = $image_origin_name;
-            $data['image_path'] = Storage::url('file.jpg');
-        }   */
-
-        $this->product->find($id)->update($data);
-        $product_update = $this->product->find($id);
-        return new productResource($product_update);
+        $token = $request->header('token');
+        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
+        if(empty($token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token not send !'
+            ],500);
+        }elseif(empty($get_session_token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token incorrect !'
+            ],500);
+        }else{
+            $request->validate([
+                'name' => 'required|min:1|max:30|unique:tbl_product',
+                'current_price' => 'required',
+                'previous_price' => 'required',
+                'origin_price' => 'required',
+                'ram' => 'required',
+                'desc' => 'required|min:1',
+                'isOnSale' => 'required',
+                'quantity' => 'required',
+                'user_id' => 'required',
+            ]);
+    
+            $data = array(
+                'name' => $request->name,
+                'current_price' => $request->current_price,
+                'previous_price' => $request->previous_price,
+                'origin_price' => $request->origin_price,
+                'ram' => $request->ram,
+                'desc' => $request->desc,
+                'isOnSale' => $request->isOnSale,
+                'quantity' => $request->quantity,
+                'user_id' => '1',
+    
+                'image_path' => 'test duong dan anh',
+            );
+            /* if($request->hasFile('image')){
+                $file = $request->file('image');
+                $image_origin_name = $file->getClientOriginalName();
+                $image_hash_name = Str::random(20).'.'.$file->extension();
+                $store = $file->storeAs('public/product/1',$image_hash_name);            
+                $data['image_name'] = $image_origin_name;
+                $data['image_path'] = Storage::url('file.jpg');
+            }   */
+    
+            $this->product->find($id)->update($data);
+            $product_update = $this->product->find($id);
+            return response()->json([
+                'code' => 201,
+                'data' => new productResource($product_update)
+            ],201);
+        }
     }
 
     /**
@@ -143,10 +194,29 @@ class productController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $product_item = $this->product->find($id);
-        $this->product->find($id)->delete();
-        return new productResource($product_item);
+        $token = $request->header('token');
+        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
+        if(empty($token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token not send !'
+            ],500);
+        }elseif(empty($get_session_token)){
+            return response()->json([
+                'code' => 500,
+                'message' => 'token incorrect !'
+            ],500);
+        }else{
+            $product_item = $this->product->find($id);
+            $this->product->find($id)->delete();
+            return new productResource($product_item);
+                return response()->json([
+                    'code' => 201,
+                    'data' => new productResource($product_item)
+            ],201);
+        }
+        
     }
 }

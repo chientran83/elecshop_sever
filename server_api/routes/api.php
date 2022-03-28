@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\v1\categoryController;
 use App\Http\Controllers\api\v1\productController;
 use App\Http\Controllers\api\v1\sliderController;
+use App\Http\Controllers\api\v1\userController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,9 +30,13 @@ use Illuminate\Support\Facades\Route;
      });
      Route::resource('product',productController::class)->except(['edit','create']);
      //router category
+     Route::get('category/paginate',[categoryController::class,'paginate'])->name('category_paginate');
      Route::resource('category',categoryController::class)->except(['edit','create']);
      //router slider
      Route::resource('slider',sliderController::class)->except(['edit','create']);
-
-
+     //router user
+     Route::post('users/login',[userController::class,'login'])->name('user.login');
+     Route::get('users/logout',[userController::class,'logout'])->name('user.logout');
+     Route::get('users/delete_token',[userController::class,'delete_token'])->name('user.delete_token');
+     Route::resource('users',userController::class)->except(['edit','create']);
  });

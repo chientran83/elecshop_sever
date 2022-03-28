@@ -17,14 +17,12 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('name');
             $table->integer('current_price')->default(0);
+            $table->integer('previous_price')->default(0);
             $table->integer('origin_price')->default(0);
-            $table->string('image_name')->default('default.jpg');
             $table->string('image_path')->default('default.jpg');
-            $table->string('memory');
             $table->string('ram');
-            $table->date('sale_date');
             $table->longText('desc');
-            $table->integer('coupon_number')->default(0);
+            $table->integer('isOnSale')->default(0);
             $table->integer('quantity')->default(0);
             $table->integer('user_id');
             $table->timestamps();
