@@ -6,6 +6,7 @@ use App\Http\Controllers\api\v1\productController;
 use App\Http\Controllers\api\v1\roleController;
 use App\Http\Controllers\api\v1\sliderController;
 use App\Http\Controllers\api\v1\userController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\Route;
      });
      Route::resource('product',productController::class)->except(['edit','create']);
      //router category
-     Route::get('category/paginate',[categoryController::class,'paginate'])->middleware('can:isAdmin'); /* ->middleware('allowedDomains') */
+     Route::get('category/paginate',[categoryController::class,'paginate'])->middleware('can:admin'); /* ->middleware('allowedDomains') */
      Route::resource('category',categoryController::class)->except(['edit','create']);
      //router slider
      Route::resource('slider',sliderController::class)->except(['edit','create']);
@@ -46,3 +47,4 @@ use Illuminate\Support\Facades\Route;
      //router permission
      Route::post('permission',[permissionController::class,'store']);
  });
+

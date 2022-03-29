@@ -78,7 +78,7 @@ class productController extends Controller
             if($request->hasFile('image')){
                 $file = $request->file('image');
                 $image_hash_name = Str::random(20).'.'.$file->extension();
-                $store = $file->storeAs('public/product/1',$image_hash_name);            
+                $store = $file->storeAs('public/product/1',$image_hash_name);    
                 $data['image_path'] = Storage::url($store);
             }
 

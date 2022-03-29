@@ -11,7 +11,7 @@ class product extends Model
     protected $fillable = ['name','current_price','previous_price','origin_price','image_path','ram','desc','quantity','isOnSale','user_id'];
     protected $table = 'tbl_product';
     protected $primaryKey = 'id';
-   /*  public function color(){
+    /* public function color(){
         return $this->belongsToMany('');
     } */
 };

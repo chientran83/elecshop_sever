@@ -30,7 +30,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <form>
+                                        <form v-on:submit.prevent="product_store()">
                                             <div class="form-group">
                                                 <label>Name</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="product.name">
@@ -53,44 +53,66 @@
                                             </div>
                                              <div class="form-group">
                                                 <label>isOnsale</label>
-                                                <select class="form-control" id="exampleFormControlSelect1" v-model="product.isOnsale">
-                                                    <option value="0">False</option>
-                                                    <option value="1" selected>True</option>
+                                                <select class="form-control" v-model="product.isOnsale" id="exampleFormControlSelect1" >
+                                                    <option value="0" selected>False</option>
+                                                    <option value="1">True</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                            <label for="exampleFormControlTextarea1">Desc</label>
-                                            <textarea class="form-control" id="editor1" rows="3" placeholder="Enter desc" v-model="product.desc"></textarea>
-                                            </div>
+                                                <label for="exampleFormControlTextarea1">Desc</label>
+                                                <ckeditor v-model="product.desc"></ckeditor>
+                                                </div>
                                              <div class="form-group">
                                                 <label>Ram</label>
                                                 <input type="number" class="form-control" placeholder="Enter name" v-model="product.ram">
                                             </div>
                                              <div class="form-group">
-                                                <label>Tag</label>
-                                                <div>
-                                                    <label class="typo__label">Tagging</label>
-                                                    <multiselect v-model="value" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
-                                                    <pre class="language-json"><code>{{ value  }}</code></pre>
-                                                </div>
+                                                <label class="typo__label">Tags</label>
+                                                <multiselect v-model="product.tags" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsTags" :multiple="true" :taggable="true" @tag="addTags"></multiselect>
+                                                <pre class="language-json"><code>{{ product.tags  }}</code></pre>                                        
                                             </div>
-                                            
-                                             <div class="form-group">
-                                                <label>Memory</label>
-                                                <select class="form-control js-example-basic-single-color" multiple="multiple" id="memory" v-on:change="get_value_input_multiple('memory')">
-                                                </select>
+                                             <div class="form-group" v-if="product.tags != ''">
+                                                <label class="typo__label">Enter price for each tag</label>
+                                                <div class="input-group mb-3" v-for="(tag,key) in product.tags" v-bind:key="key">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">{{tag.name}}</span>
+                                                    </div>
+                                                    <input type="number" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)">
+                                                </div>                                               
                                             </div>
                                              <div class="form-group">
-                                                <label>Colors</label>
-                                                <select class="form-control js-example-basic-single-color" multiple="multiple" id="colors" v-on:change="get_value_input_multiple('colors')">
-                                                </select>
+                                                <label class="typo__label">Memory</label>
+                                                <multiselect v-model="product.memory" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsMemory" :multiple="true" :taggable="true" @tag="addMemory"></multiselect>
+                                                <pre class="language-json"><code>{{ product.memory  }}</code></pre>
                                             </div>
-                                                
+                                              <div class="form-group" v-if="product.memory != ''">
+                                                <label class="typo__label">Enter price for each memory</label>
+                                                <div class="input-group mb-3" v-for="(memory,key) in product.memory" v-bind:key="key">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">{{memory.name}}</span>
+                                                    </div>
+                                                    <input type="number" v-bind:id="'priceMemory' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceMemory(memory,key)">
+                                                </div>                                               
+                                            </div>
                                              <div class="form-group">
-                                                <label>categoryID</label>
-                                                <select class="form-control js-example-basic-single-category" v-model="product.category_id">
-                                                    <option v-for="(category,key) in categories" v-bind:key="key">{{category.name}}</option>
-                                                </select>
+                                                <label class="typo__label">Colors</label>
+                                                <multiselect v-model="product.colors" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsColors" :multiple="true" :taggable="true" @tag="addColors"></multiselect>
+                                                <pre class="language-json"><code>{{ product.colors  }}</code></pre>
+                                            </div>
+                                              <div class="form-group" v-if="product.colors != ''">
+                                                <label class="typo__label">Enter price for each color</label>
+                                                <div class="input-group mb-3" v-for="(color,key) in product.colors" v-bind:key="key">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">{{color.name}}</span>
+                                                    </div>
+                                                    <input type="number" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)">
+                                                </div>                                               
+                                            </div>
+                                             <div class="form-group">
+                                                <label class="typo__label">Category</label>
+                                                <multiselect v-model="product.category_id" :options="categories" placeholder="Select one" label="name" track-by="name">
+                                                </multiselect>
+                                                <pre class="language-json"><code>{{ product.category_id  }}</code></pre>
                                             </div>
                                              <div class="form-group">
                                                 <label>MainImage</label>
@@ -103,7 +125,7 @@
                                             class="btn btn-secondary"
                                             to="/product">Thoát</router-link>
                                             </a>
-                                            <button class="btn btn-primary" v-on:click="product_store()">Submit</button>
+                                            <button class="btn btn-primary" type="submit">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -115,19 +137,33 @@
                 <!-- [ Main Content ] end -->
             </div>
         </div>
-        <h1>{{ product.tags  }}</h1>
-        <h1>{{ product.colors  }}</h1>
-        <h1>{{ product.memory  }}</h1>
     </div>
 </template>
 <script>
+import Vue from 'vue';
+import CKEditor from 'ckeditor4-vue';
+import axios from 'axios';
 import Multiselect from 'vue-multiselect'
+
+Vue.use( CKEditor );
     export default {
-         components:{
+        components: {
             Multiselect
         },
         data(){
             return {
+                optionsTags: [
+                    
+                ],
+                optionsMemory: [
+                    
+                ],
+                optionsColors: [
+                    
+                ],
+                optionsCategory: [
+                    
+                ],
                 product:{
                     name:"",
                     origin_price:"",
@@ -138,71 +174,129 @@ import Multiselect from 'vue-multiselect'
                     desc:"",
                     quantity:"",
                     user_id:"",
-                    tags:['a','b'],
+                    tags:[],
                     colors:[],
                     memory:[],
                     category_id:""
                 },
-                categories:[],
-                 value: [
-                    { name: 'Javascript', code: 'js' }
-                ],
-                options: [
-                    { name: 'Vue.js', code: 'vu' },
-                    { name: 'Javascript', code: 'js' },
-                    { name: 'Open Source', code: 'os' }
-                ]
+                categories:[]
             }
         },
         mounted(){
-            CKEDITOR.replace( 'editor1' );
             fetch('http://localhost:8000/api/v1/category').then(res => res.json()).then(res => {
                 this.categories = res.data
             })
-            
-            /* $(document).change('#tags',function(){
-                value_tags = $("#tags").val();
-                console.log(this.product.tags)
-                
-            }) */
-
-
-            /* var colors = document.getElementById("colors");
-            colors.change = function(){
-                this.get_value_input_multiple("colors");
-            }
-            var memory = document.getElementById("memory");
-            memory.change = function(){
-                this.get_value_input_multiple("memory");
-            } */
         },
         
         methods:{
-            addTag (newTag) {
-                const tag = {
-                    name: newTag,
-                    code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+            priceTag:function(tag,key){
+                var price = document.getElementById('priceTags' + key).value
+                var obj = {
+                    name: tag.name,
+                    price: price
                 }
-                this.options.push(tag)
-                this.value.push(tag)
+                this.product.tags[key] = obj;
+                console.log(this.product.tags[key])
+            },
+            priceColor:function(color,key){
+                var price = document.getElementById('priceColors' + key).value
+                var obj = {
+                    name: color.name,
+                    price: price
+                }
+                this.product.colors[key] = obj;
+                console.log(this.product.colors[key])
+            },
+            priceMemory:function(memory,key){
+                var price = document.getElementById('priceMemory' + key).value
+                var obj = {
+                    name: memory.name,
+                    price: price
+                }
+                this.product.memory[key] = obj;
+                console.log(this.product.memory[key])
+            },
+            priceTag:function(tag,key){
+                var price = document.getElementById('priceTags' + key).value
+                var obj = {
+                    name: tag.name,
+                    price: price
+                }
+                this.product.tags[key] = obj;
+                console.log(this.product.tags[key])
+            },
+            addTags (newTag) {
+            const tag = {
+                name: newTag,
+                price:0
+            }
+            this.optionsTags.push(tag)
+            this.product.tags.push(tag)
+            },
+            addMemory (newMemory) {
+            const tag = {
+                name: newMemory,
+                price:0
+            }
+            this.optionsMemory.push(tag)
+            this.product.memory.push(tag)
+            },
+            addColors (newColors) {
+            const tag = {
+                name: newColors,
+                price:0
+            }
+            this.optionsColors.push(tag)
+            this.product.colors.push(tag)
             },
             product_store:function(){
-                var FormData = new FormData();
-                /* FormData.append('name',this.product.name);
-                FormData.append('origin_price',this.product.origin_price);
-                FormData.append('previous_price',this.product.previous_price);
-                FormData.append('current_price',this.product.current_price);
-                FormData.append('image',document.getElementById('imgInp').files[0]);
-                FormData.append('ram',this.product.ram);
-                FormData.append('isOnsale',this.product.isOnsale);
-                FormData.append('desc',this.product.desc);
-                FormData.append('quantity',this.product.quantity);
-                FormData.append('user_id',1);
-                FormData.append('tags',this.product.tags);
-                FormData.append('colors',this.product.colors);
-                FormData.append('memory',this.product.memory);
-                FormData.append('category_id',this.product.category_id);
-                console.log(FormData) */
+               Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, I agree!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var formData = new FormData();
+                        formData.append('name',this.product.name);
+                        formData.append('origin_price',this.product.origin_price);
+                        formData.append('previous_price',this.product.previous_price);
+                        formData.append('current_price',this.product.current_price);
+                        formData.append('image',document.getElementById('imgInp').files[0]);
+                        formData.append('ram',this.product.ram);
+                        formData.append('isOnsale',this.product.isOnsale);
+                        formData.append('desc',this.product.desc);
+                        formData.append('quantity',this.product.quantity);
+
+                        formData.append('tags',this.product.tags);
+                        formData.append('colors',this.product.colors);
+                        formData.append('memory',this.product.memory);
+                        formData.append('category_id',this.product.category_id);
+                        axios.post('http://localhost:8000/api/v1/product',formData)
+                            .then(res => {
+                                Swal.fire(
+                                    'Added new!',
+                                    'New category has been added.',
+                                    'success'
+                                )
+                                this.product.tags="";
+                                this.product.colors="";
+                                this.product.memory="";
+                                this.product.category_id="";
+                                this.product.name="";
+                                this.product.origin_price="";
+                                this.product.previous_price="";
+                                this.product.current_price= "";
+                                this.product.ram="";
+                                this.product.isOnsale="";
+                                this.product.desc="";
+                                this.product.quantity="";
+                            })
+                    }
+                })
             },
             preview_image:function(){
                 const [file] = imgInp.files
@@ -213,5 +307,10 @@ import Multiselect from 'vue-multiselect'
         }
     }
 </script>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<!-- New step!
+     Add Multiselect CSS. Can be added as a static asset or inside a component. -->
+
 <style>
+  
 </style>
