@@ -41,7 +41,7 @@ class productController extends Controller
      */
     public function store(Request $request)
     {
-        $token = $request->header('token');
+        /* $token = $request->header('token');
         $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
         if(empty($token)){
             return response()->json([
@@ -53,7 +53,7 @@ class productController extends Controller
                 'code' => 500,
                 'message' => 'token incorrect !'
             ],500);
-        }else{
+        }else{ */
             $request->validate([
                 'name' => 'required|min:1|max:30|unique:tbl_product',
                 'current_price' => 'required',
@@ -61,9 +61,8 @@ class productController extends Controller
                 'origin_price' => 'required',
                 'ram' => 'required',
                 'desc' => 'required|min:1',
-                'isOnSale' => 'required',
-                'quantity' => 'required',
-                'user_id' => 'required',
+                'isOnsale' => 'required',
+                'quantity' => 'required'
             ]);
             $data = array(
                 'name' => $request->name,
@@ -72,27 +71,23 @@ class productController extends Controller
                 'origin_price' => $request->origin_price,
                 'ram' => $request->ram,
                 'desc' => $request->desc,
-                'isOnSale' => $request->isOnSale,
+                'isOnsale' => $request->isOnsale,
                 'quantity' => $request->quantity,
-                'user_id' => '1',
-                
-                'image_path' => 'test duong dan anh',
+                'user_id' => 11
             );
-            /* if($request->hasFile('image')){
+            if($request->hasFile('image')){
                 $file = $request->file('image');
-                $image_origin_name = $file->getClientOriginalName();
                 $image_hash_name = Str::random(20).'.'.$file->extension();
                 $store = $file->storeAs('public/product/1',$image_hash_name);            
-                $data['image_name'] = $image_origin_name;
-                $data['image_path'] = Storage::url('file.jpg');
-            }   */
-            $product_new = $this->product->create($data);
+                $data['image_path'] = Storage::url($store);
+            }
 
+            $product_new = $this->product->create($data);
             return response()->json([
                 'code' => 201,
                 'data' => new productResource($product_new)
             ],201);
-        }
+        /* } */
         
     }
 
