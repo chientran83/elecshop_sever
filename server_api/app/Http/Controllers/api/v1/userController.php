@@ -84,6 +84,22 @@ class userController extends Controller
             ],500);
         }
     }
+    public function checkLogin()
+    {
+        if(auth()->check()){
+            return response()->json([
+                'code' => 201,
+                'message' => 'login!'
+            ],201);
+            
+        }else{
+            return response()->json([
+                'code' => 201,
+                'message' => 'not login!'
+            ],201);
+
+        }
+    }
     public function logout(Request $request)
     {
         auth()->logout();

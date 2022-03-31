@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Policies\categoryPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -25,10 +26,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        // [categoryPolicy::class,'viewAny']
         
-        Gate::define('admin', function (User $user) {
-            /* dd($user); */
-            return $user->is_admin;
+        Gate::define('update-post', function (User $user) {
+            dd('co nha');
+            /* return $user->id === $post->user_id; */
         });
     }
 }

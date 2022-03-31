@@ -21,6 +21,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'current_price',
+        'origin_price',
+        'ram',
+        'desc',
+        'isOnsale',
+        'quantity',
+        'user_id',
+        'category_id'
+
+
     ];
 
     /**

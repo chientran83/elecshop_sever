@@ -33,12 +33,13 @@ use Illuminate\Support\Facades\Route;
      });
      Route::resource('product',productController::class)->except(['edit','create']);
      //router category
-     Route::get('category/paginate',[categoryController::class,'paginate'])->middleware('can:admin'); /* ->middleware('allowedDomains') */
+     Route::get('category/paginate',[categoryController::class,'paginate'])/* ->middleware('can:admin') */; /* ->middleware('allowedDomains') */
      Route::resource('category',categoryController::class)->except(['edit','create']);
      //router slider
      Route::resource('slider',sliderController::class)->except(['edit','create']);
      //router user
      Route::post('users/login',[userController::class,'login'])->name('user.login');
+     Route::get('users/checkLogin',[userController::class,'checkLogin'])->name('user.checkLogin');
      Route::get('users/logout',[userController::class,'logout'])->name('user.logout');
      Route::get('users/delete_token',[userController::class,'delete_token'])->name('user.delete_token');
      Route::resource('users',userController::class)->except(['edit','create']);

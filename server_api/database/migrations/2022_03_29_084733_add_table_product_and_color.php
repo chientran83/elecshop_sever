@@ -13,10 +13,10 @@ class AddTableProductAndColor extends Migration
      */
     public function up()
     {
-        Schema::create('tbl_product_roles', function (Blueprint $table) {
+        Schema::create('tbl_product_color', function (Blueprint $table) {
             $table->id();
             $table->string('product_id');
-            $table->string('role_id');
+            $table->string('color_id');
             $table->string('price')->default(0);
             $table->timestamps();
         });

@@ -68,51 +68,51 @@
                                             </div>
                                              <div class="form-group">
                                                 <label class="typo__label">Tags</label>
-                                                <multiselect v-model="product.tags" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsTags" :multiple="true" :taggable="true" @tag="addTags"></multiselect>
-                                                <pre class="language-json"><code>{{ product.tags  }}</code></pre>                                        
+                                                <multiselect v-model="product.tags" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsTags" :multiple="true" :taggable="true" @tag="addTags"></multiselect>                                     
                                             </div>
                                              <div class="form-group" v-if="product.tags != ''">
-                                                <label class="typo__label">Enter price for each tag</label>
+                                                <label class="typo__label ">Enter price for each tag</label>
                                                 <div class="input-group mb-3" v-for="(tag,key) in product.tags" v-bind:key="key">
-                                                    <div class="input-group-prepend">
+                                                    <div class="input-group-prepend bg-warning">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{tag.name}}</span>
                                                     </div>
-                                                    <input type="number" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)">
+                                                    <input type="number" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)" placeholder="Enter price">
                                                 </div>                                               
                                             </div>
                                              <div class="form-group">
                                                 <label class="typo__label">Memory</label>
                                                 <multiselect v-model="product.memory" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsMemory" :multiple="true" :taggable="true" @tag="addMemory"></multiselect>
-                                                <pre class="language-json"><code>{{ product.memory  }}</code></pre>
+                                              
                                             </div>
                                               <div class="form-group" v-if="product.memory != ''">
                                                 <label class="typo__label">Enter price for each memory</label>
                                                 <div class="input-group mb-3" v-for="(memory,key) in product.memory" v-bind:key="key">
-                                                    <div class="input-group-prepend">
+                                                    <div class="input-group-prepend bg-success">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{memory.name}}</span>
                                                     </div>
-                                                    <input type="number" v-bind:id="'priceMemory' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceMemory(memory,key)">
+                                                    <input type="number" v-bind:id="'priceMemory' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceMemory(memory,key)" placeholder="Enter price">
                                                 </div>                                               
                                             </div>
                                              <div class="form-group">
                                                 <label class="typo__label">Colors</label>
-                                                <multiselect v-model="product.colors" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsColors" :multiple="true" :taggable="true" @tag="addColors"></multiselect>
-                                                <pre class="language-json"><code>{{ product.colors  }}</code></pre>
+                                                <multiselect v-model="product.colors" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsColors" :multiple="true" :taggable="true" @tag="addColors" ></multiselect>
+                                                
                                             </div>
                                               <div class="form-group" v-if="product.colors != ''">
                                                 <label class="typo__label">Enter price for each color</label>
                                                 <div class="input-group mb-3" v-for="(color,key) in product.colors" v-bind:key="key">
-                                                    <div class="input-group-prepend">
+                                                    <div class="input-group-prepend bg-primary">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{color.name}}</span>
                                                     </div>
-                                                    <input type="number" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)">
-                                                </div>                                               
+                                                    <input type="number" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
+                                                    <input type="text" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
+                                                </div>                                           
                                             </div>
                                              <div class="form-group">
                                                 <label class="typo__label">Category</label>
                                                 <multiselect v-model="product.category_id" :options="categories" placeholder="Select one" label="name" track-by="name">
                                                 </multiselect>
-                                                <pre class="language-json"><code>{{ product.category_id  }}</code></pre>
+                                              
                                             </div>
                                              <div class="form-group">
                                                 <label>MainImage</label>
@@ -189,6 +189,7 @@ Vue.use( CKEditor );
         },
         
         methods:{
+            // add price when keyup
             priceTag:function(tag,key){
                 var price = document.getElementById('priceTags' + key).value
                 var obj = {
@@ -196,16 +197,18 @@ Vue.use( CKEditor );
                     price: price
                 }
                 this.product.tags[key] = obj;
-                console.log(this.product.tags[key])
             },
             priceColor:function(color,key){
-                var price = document.getElementById('priceColors' + key).value
+                var price = 0;
+                var code = 0;
+                price = document.getElementById('priceColors' + key).value
+                code = document.getElementById('codeColors' + key).value
                 var obj = {
                     name: color.name,
-                    price: price
+                    price: price,
+                    code:code
                 }
                 this.product.colors[key] = obj;
-                console.log(this.product.colors[key])
             },
             priceMemory:function(memory,key){
                 var price = document.getElementById('priceMemory' + key).value
@@ -214,7 +217,6 @@ Vue.use( CKEditor );
                     price: price
                 }
                 this.product.memory[key] = obj;
-                console.log(this.product.memory[key])
             },
             priceTag:function(tag,key){
                 var price = document.getElementById('priceTags' + key).value
@@ -223,8 +225,8 @@ Vue.use( CKEditor );
                     price: price
                 }
                 this.product.tags[key] = obj;
-                console.log(this.product.tags[key])
             },
+            // add tags,memory,color
             addTags (newTag) {
             const tag = {
                 name: newTag,
@@ -244,11 +246,13 @@ Vue.use( CKEditor );
             addColors (newColors) {
             const tag = {
                 name: newColors,
-                price:0
+                price:0,
+                code:'null'
             }
             this.optionsColors.push(tag)
             this.product.colors.push(tag)
             },
+            // store product
             product_store:function(){
                Swal.fire({
                 title: 'Are you sure?',
@@ -271,11 +275,14 @@ Vue.use( CKEditor );
                         formData.append('desc',this.product.desc);
                         formData.append('quantity',this.product.quantity);
 
-                        formData.append('tags',this.product.tags);
-                        formData.append('colors',this.product.colors);
-                        formData.append('memory',this.product.memory);
-                        formData.append('category_id',this.product.category_id);
-                        axios.post('http://localhost:8000/api/v1/product',formData)
+                        formData.append('tags', JSON.stringify(this.product.tags));
+                        formData.append('colors',JSON.stringify(this.product.colors));
+                        formData.append('memory',JSON.stringify(this.product.memory));
+                        formData.append('category_id',JSON.stringify(this.product.category_id));
+                        axios.post('http://localhost:8000/api/v1/product',formData,{
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }})
                             .then(res => {
                                 Swal.fire(
                                     'Added new!',

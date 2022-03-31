@@ -25,6 +25,7 @@ class CreateProductsTable extends Migration
             $table->integer('isOnSale')->default(0);
             $table->integer('quantity')->default(0);
             $table->integer('user_id');
+            $table->integer('category_id');
             $table->timestamps();
         });
     }

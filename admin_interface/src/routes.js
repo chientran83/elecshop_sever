@@ -18,6 +18,6 @@ export const routes = [
     {path:'/product',name:'Product',component:Product, children:[
         {path:'',name:'Product_index',component:Product_index},
         {path:'create',name:'Product_create',component:Product_create},
-        {path:'edit',name:'Product_edit',component:Product_edit}
+        {path:'edit/:id',name:'Product_edit',component:Product_edit}
     ]}
 ]

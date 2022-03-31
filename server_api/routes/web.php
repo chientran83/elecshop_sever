@@ -20,13 +20,6 @@ use Illuminate\Support\Facades\Route;
             abort(403);
         } */
         return view('welcome');
-    })->middleware('can:admin') ;
-    Route::get('loginkk',function(){
-        $user = User::find(21);
-        auth()->login($user);
-     });
-     Route::get('logoutkk',function(){
-        auth()->logout();
-     });
+    })/* ->middleware('can:admin') */ ;
 
  

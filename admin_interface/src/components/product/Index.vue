@@ -80,7 +80,7 @@
                                                         <router-link
                                                             tag="button"
                                                             class="btn btn-info"
-                                                            :to="'product/edit'+product.id">
+                                                            :to="'product/edit/'+product.id">
                                                             Edit <i class="fas fa-edit"></i>
                                                         </router-link>
                                                     </a>

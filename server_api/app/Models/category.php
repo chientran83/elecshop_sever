@@ -13,9 +13,9 @@ class category extends Model
     protected $primary = 'id';
 
     public function product(){
-        return $this->belongsToMany(product::class,'tbl_product_category','category_id','product_id')->orderBy('id','ASC');
+        return $this->hasMany(product::class,'category_id')->orderBy('id','ASC');
     }
     public function product_desc(){
-        return $this->belongsToMany(product::class,'tbl_product_category','category_id','product_id')->orderBy('id','DESC');
+        return $this->hasMany(product::class,'category_id')->orderBy('id','DESC');
     }
 }
