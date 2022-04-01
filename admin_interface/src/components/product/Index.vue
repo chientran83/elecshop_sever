@@ -70,7 +70,7 @@
                                                 <td>{{product.current_price}}</td>
                                                 <td>{{product.previous_price}}</td>
                                                 <td>{{product.origin_price}}</td>
-                                                <td><img v-bind:src="product.image_path" style="width:40px; height:40px;" alt=""></td>
+                                                <td><img v-bind:src="'http://localhost:8000' + product.image_path" style="width:40px; height:40px;" alt=""></td>
                                                 <td>{{product.ram}}</td>
                                                 <td>{{ product.isOnSale }}</td>
                                                 <td  class="d-inline-block text-truncate" style="max-width: 200px;">{{product.desc}}</td>

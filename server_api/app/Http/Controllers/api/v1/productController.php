@@ -50,6 +50,7 @@ class productController extends Controller
      */
     public function store(Request $request)
     {
+        
         /* $token = $request->header('token');
         $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
         if(empty($token)){
@@ -71,7 +72,7 @@ class productController extends Controller
                 'origin_price' => 'required',
                 'ram' => 'required',
                 'desc' => 'required|min:1',
-                'isOnSale' => 'required',
+                'isOnsale' => 'required',
                 'quantity' => 'required'
             ]);
             
@@ -82,7 +83,7 @@ class productController extends Controller
                 'origin_price' => $request->origin_price,
                 'ram' => $request->ram,
                 'desc' => $request->desc,
-                'isOnsale' => $request->isOnsale,
+                'isOnSale' => $request->isOnsale,
                 'quantity' => $request->quantity,
                 'user_id' => 11,
                 'category_id' => json_decode($request->category_id)->id,
@@ -102,7 +103,6 @@ class productController extends Controller
                 $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
                 $product_new->tag()->attach($new_tag->id,['price' => $tag_item->price]);
             }
-
             foreach(json_decode($request->colors) as $color_item){
                 $new_color = $this->color->firstOrcreate(['name' => $color_item->name,'code' => $color_item->code]);
                 $product_new->color()->attach($new_color,['price' => $color_item->price]);
@@ -111,6 +111,10 @@ class productController extends Controller
             foreach(json_decode($request->memory) as $memory_item){
                 $new_memory = $this->memory->firstOrcreate(['name' => $memory_item->name]);
                 $product_new->memory()->attach($new_memory,['price' => $memory_item->price]);
+            }
+
+            foreach(json_decode($request->accessories) as $accessories_item){
+                $product_new->accessories()->attach($accessories_item->id);
             }
             
             return response()->json([

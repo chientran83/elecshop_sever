@@ -27,7 +27,6 @@ class categoryController extends Controller
     }
     public function paginate()
     {
-      
         return new categoryCollection($this->category->paginate(6));
     }
 

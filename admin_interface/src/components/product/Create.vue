@@ -115,6 +115,13 @@
                                               
                                             </div>
                                              <div class="form-group">
+                                               <label class="typo__label">Select accessories</label>
+                                               <multiselect v-model="product.accessories" :options="optionsAccessories" :multiple="true" group-values="libs" group-label="language" :group-select="true" placeholder="Select accessories" track-by="name" label="name"><span slot="noResult">Oops! No elements found. Consider changing the search query.</span></multiselect>
+                                            </div>
+                                             <div class="form-group">
+                                                
+                                            </div>
+                                             <div class="form-group">
                                                 <label>MainImage</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
                                                 <img src="@/assets/default.jpg" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
@@ -164,6 +171,10 @@ Vue.use( CKEditor );
                 optionsCategory: [
                     
                 ],
+                optionsAccessories: [{
+                    language: 'Choose all',
+                    libs: []
+                }],
                 product:{
                     name:"",
                     origin_price:"",
@@ -177,6 +188,7 @@ Vue.use( CKEditor );
                     tags:[],
                     colors:[],
                     memory:[],
+                    accessories:[],
                     category_id:""
                 },
                 categories:[]
@@ -185,6 +197,9 @@ Vue.use( CKEditor );
         mounted(){
             fetch('http://localhost:8000/api/v1/category').then(res => res.json()).then(res => {
                 this.categories = res.data
+            })
+             fetch('http://localhost:8000/api/v1/product').then(res => res.json()).then(res => {
+                this.optionsAccessories[0].libs = res.data;
             })
         },
         
@@ -265,6 +280,7 @@ Vue.use( CKEditor );
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var formData = new FormData();
+                        console.log(this.product.accessories);
                         formData.append('name',this.product.name);
                         formData.append('origin_price',this.product.origin_price);
                         formData.append('previous_price',this.product.previous_price);
@@ -278,6 +294,7 @@ Vue.use( CKEditor );
                         formData.append('tags', JSON.stringify(this.product.tags));
                         formData.append('colors',JSON.stringify(this.product.colors));
                         formData.append('memory',JSON.stringify(this.product.memory));
+                        formData.append('accessories',JSON.stringify(this.product.accessories));
                         formData.append('category_id',JSON.stringify(this.product.category_id));
                         axios.post('http://localhost:8000/api/v1/product',formData,{
                             headers: {

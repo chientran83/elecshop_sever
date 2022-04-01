@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class product extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','current_price','previous_price','origin_price','image_path','ram','desc','quantity','isOnSale','user_id'];
+    protected $fillable = ['name','current_price','previous_price','origin_price','image_path','ram','desc','quantity','isOnSale','user_id','category_id'];
     protected $table = 'tbl_product';
     protected $primaryKey = 'id';
     public function color(){
@@ -22,5 +22,8 @@ class product extends Model
     }
     public function category(){
         return $this->belongsTo(category::class,'category_id');
+    }
+    public function accessories(){
+        return $this->belongsToMany(product::class,'tbl_product_accessories','product_primary','product_secondary');
     }
 };

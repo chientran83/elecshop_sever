@@ -27,7 +27,10 @@ class productResource extends JsonResource
             'quantity' => $this->quantity,
             'user_id' => $this->user_id,
             'category_id' => $this->category_id,
-            'tags' => Resource::collection($this->tag)
+            'tags' => Resource::collection($this->tag),
+            'colors' => Resource::collection($this->color),
+            'memory' => Resource::collection($this->memory),
+            'accessories' => Resource::collection($this->accessories)
         ];
         /* return parent::toArray($request); */
     }

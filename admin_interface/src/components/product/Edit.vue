@@ -76,7 +76,7 @@
                                                     <div class="input-group-prepend bg-warning">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{tag.name}}</span>
                                                     </div>
-                                                    <input type="number" ref="priceTags" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)" placeholder="Enter price" value="0">
+                                                    <input type="number" :ref="'priceTags' + key" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)" placeholder="Enter price" >
                                                 </div>                                               
                                             </div>
                                              <div class="form-group">
@@ -92,7 +92,7 @@
                                                     <input type="number" v-bind:id="'priceMemory' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceMemory(memory,key)" placeholder="Enter price">
                                                 </div>                                               
                                             </div>
-                                             <div class="form-group">
+                                            <div class="form-group">
                                                 <label class="typo__label">Colors</label>
                                                 <multiselect v-model="product.colors" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsColors" :multiple="true" :taggable="true" @tag="addColors" ></multiselect>                                                
                                             </div> 
@@ -110,6 +110,14 @@
                                                 <label class="typo__label">Category</label>
                                                 <multiselect v-model="product.category_id" :options="categories" placeholder="Select one" label="name" track-by="name">
                                                 </multiselect>
+                                            </div>
+                                             <div class="form-group">
+                                               <label class="typo__label">Select accessories</label>
+                                               <multiselect v-model="product.accessories" :options="optionsAccessories" :multiple="true" group-values="libs" group-label="language" :group-select="true" placeholder="Select accessories" track-by="name" label="name"><span slot="noResult">Oops! No elements found. Consider changing the search query.</span></multiselect>
+                                               <pre class="language-json"><code>{{ product.accessories  }}</code></pre>
+                                            </div>
+                                             <div class="form-group">
+                                                
                                             </div>
                                              <div class="form-group">
                                                 <label>MainImage</label>
@@ -134,8 +142,6 @@
                 <!-- [ Main Content ] end -->
             </div>
         </div>
-        <input id="hello" type="text" value="okokok">
-        <input id="helslo" type="text"  ref="myDiv" value="okokok">
     </div>
 </template>
 <script>
@@ -163,8 +169,13 @@ Vue.use( CKEditor );
                 optionsCategory: [
                     
                 ],
+                optionsAccessories: [{
+                    language: 'Choose all',
+                    libs: []
+                }],
                 product_id: "",
                 product:{
+                    id:"",
                     name:"",
                     origin_price:"",
                     previous_price:"",
@@ -177,28 +188,32 @@ Vue.use( CKEditor );
                     tags:[],
                     colors:[],
                     memory:[],
+                    accessories:[],
                     category_id:"",
                     image_path:""
                 },
-                categories:[]
+                categories:[],
             }
         },
         mounted(){
-            console.log(this.$refs.myDiv)
             this.product_id = this.$route.params.id
             fetch('http://localhost:8000/api/v1/category').then(res => res.json()).then(res => {
                 this.categories = res.data
             })
             fetch('http://localhost:8000/api/v1/product/'+this.product_id).then(res => res.json()).then(res => {
                 this.product.tags = res.data.tags;
-
-                // ---------------------------------
+                console.log(res.data.tags[0]);
                 
-                    this.product.tags.map(function(value, key) {
-                        console.log(this.$refs.myDiv)
-                    });
+                for( var i = 0; i < res.data.tags.length;i++){
+                    document.getElementById('priceTags'+i).value = res.data.tags[i].pivot.price;
+                }
+                /* this.product.tags.forEach(function(value, key) {
+                    // console.log(this.$refs.priceTags + key)
                     
+                }); */
+
                 this.product.colors="";
+                this.product.id=res.data.id;
                 this.product.memory="";
                 this.product.category_id="";
                 this.product.name=res.data.name;
@@ -210,6 +225,13 @@ Vue.use( CKEditor );
                 this.product.desc=res.data.desc;
                 this.product.quantity=res.data.quantity;
                 this.product.image_path=res.data.image_path;
+            })
+            fetch('http://localhost:8000/api/v1/product').then(res => res.json()).then(res => {
+                var product_id = this.product.id;
+                var accessories = res.data.filter(function(index,key){
+                    return index.id != product_id
+                })
+                this.optionsAccessories[0].libs = accessories;
             })
         },
         
@@ -302,6 +324,7 @@ Vue.use( CKEditor );
                         formData.append('tags', JSON.stringify(this.product.tags));
                         formData.append('colors',JSON.stringify(this.product.colors));
                         formData.append('memory',JSON.stringify(this.product.memory));
+                        formData.append('accessories',JSON.stringify(this.product.accessories));
                         formData.append('category_id',JSON.stringify(this.product.category_id));
                         axios.post('http://localhost:8000/api/v1/product',formData,{
                             headers: {
