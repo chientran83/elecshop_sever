@@ -102,18 +102,16 @@ class productController extends Controller
                 $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
                 $product_new->tag()->attach($new_tag->id,['price' => $tag_item->price]);
             }
-            foreach(json_decode($request->colors) as $color_item){
+            foreach(json_decode($request->colors) as $key => $color_item){
                 $new_color = $this->color->firstOrcreate(['name' => $color_item->name,'code' => $color_item->code]);
-                for($i = 0; $i < $request->countColorsImage;$i++){
-                    if($request->hasFile('file'.$i)){
-                        $file = $request->file('file'.$i);
+                    if($request->hasFile('file'.$key)){
+                        $file = $request->file('file'.$key);
                         $image_hash_name = Str::random(20).'.'.$file->extension();
                         $store = $file->storeAs('public/productImageColor/2',$image_hash_name);
                         DB::table('tbl_product_color_image')->insert([
                             'color_id' => $new_color->id,
                             'image_path' =>  Storage::url($store)
                         ]);
-                    }
                 } 
                 $product_new->color()->attach($new_color,['price' => $color_item->price]);
             }

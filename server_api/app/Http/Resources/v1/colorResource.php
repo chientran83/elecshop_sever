@@ -22,7 +22,7 @@ class colorResource extends JsonResource
             'price' => $this->whenPivotLoaded('tbl_product_color', function () {
                     return $this->pivot->price;
                 }),
-            'image' => DB::table('tbl_product_color_image')->where('color_id',$this->id)->get()
+            'image' => DB::table('tbl_product_color_image')->where('color_id',$this->id)->first()
         ];
     }
 }

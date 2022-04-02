@@ -326,7 +326,7 @@ Vue.use( CKEditor );
                                     'New category has been added.',
                                     'success'
                                 )
-                               /*  this.product.tags="";
+                                this.product.tags="";
                                 this.product.colors="";
                                 this.product.memory="";
                                 this.product.category_id="";
@@ -337,7 +337,7 @@ Vue.use( CKEditor );
                                 this.product.ram="";
                                 this.product.isOnsale="";
                                 this.product.desc="";
-                                this.product.quantity=""; */
+                                this.product.quantity="";
                             })
                     }
                 })

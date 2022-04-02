@@ -76,7 +76,7 @@
                                                     <div class="input-group-prepend bg-warning">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{tag.name}}</span>
                                                     </div>
-                                                    <input type="number" :ref="'priceTags' + key" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)" placeholder="Enter price" >
+                                                    <input type="number" v-model="product.tags[key].pivot.price" v-bind:id="'priceTags' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceTag(tag,key)" placeholder="Enter price" >
                                                 </div>                                               
                                             </div>
                                              <div class="form-group">
@@ -89,7 +89,7 @@
                                                     <div class="input-group-prepend bg-success">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{memory.name}}</span>
                                                     </div>
-                                                    <input type="number" v-bind:id="'priceMemory' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceMemory(memory,key)" placeholder="Enter price">
+                                                    <input type="number" v-model="product.memory[key].pivot.price" v-bind:id="'priceMemory' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceMemory(memory,key)" placeholder="Enter price">
                                                 </div>                                               
                                             </div>
                                             <div class="form-group">
@@ -102,8 +102,12 @@
                                                     <div class="input-group-prepend bg-primary">
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{color.name}}</span>
                                                     </div>
-                                                    <input type="number" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
-                                                    <input type="text" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
+                                                    <input type="number" v-model="product.colors[key].price" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
+                                                    <input type="text" v-model="product.colors[key].code" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
+                                                    <div class="form-control">
+                                                        <img :src="'http://localhost:8000'+product.colors[key].image.image_path" alt="default.jpg" :id="'image_preview_colors' + key" class="col-3" style="height:100%;">
+                                                        <input type="file" class="col-8" v-bind:id="'imageColors' + key"  v-on:change="priceColor(color,key); preview_image_color(color,key);">
+                                                    </div>
                                                 </div>                                           
                                             </div>
                                              <div class="form-group">
@@ -114,7 +118,6 @@
                                              <div class="form-group">
                                                <label class="typo__label">Select accessories</label>
                                                <multiselect v-model="product.accessories" :options="optionsAccessories" :multiple="true" group-values="libs" group-label="language" :group-select="true" placeholder="Select accessories" track-by="name" label="name"><span slot="noResult">Oops! No elements found. Consider changing the search query.</span></multiselect>
-                                               <pre class="language-json"><code>{{ product.accessories  }}</code></pre>
                                             </div>
                                              <div class="form-group">
                                                 
@@ -122,7 +125,7 @@
                                              <div class="form-group">
                                                 <label>MainImage</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img v-bind:src="product.image_path" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <img v-bind:src="'http://localhost:8000' + product.image_path" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
                                             </div>
                                             <a>
                                             <router-link
@@ -201,21 +204,17 @@ Vue.use( CKEditor );
                 this.categories = res.data
             })
             fetch('http://localhost:8000/api/v1/product/'+this.product_id).then(res => res.json()).then(res => {
+                 fetch('http://localhost:8000/api/v1/category/'+res.data.category_id).then(res => res.json()).then(res => {
+                    this.product.category_id = {
+                        "id": res.data.id,
+                        "name": res.data.name
+                    };
+                })
                 this.product.tags = res.data.tags;
-                console.log(res.data.tags[0]);
-                
-                for( var i = 0; i < res.data.tags.length;i++){
-                    document.getElementById('priceTags'+i).value = res.data.tags[i].pivot.price;
-                }
-                /* this.product.tags.forEach(function(value, key) {
-                    // console.log(this.$refs.priceTags + key)
-                    
-                }); */
-
-                this.product.colors="";
+                this.product.colors=res.data.colors;
+                this.product.memory=res.data.memory;
+                this.product.accessories=res.data.accessories;
                 this.product.id=res.data.id;
-                this.product.memory="";
-                this.product.category_id="";
                 this.product.name=res.data.name;
                 this.product.origin_price=res.data.origin_price;
                 this.product.previous_price=res.data.previous_price;
@@ -311,6 +310,7 @@ Vue.use( CKEditor );
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        console.log(this.product.isOnsale)
                         var formData = new FormData();
                         formData.append('name',this.product.name);
                         formData.append('origin_price',this.product.origin_price);
@@ -326,7 +326,7 @@ Vue.use( CKEditor );
                         formData.append('memory',JSON.stringify(this.product.memory));
                         formData.append('accessories',JSON.stringify(this.product.accessories));
                         formData.append('category_id',JSON.stringify(this.product.category_id));
-                        axios.post('http://localhost:8000/api/v1/product',formData,{
+                        /* axios.post('http://localhost:8000/api/v1/product',formData,{
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }})
@@ -348,7 +348,7 @@ Vue.use( CKEditor );
                                 this.product.isOnsale="";
                                 this.product.desc="";
                                 this.product.quantity="";
-                            })
+                            }) */
                     }
                 })
             },
@@ -359,6 +359,15 @@ Vue.use( CKEditor );
                 const [file] = imgInp.files
                 if (file) {
                     blah.src = URL.createObjectURL(file)
+                }
+            },
+            preview_image_color:function(color,key){
+                var image_preview_colors = 'image_preview_colors' + key;
+                var imageColors = document.getElementById('imageColors' + key).files[0]
+                var image_preview_colors = document.getElementById('image_preview_colors' + key);
+                image_preview_colors.src = URL.createObjectURL(imageColors);
+                image_preview_colors.onload = function() {
+                URL.revokeObjectURL(image_preview_colors.src) // free memory
                 }
             }
         }
