@@ -11,4 +11,8 @@ class color extends Model
     protected $fillable = ['name','code'];
     protected $table = 'tbl_colors';
     protected $primaryKey = 'id';
+
+   /*  public function image_path(){
+        return $this->hasMany();
+    } */
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Resources\v1;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class productResource extends JsonResource
 {
@@ -28,7 +29,7 @@ class productResource extends JsonResource
             'user_id' => $this->user_id,
             'category_id' => $this->category_id,
             'tags' => Resource::collection($this->tag),
-            'colors' => Resource::collection($this->color),
+            'colors' => colorResource::collection($this->color),
             'memory' => Resource::collection($this->memory),
             'accessories' => Resource::collection($this->accessories)
         ];

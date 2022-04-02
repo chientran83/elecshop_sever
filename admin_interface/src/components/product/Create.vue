@@ -106,6 +106,10 @@
                                                     </div>
                                                     <input type="number" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
                                                     <input type="text" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
+                                                    <div class="form-control">
+                                                    <img src="@/assets/default.jpg" alt="default.jpg" :id="'image_preview_colors' + key" class="col-3" style="height:100%;">
+                                                    <input type="file" class="col-8" v-bind:id="'imageColors' + key"  v-on:change="priceColor(color,key); preview_image_color(color,key);">
+                                                    </div>
                                                 </div>                                           
                                             </div>
                                              <div class="form-group">
@@ -187,6 +191,7 @@ Vue.use( CKEditor );
                     user_id:"",
                     tags:[],
                     colors:[],
+                    colorsImage:[],
                     memory:[],
                     accessories:[],
                     category_id:""
@@ -216,13 +221,25 @@ Vue.use( CKEditor );
             priceColor:function(color,key){
                 var price = 0;
                 var code = 0;
+                var image = "@/assets/default.jpg";
                 price = document.getElementById('priceColors' + key).value
                 code = document.getElementById('codeColors' + key).value
+                image = document.getElementById('imageColors' + key).files[0]
+                console.log(image)
                 var obj = {
                     name: color.name,
                     price: price,
                     code:code
                 }
+                // reCreate new Object and set File Data into it
+              /*   var newObject  = {
+                'lastModified'     : image.lastModified,
+                'lastModifiedDate' : image.lastModifiedDate,
+                'name'             : image.name,
+                'size'             : image.size,
+                'type'             : image.type
+                };  */
+                this.product.colorsImage[key] = image;
                 this.product.colors[key] = obj;
             },
             priceMemory:function(memory,key){
@@ -280,7 +297,6 @@ Vue.use( CKEditor );
                 }).then((result) => {
                     if (result.isConfirmed) {
                         var formData = new FormData();
-                        console.log(this.product.accessories);
                         formData.append('name',this.product.name);
                         formData.append('origin_price',this.product.origin_price);
                         formData.append('previous_price',this.product.previous_price);
@@ -290,9 +306,13 @@ Vue.use( CKEditor );
                         formData.append('isOnsale',this.product.isOnsale);
                         formData.append('desc',this.product.desc);
                         formData.append('quantity',this.product.quantity);
-
                         formData.append('tags', JSON.stringify(this.product.tags));
                         formData.append('colors',JSON.stringify(this.product.colors));
+                        formData.append('countColorsImage',JSON.stringify(this.product.colorsImage.length));
+                        for (let i = 0; i < this.product.colorsImage.length; i++) {
+                            formData.append('file'+i, this.product.colorsImage[i])
+                        }
+
                         formData.append('memory',JSON.stringify(this.product.memory));
                         formData.append('accessories',JSON.stringify(this.product.accessories));
                         formData.append('category_id',JSON.stringify(this.product.category_id));
@@ -306,7 +326,7 @@ Vue.use( CKEditor );
                                     'New category has been added.',
                                     'success'
                                 )
-                                this.product.tags="";
+                               /*  this.product.tags="";
                                 this.product.colors="";
                                 this.product.memory="";
                                 this.product.category_id="";
@@ -317,7 +337,7 @@ Vue.use( CKEditor );
                                 this.product.ram="";
                                 this.product.isOnsale="";
                                 this.product.desc="";
-                                this.product.quantity="";
+                                this.product.quantity=""; */
                             })
                     }
                 })
@@ -327,9 +347,19 @@ Vue.use( CKEditor );
                 if (file) {
                     blah.src = URL.createObjectURL(file)
                 }
+            },
+            preview_image_color:function(color,key){
+                var image_preview_colors = 'image_preview_colors' + key;
+                var imageColors = document.getElementById('imageColors' + key).files[0]
+                var image_preview_colors = document.getElementById('image_preview_colors' + key);
+                image_preview_colors.src = URL.createObjectURL(imageColors);
+                image_preview_colors.onload = function() {
+                URL.revokeObjectURL(image_preview_colors.src) // free memory
+                }
             }
         }
     }
+    /* <input type="file" accept="image/*" onchange="loadFile(event)"> */
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <!-- New step!

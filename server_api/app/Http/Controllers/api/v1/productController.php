@@ -50,7 +50,6 @@ class productController extends Controller
      */
     public function store(Request $request)
     {
-        
         /* $token = $request->header('token');
         $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
         if(empty($token)){
@@ -96,7 +95,7 @@ class productController extends Controller
                 $store = $file->storeAs('public/product/1',$image_hash_name);    
                 $data['image_path'] = Storage::url($store);
             }
-           
+
             $product_new = $this->product->create($data);
 
             foreach(json_decode($request->tags) as $tag_item){
@@ -105,6 +104,17 @@ class productController extends Controller
             }
             foreach(json_decode($request->colors) as $color_item){
                 $new_color = $this->color->firstOrcreate(['name' => $color_item->name,'code' => $color_item->code]);
+                for($i = 0; $i < $request->countColorsImage;$i++){
+                    if($request->hasFile('file'.$i)){
+                        $file = $request->file('file'.$i);
+                        $image_hash_name = Str::random(20).'.'.$file->extension();
+                        $store = $file->storeAs('public/productImageColor/2',$image_hash_name);
+                        DB::table('tbl_product_color_image')->insert([
+                            'color_id' => $new_color->id,
+                            'image_path' =>  Storage::url($store)
+                        ]);
+                    }
+                } 
                 $product_new->color()->attach($new_color,['price' => $color_item->price]);
             }
 
