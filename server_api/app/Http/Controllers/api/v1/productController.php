@@ -24,12 +24,12 @@ class productController extends Controller
      * @return \Illuminate\Http\Response
      */
     public $product;
-    public $tag;
+    public $tags;
     public $color;
     public $memory;
-    public function __construct(product $product,tag $tag,color $color,memory $memory){
+    public function __construct(product $product,tag $tags,color $color,memory $memory){
         $this->product = $product;
-        $this->tag = $tag;
+        $this->tags = $tags;
         $this->color = $color;
         $this->memory = $memory;
     }
@@ -71,6 +71,7 @@ class productController extends Controller
                 'previous_price' => 'required',
                 'origin_price' => 'required',
                 'ram' => 'required',
+                'tag' => 'required',
                 'desc' => 'required|min:1',
                 'isOnsale' => 'required',
                 'quantity' => 'required'
@@ -82,6 +83,7 @@ class productController extends Controller
                 'previous_price' => $request->previous_price,
                 'origin_price' => $request->origin_price,
                 'ram' => $request->ram,
+                'tag' => $request->tag,
                 'desc' => $request->desc,
                 'isOnSale' => $request->isOnsale,
                 'quantity' => $request->quantity,
@@ -101,8 +103,8 @@ class productController extends Controller
 
             if($request->tags){
                 foreach(json_decode($request->tags) as $tag_item){
-                    $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
-                    $product_new->tag()->attach($new_tag->id,['price' => $tag_item->price]);
+                    $new_tag = $this->tags->firstOrcreate(['name' => $tag_item->name]);
+                    $product_new->tags()->attach($new_tag->id,['price' => $tag_item->price]);
                 }
 
             }
@@ -213,6 +215,7 @@ class productController extends Controller
                 'previous_price' => 'required',
                 'origin_price' => 'required',
                 'ram' => 'required',
+                'tag' => 'required',
                 'desc' => 'required|min:1',
                 'isOnsale' => 'required',
                 'quantity' => 'required'
@@ -224,6 +227,7 @@ class productController extends Controller
                 'previous_price' => $request->previous_price,
                 'origin_price' => $request->origin_price,
                 'ram' => $request->ram,
+                'tag' => $request->tag,
                 'desc' => $request->desc,
                 'isOnSale' => $request->isOnsale,
                 'quantity' => $request->quantity,
@@ -244,10 +248,10 @@ class productController extends Controller
             $this->product->find($id)->update($data);
 
             $product_item= $this->product->find($id);
-            $product_item->tag()->delete();
+            $product_item->tags()->delete();
             foreach(json_decode($request->tags) as $tag_item){
-                $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
-                $product_item->tag()->attach($new_tag->id,['price' => $tag_item->pivot->price]);
+                $new_tag = $this->tags->firstOrcreate(['name' => $tag_item->name]);
+                $product_item->tags()->attach($new_tag->id,['price' => $tag_item->pivot->price]);
             }
 
             if($request->colors){

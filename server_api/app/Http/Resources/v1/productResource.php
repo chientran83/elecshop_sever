@@ -26,13 +26,14 @@ class productResource extends JsonResource
             'desc' => $this->desc,
             'isOnSale' => $this->isOnSale,
             'quantity' => $this->quantity,
+            'tag' => $this->tag,
             'user_id' => $this->user_id,
             'category_id' => $this->category_id,
-            'tags' => Resource::collection($this->tag),
+            'tags' => Resource::collection($this->tags),
             'colors' => colorResource::collection($this->color),
             'memory' => Resource::collection($this->memory),
-            'accessories' => Resource::collection($this->accessories)
+            'accessories' => Resource::collection($this->accessories),
         ];
-        /* return parent::toArray($request); */
+        // return parent::toArray($request);
     }
 }

@@ -66,6 +66,10 @@
                                                 <label>Ram</label>
                                                 <input type="number" class="form-control" placeholder="Enter name" v-model="product.ram">
                                             </div>
+                                            <div class="form-group">
+                                                <label>Tag</label>
+                                                <input type="text" class="form-control" placeholder="Enter name" v-model="product.tag">
+                                            </div>
                                              <div class="form-group">
                                                 <label class="typo__label">Tags</label>
                                                 <multiselect v-model="product.tags" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsTags" :multiple="true" :taggable="true" @tag="addTags"></multiselect>                                     
@@ -184,6 +188,7 @@ Vue.use( CKEditor );
                     previous_price:"",
                     current_price: "",
                     ram:"",
+                    tag:"",
                     isOnsale:"",
                     desc:"",
                     quantity:"",
@@ -217,6 +222,7 @@ Vue.use( CKEditor );
                 this.product.accessories=res.data.accessories;
                 this.product.id=res.data.id;
                 this.product.name=res.data.name;
+                this.product.tag=res.data.tag;
                 this.product.origin_price=res.data.origin_price;
                 this.product.previous_price=res.data.previous_price;
                 this.product.current_price= res.data.current_price;
@@ -320,6 +326,7 @@ Vue.use( CKEditor );
                     if (result.isConfirmed) {
                         var formData = new FormData();
                         formData.append('name',this.product.name);
+                        formData.append('tag',this.product.tag);
                         formData.append('origin_price',this.product.origin_price);
                         formData.append('previous_price',this.product.previous_price);
                         formData.append('current_price',this.product.current_price);
