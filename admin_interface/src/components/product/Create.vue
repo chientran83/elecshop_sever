@@ -220,25 +220,16 @@ Vue.use( CKEditor );
             },
             priceColor:function(color,key){
                 var price = 0;
-                var code = 0;
+                var code = '';
                 var image = "@/assets/default.jpg";
                 price = document.getElementById('priceColors' + key).value
                 code = document.getElementById('codeColors' + key).value
                 image = document.getElementById('imageColors' + key).files[0]
-                console.log(image)
                 var obj = {
                     name: color.name,
                     price: price,
                     code:code
                 }
-                // reCreate new Object and set File Data into it
-              /*   var newObject  = {
-                'lastModified'     : image.lastModified,
-                'lastModifiedDate' : image.lastModifiedDate,
-                'name'             : image.name,
-                'size'             : image.size,
-                'type'             : image.type
-                };  */
                 this.product.colorsImage[key] = image;
                 this.product.colors[key] = obj;
             },
@@ -323,12 +314,14 @@ Vue.use( CKEditor );
                             .then(res => {
                                 Swal.fire(
                                     'Added new!',
-                                    'New category has been added.',
+                                    'New product has been added.',
                                     'success'
                                 )
-                                this.product.tags="";
-                                this.product.colors="";
-                                this.product.memory="";
+                                this.product.tags=[];
+                                this.product.colors=[];
+                                this.product.memory=[];
+                                this.product.colorsImage=[];
+                                this.product.accessories=[];
                                 this.product.category_id="";
                                 this.product.name="";
                                 this.product.origin_price="";

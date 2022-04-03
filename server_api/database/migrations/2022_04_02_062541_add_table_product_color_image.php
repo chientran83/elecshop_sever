@@ -16,7 +16,7 @@ class AddTableProductColorImage extends Migration
         Schema::create('tbl_product_color_image', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('color_id');
-            $table->string('image_path');
+            $table->string('image_path')->default('null');
             $table->timestamps();
         });
     }

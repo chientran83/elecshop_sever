@@ -56,9 +56,7 @@
                                                 <th>previous Price</th>
                                                 <th>Origin Price</th>
                                                 <th>Image</th>
-                                                <th>Ram</th>
                                                 <th>isOnSale</th>
-                                                <th>Desc</th>
                                                 <th>Quantity</th>
                                                 <th>Action</th>
                                             </tr>
@@ -71,9 +69,7 @@
                                                 <td>{{product.previous_price}}</td>
                                                 <td>{{product.origin_price}}</td>
                                                 <td><img v-bind:src="'http://localhost:8000' + product.image_path" style="width:40px; height:40px;" alt=""></td>
-                                                <td>{{product.ram}}</td>
                                                 <td>{{ product.isOnSale }}</td>
-                                                <td  class="d-inline-block text-truncate" style="max-width: 200px;">{{product.desc}}</td>
                                                 <td>{{product.quantity}}</td>
                                                 <td class="col-2">
                                                     <a>
@@ -84,7 +80,7 @@
                                                             Edit <i class="fas fa-edit"></i>
                                                         </router-link>
                                                     </a>
-                                                    <button class="btn btn-danger">
+                                                    <button class="btn btn-danger" v-on:click="delete_product(product.id)">
                                                         Delete <i class="fas fa-minus"></i>
                                                     </button> 
                                                     
@@ -111,11 +107,13 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
     data(){
         return {
             products:[],
             product: {
+                id:"",
                 name:"",
                 current_price: "",
                 previous_price: "",
@@ -172,7 +170,31 @@ export default {
                         from:res.meta.from,
                         last_page:res.meta.last_page
                     }
-            })
+                })
+            },
+            delete_product:function(id){
+                Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete('http://localhost:8000/api/v1/product/'+id)
+                    .then(res => {
+                        Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                        );
+                        this.load_data_product('');
+                    })
+                   
+                }
+                })
             }
         }
 }

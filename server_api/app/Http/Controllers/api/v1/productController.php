@@ -12,6 +12,7 @@ use App\Models\memory;
 use App\Models\tag;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -98,31 +99,42 @@ class productController extends Controller
 
             $product_new = $this->product->create($data);
 
-            foreach(json_decode($request->tags) as $tag_item){
-                $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
-                $product_new->tag()->attach($new_tag->id,['price' => $tag_item->price]);
+            if($request->tags){
+                foreach(json_decode($request->tags) as $tag_item){
+                    $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
+                    $product_new->tag()->attach($new_tag->id,['price' => $tag_item->price]);
+                }
+
             }
-            foreach(json_decode($request->colors) as $key => $color_item){
-                $new_color = $this->color->firstOrcreate(['name' => $color_item->name,'code' => $color_item->code]);
+            if($request->colors){
+                foreach(json_decode($request->colors) as $key => $color_item){
+                    $arr = array(
+                        'name' => $color_item->name,
+                        'code' => $color_item->code,
+                        'price'=> $color_item->price,
+                        'product_id'=>$product_new->id
+                    );
                     if($request->hasFile('file'.$key)){
                         $file = $request->file('file'.$key);
                         $image_hash_name = Str::random(20).'.'.$file->extension();
                         $store = $file->storeAs('public/productImageColor/2',$image_hash_name);
-                        DB::table('tbl_product_color_image')->insert([
-                            'color_id' => $new_color->id,
-                            'image_path' =>  Storage::url($store)
-                        ]);
-                } 
-                $product_new->color()->attach($new_color,['price' => $color_item->price]);
+                        $arr['image_path'] =  Storage::url($store);
+                    }
+                    $this->color->create($arr);
+                }
             }
+            if($request->memory){
+                foreach(json_decode($request->memory) as $memory_item){
+                    $new_memory = $this->memory->firstOrcreate(['name' => $memory_item->name]);
+                    $product_new->memory()->attach($new_memory,['price' => $memory_item->price]);
+                }
 
-            foreach(json_decode($request->memory) as $memory_item){
-                $new_memory = $this->memory->firstOrcreate(['name' => $memory_item->name]);
-                $product_new->memory()->attach($new_memory,['price' => $memory_item->price]);
             }
+            if($request->accessories){
+                foreach(json_decode($request->accessories) as $accessories_item){
+                    $product_new->accessories()->attach($accessories_item->id);
+                }
 
-            foreach(json_decode($request->accessories) as $accessories_item){
-                $product_new->accessories()->attach($accessories_item->id);
             }
             
             return response()->json([
@@ -169,7 +181,8 @@ class productController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $token = $request->header('token');
+        
+        /* $token = $request->header('token');
         $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
         if(empty($token)){
             return response()->json([
@@ -192,8 +205,19 @@ class productController extends Controller
                 'isOnSale' => 'required',
                 'quantity' => 'required',
                 'user_id' => 'required',
+            ]); */
+            $product_item= $this->product->find($id);
+            $request->validate([
+                'name' => 'required|min:1|max:30|unique:tbl_product,name,'.$product_item->id,
+                'current_price' => 'required',
+                'previous_price' => 'required',
+                'origin_price' => 'required',
+                'ram' => 'required',
+                'desc' => 'required|min:1',
+                'isOnsale' => 'required',
+                'quantity' => 'required'
             ]);
-    
+            
             $data = array(
                 'name' => $request->name,
                 'current_price' => $request->current_price,
@@ -201,27 +225,92 @@ class productController extends Controller
                 'origin_price' => $request->origin_price,
                 'ram' => $request->ram,
                 'desc' => $request->desc,
-                'isOnSale' => $request->isOnSale,
+                'isOnSale' => $request->isOnsale,
                 'quantity' => $request->quantity,
-                'user_id' => '1',
-                'image_path' => 'test duong dan anh',
+                'user_id' => 11,
+                'category_id' => json_decode($request->category_id)->id
             );
-            /* if($request->hasFile('image')){
+
+            if($request->hasFile('image')){
+                if(File::exists($product_item->image_path)) {
+                    File::delete($product_item->image_path);
+                }
                 $file = $request->file('image');
-                $image_origin_name = $file->getClientOriginalName();
                 $image_hash_name = Str::random(20).'.'.$file->extension();
-                $store = $file->storeAs('public/product/1',$image_hash_name);            
-                $data['image_name'] = $image_origin_name;
-                $data['image_path'] = Storage::url('file.jpg');
-            }   */
-    
+                $store = $file->storeAs('public/product/1',$image_hash_name);    
+                $data['image_path'] = Storage::url($store);
+            }
+
             $this->product->find($id)->update($data);
+
+            $product_item= $this->product->find($id);
+            $product_item->tag()->delete();
+            foreach(json_decode($request->tags) as $tag_item){
+                $new_tag = $this->tag->firstOrcreate(['name' => $tag_item->name]);
+                $product_item->tag()->attach($new_tag->id,['price' => $tag_item->pivot->price]);
+            }
+
+            if($request->colors){
+                foreach($this->product->find($id)->color as $value){
+                    $abc = json_decode($request->colors);
+                    $collection = collect($abc);
+                    if($collection->contains('name',$value->name)){
+                        
+                    }else{
+                        $this->color->find($value->id)->delete();
+                    }
+                }
+                foreach(json_decode($request->colors) as $key => $color_item){
+                    $product_color = $this->color->where('name', $color_item->name)->first();
+                    if($product_color){
+                        $arr = array(
+                            'name' => $color_item->name,
+                            'code' => $color_item->code,
+                            'price'=> $color_item->price
+                        );
+                        if($request->hasFile('file'.$key)){
+                            $file = $request->file('file'.$key);
+                            $image_hash_name = Str::random(20).'.'.$file->extension();
+                            $store = $file->storeAs('public/productImageColor/2',$image_hash_name);
+                            $arr['image_path'] =  Storage::url($store);
+                        }
+                        $product_color->update($arr);
+                    }else{
+                        $arr = array(
+                            'name' => $color_item->name,
+                            'code' => $color_item->code,
+                            'price'=> $color_item->price,
+                            'product_id'=>$product_item->id
+                        );
+                        if($request->hasFile('file'.$key)){
+                            $file = $request->file('file'.$key);
+                            $image_hash_name = Str::random(20).'.'.$file->extension();
+                            $store = $file->storeAs('public/productImageColor/2',$image_hash_name);
+                            $arr['image_path'] =  Storage::url($store);
+                        }
+                        $this->color->create($arr);
+                    }
+                }
+            }
+
+            $product_item->memory()->delete();
+            foreach(json_decode($request->memory) as $memory_item){
+                $new_memory = $this->memory->firstOrcreate(['name' => $memory_item->name]);
+                $product_item->memory()->attach($new_memory,['price' => $memory_item->pivot->price]);
+            }
+
+            $accessories = [];
+            foreach(json_decode($request->accessories) as $accessories_item){
+                $accessories[] = $accessories_item->id;
+            }
+            $product_item->accessories()->sync($accessories);
+
             $product_update = $this->product->find($id);
             return response()->json([
                 'code' => 201,
                 'data' => new productResource($product_update)
             ],201);
-        }
+        /* } */
     }
 
     /**
@@ -232,7 +321,7 @@ class productController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $token = $request->header('token');
+        /* $token = $request->header('token');
         $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
         if(empty($token)){
             return response()->json([
@@ -244,7 +333,7 @@ class productController extends Controller
                 'code' => 500,
                 'message' => 'token incorrect !'
             ],500);
-        }else{
+        }else{ */
             $product_item = $this->product->find($id);
             $this->product->find($id)->delete();
             return new productResource($product_item);
@@ -254,5 +343,5 @@ class productController extends Controller
             ],201);
         }
         
-    }
+    /* } */
 }

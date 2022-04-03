@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class color extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','code'];
+    protected $fillable = ['name','code','price','image_path','product_id'];
     protected $table = 'tbl_colors';
     protected $primaryKey = 'id';
 

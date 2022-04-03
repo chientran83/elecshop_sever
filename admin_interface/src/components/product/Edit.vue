@@ -105,7 +105,7 @@
                                                     <input type="number" v-model="product.colors[key].price" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
                                                     <input type="text" v-model="product.colors[key].code" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
                                                     <div class="form-control">
-                                                        <img :src="'http://localhost:8000'+product.colors[key].image.image_path" alt="default.jpg" :id="'image_preview_colors' + key" class="col-3" style="height:100%;">
+                                                        <img :src="'http://localhost:8000'+product.colors[key].image_path " alt="default.jpg" :id="'image_preview_colors' + key" class="col-4" style="height:100%;">
                                                         <input type="file" class="col-8" v-bind:id="'imageColors' + key"  v-on:change="priceColor(color,key); preview_image_color(color,key);">
                                                     </div>
                                                 </div>                                           
@@ -191,6 +191,7 @@ Vue.use( CKEditor );
                     tags:[],
                     colors:[],
                     memory:[],
+                    colorsImage:[],
                     accessories:[],
                     category_id:"",
                     image_path:""
@@ -237,46 +238,50 @@ Vue.use( CKEditor );
         methods:{
             // add price when keyup
             priceTag:function(tag,key){
-                var price = document.getElementById('priceTags' + key).value
+                var price = 0
+                price = document.getElementById('priceTags' + key).value
                 var obj = {
                     name: tag.name,
-                    price: price
+                    pivot:{
+                    price:price
+                }
                 }
                 this.product.tags[key] = obj;
             },
             priceColor:function(color,key){
-                var price = 0;
-                var code = 0;
-                price = document.getElementById('priceColors' + key).value
-                code = document.getElementById('codeColors' + key).value
+                var price = this.product.colors[key].price
+                var code = this.product.colors[key].code
+                var image = document.getElementById('imageColors' + key).files[0]
+                if(image == ''){
+                    image = null;
+                }
                 var obj = {
                     name: color.name,
                     price: price,
-                    code:code
+                    code:code,
+                    image_path:''
                 }
+                this.product.colorsImage[key] = image;
                 this.product.colors[key] = obj;
             },
             priceMemory:function(memory,key){
-                var price = document.getElementById('priceMemory' + key).value
+                var price = 0
+                price = document.getElementById('priceMemory' + key).value
                 var obj = {
                     name: memory.name,
-                    price: price
+                    pivot:{
+                    price:price
+                }
                 }
                 this.product.memory[key] = obj;
-            },
-            priceTag:function(tag,key){
-                var price = document.getElementById('priceTags' + key).value
-                var obj = {
-                    name: tag.name,
-                    price: price
-                }
-                this.product.tags[key] = obj;
             },
             // add tags,memory,color
             addTags (newTag) {
             const tag = {
                 name: newTag,
-                price:0
+                pivot:{
+                    price:0
+                }
             }
             this.optionsTags.push(tag)
             this.product.tags.push(tag)
@@ -284,7 +289,9 @@ Vue.use( CKEditor );
             addMemory (newMemory) {
             const tag = {
                 name: newMemory,
-                price:0
+                pivot:{
+                    price:0
+                }
             }
             this.optionsMemory.push(tag)
             this.product.memory.push(tag)
@@ -293,7 +300,8 @@ Vue.use( CKEditor );
             const tag = {
                 name: newColors,
                 price:0,
-                code:'null'
+                code:'null',
+                image_path:''
             }
             this.optionsColors.push(tag)
             this.product.colors.push(tag)
@@ -310,7 +318,6 @@ Vue.use( CKEditor );
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        console.log(this.product.isOnsale)
                         var formData = new FormData();
                         formData.append('name',this.product.name);
                         formData.append('origin_price',this.product.origin_price);
@@ -323,32 +330,26 @@ Vue.use( CKEditor );
                         formData.append('quantity',this.product.quantity);
                         formData.append('tags', JSON.stringify(this.product.tags));
                         formData.append('colors',JSON.stringify(this.product.colors));
+                        formData.append('countColorsImage',JSON.stringify(this.product.colorsImage.length));
+                        for (let i = 0; i < this.product.colorsImage.length; i++) {
+                            formData.append('file'+i, this.product.colorsImage[i])
+                        }
                         formData.append('memory',JSON.stringify(this.product.memory));
                         formData.append('accessories',JSON.stringify(this.product.accessories));
                         formData.append('category_id',JSON.stringify(this.product.category_id));
-                        /* axios.post('http://localhost:8000/api/v1/product',formData,{
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
+                        formData.append('_method',"PUT");
+
+                        axios.post('http://localhost:8000/api/v1/product/'+this.product_id,formData,{
+                            headers : {
+                                'Content-Type' : 'multipart/form-data;'
                             }})
                             .then(res => {
                                 Swal.fire(
-                                    'Added new!',
-                                    'New category has been added.',
+                                    'Updated!',
+                                    'The product has been updated.',
                                     'success'
                                 )
-                                this.product.tags="";
-                                this.product.colors="";
-                                this.product.memory="";
-                                this.product.category_id="";
-                                this.product.name="";
-                                this.product.origin_price="";
-                                this.product.previous_price="";
-                                this.product.current_price= "";
-                                this.product.ram="";
-                                this.product.isOnsale="";
-                                this.product.desc="";
-                                this.product.quantity="";
-                            }) */
+                            })
                     }
                 })
             },

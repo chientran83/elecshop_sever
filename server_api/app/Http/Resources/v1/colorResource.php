@@ -19,10 +19,8 @@ class colorResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
-            'price' => $this->whenPivotLoaded('tbl_product_color', function () {
-                    return $this->pivot->price;
-                }),
-            'image' => DB::table('tbl_product_color_image')->where('color_id',$this->id)->first()
+            'price' => $this->price,
+            'image_path' => $this->image_path
         ];
     }
 }

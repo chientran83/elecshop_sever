@@ -12,7 +12,7 @@ class product extends Model
     protected $table = 'tbl_product';
     protected $primaryKey = 'id';
     public function color(){
-        return $this->belongsToMany(color::class,'tbl_product_color','product_id','color_id')->withPivot('price');
+        return $this->hasMany(color::class,'product_id');
     }
     public function tag(){
         return $this->belongsToMany(tag::class,'tbl_product_tag','product_id','tag_id')->withPivot('price');

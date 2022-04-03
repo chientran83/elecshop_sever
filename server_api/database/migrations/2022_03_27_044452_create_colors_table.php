@@ -17,6 +17,9 @@ class CreateColorsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('code');
+            $table->string('image_path')->default('null');
+            $table->bigInteger('price')->default(0);
+            $table->bigInteger('product_id');
             $table->timestamps();
         });
     }
