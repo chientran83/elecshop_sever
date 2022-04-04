@@ -16,10 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
  
     Route::get('/', function () {
-        /* if (! Gate::allows('update-article')) {
-            abort(403);
-        } */
         return view('welcome');
-    })/* ->middleware('can:admin') */ ;
+    });
 
  

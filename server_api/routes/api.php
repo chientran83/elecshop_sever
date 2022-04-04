@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\v1\categoryController;
 use App\Http\Controllers\api\v1\permissionController;
 use App\Http\Controllers\api\v1\productController;
+use App\Http\Controllers\api\v1\resourceController;
 use App\Http\Controllers\api\v1\roleController;
 use App\Http\Controllers\api\v1\sliderController;
 use App\Http\Controllers\api\v1\userController;
@@ -29,23 +30,27 @@ use Illuminate\Support\Facades\Route;
  Route::prefix('v1')->group(function(){
      //router product
      Route::prefix('product')->group(function(){
-         Route::get('pagination',[productController::class,'pagination']);
+        Route::get('pagination',[productController::class,'pagination']);
      });
      Route::resource('product',productController::class)->except(['edit','create']);
      //router category
      Route::get('category/paginate',[categoryController::class,'paginate'])/* ->middleware('can:admin') */; /* ->middleware('allowedDomains') */
      Route::resource('category',categoryController::class)->except(['edit','create']);
      //router slider
+     Route::get('slider/pagination',[sliderController::class,'paginate']);
      Route::resource('slider',sliderController::class)->except(['edit','create']);
      //router user
+     Route::get('users/pagination',[userController::class,'paginate']);
      Route::post('users/login',[userController::class,'login'])->name('user.login');
-     Route::get('users/checkLogin',[userController::class,'checkLogin'])->name('user.checkLogin');
-     Route::get('users/logout',[userController::class,'logout'])->name('user.logout');
-     Route::get('users/delete_token',[userController::class,'delete_token'])->name('user.delete_token');
+     Route::post('users/logout',[userController::class,'logout'])->name('user.logout');
+     Route::post('users/refresh_token',[userController::class,'refresh_token'])->name('user.refresh_token');
      Route::resource('users',userController::class)->except(['edit','create']);
      //router role
      Route::post('role',[roleController::class,'store']);
+     //router role
+     Route::post('resource',[resourceController::class,'store']);
      //router permission
      Route::post('permission',[permissionController::class,'store']);
+
  });
 

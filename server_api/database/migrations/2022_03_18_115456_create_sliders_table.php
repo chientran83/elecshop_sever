@@ -17,6 +17,7 @@ class CreateSlidersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('desc');
+            $table->string('link');
             $table->string('image_path')->default('slide_default.jpg');
             $table->integer('status')->default(0);
             $table->timestamps();

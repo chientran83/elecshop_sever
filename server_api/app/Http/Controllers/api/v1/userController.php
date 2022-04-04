@@ -3,15 +3,21 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\v1\Collection;
+use App\Http\Resources\v1\userResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Storage;
 
 class userController extends Controller
 {
+    public function __construct() {
+       /*  $this->middleware('auth:api', ['except' => ['login', 'store','paginate']]); */
+    }
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +26,10 @@ class userController extends Controller
     public function index()
     {
         //
+    }
+    public function paginate()
+    {
+        return new Collection(User::paginate(6));
     }
 
     /**
@@ -39,7 +49,14 @@ class userController extends Controller
      */
     public function store(Request $request)
     {
-        $new_user = User::create(['name' => $request->name,'email' => $request->email,'password' => Hash::make( $request->password)]);
+        $image_path = "";
+        if($request->hasFile('image')){
+            $file = $request->file('image');
+            $image_hash_name = Str::random(20).'.'.$file->extension();
+            $store = $file->storeAs('public/user/1',$image_hash_name);    
+            $image_path = Storage::url($store);
+        }
+        $new_user = User::create(['name' => $request->name,'email' => $request->email,'password' => Hash::make( $request->password),'image_path' => $image_path]);
         if(empty($new_user)){
             return response()->json([
                 'code' => 500,
@@ -48,87 +65,41 @@ class userController extends Controller
         }else{
             return response()->json([
                 'code' => 201,
-                'data' => $new_user
+                'data' => new userResource($new_user)
             ],201);
         }
     }
     public function login(Request $request)
     {
-        if(auth()->attempt(['email' => $request->email,'password' => $request->password])){
-            $user_login = User::where('email', $request->email)->first();
-            $get_session_token = DB::table('tbl_session_token')->where('user_id',$user_login->id)->first();
-            if(empty($get_session_token)){
-                DB::table('tbl_session_token')->insert([
-                    'token' => Str::random(40),
-                    'expire_token' => date('Y-m-d', strtotime(' + 7 days')),
-                    'user_id' => $user_login->id
-                ]);
-                $token = DB::table('tbl_session_token')->where('user_id',$user_login->id)->first();
-                // set cookie
-                /* $time = date('Y-m-d', strtotime(' + 1 days'));
-                Cookie::queue('name', 'value', $time); */
-                return response()->json([
-                    'code' => 201,
-                    'data' => $token
-                ],201);
-            }else{
-                return response()->json([
-                    'code' => 201,
-                    'data' => $get_session_token
-                ],201);
-            }
-        }else{
+        if(! $token = auth()->attempt(['email' => $request->email,'password' => $request->password])){  
             return response()->json([
                 'code' => 500,
                 'message' => 'email or password incorrect!'
             ],500);
+        }else{
+            return $this->createNewToken($token);
         }
     }
-    public function checkLogin()
-    {
-        if(auth()->check()){
-            return response()->json([
-                'code' => 201,
-                'message' => 'login!'
-            ],201);
-            
-        }else{
-            return response()->json([
-                'code' => 201,
-                'message' => 'not login!'
-            ],201);
-
-        }
+    protected function createNewToken($token){
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => auth()->user()
+        ]);
     }
     public function logout(Request $request)
     {
         auth()->logout();
+
         return response()->json([
             'code' => 201,
             'message' => 'logout success!'
         ],201);
     }
-    public function delete_token(Request $request)
+    public function refresh_token(Request $request)
     {
-        $token = $request->header('token');
-        $get_session_token = DB::table('tbl_session_token')->where('token', $token)->first();
-        if(empty($token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token not send'
-            ],500);
-        }else if(empty($get_session_token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token incorrect'
-            ],500);
-        }else{
-            DB::table('tbl_session_token')->where('token', $token)->delete();
-            return response()->json([
-                'code' => 201,
-                'message' => 'delete token success !'
-            ],201);
-        }
+        return $this->createNewToken(auth()->refresh());
     }
 
     /**
@@ -139,7 +110,18 @@ class userController extends Controller
      */
     public function show($id)
     {
-        //
+        $user_item = User::find($id);
+        if($user_item){
+            return response()->json([
+                'code' => 201,
+                'data' => new userResource($user_item)
+            ],201);
+        }else{
+            return response()->json([
+                'code' => 201,
+                'message' => 'user not found!'
+            ],201);
+        }
     }
 
     /**
@@ -150,7 +132,7 @@ class userController extends Controller
      */
     public function edit($id)
     {
-        //
+        
     }
 
     /**
@@ -162,7 +144,21 @@ class userController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $item_user = User::find($id);
+        $image_path = $item_user->image_path;
+        if($request->hasFile('image')){
+            $file = $request->file('image');
+            $image_hash_name = Str::random(20).'.'.$file->extension();
+            $store = $file->storeAs('public/user/1',$image_hash_name);    
+            $image_path = Storage::url($store);
+        }
+        $item_user->update(['name' => $request->name,'email' => $request->email,'image_path' => $image_path]);
+        $item_user = User::find($id);
+        return response()->json([
+            'code' => 201,
+            'data' => new userResource($item_user)
+        ],201);
+        
     }
 
     /**
@@ -173,6 +169,11 @@ class userController extends Controller
      */
     public function destroy($id)
     {
-        //
+        User::find($id)->delete();
+        return response()->json([
+            'code' => 201,
+            'message' => 'Delete successfully!'
+        ],201);
+        
     }
 }

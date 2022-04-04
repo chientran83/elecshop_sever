@@ -9,6 +9,6 @@ class resource extends Model
 {
     use HasFactory;
     protected $fillable = ['alias'];
-    protected $table = 'tbl_resource';
+    protected $table = 'tbl_resources';
     protected $primaryKey = 'id';
 }

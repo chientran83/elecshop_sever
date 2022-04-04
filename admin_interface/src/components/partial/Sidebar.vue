@@ -53,6 +53,26 @@
                                 <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Product</span>
                             </a>
                     </router-link>
+                    <router-link
+                        tag="li"
+                        class="nav-item"
+                        to="/slider"
+                        active-class="active"
+                        >
+                            <a class="nav-link"><span class="pcoded-micon">
+                                <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Slider</span>
+                            </a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="nav-item"
+                        to="/user"
+                        active-class="active"
+                        >
+                            <a class="nav-link"><span class="pcoded-micon">
+                                <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">User</span>
+                            </a>
+                    </router-link>
                 </ul>
             </div>
         </div>

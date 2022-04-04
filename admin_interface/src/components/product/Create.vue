@@ -72,7 +72,7 @@
                                             </div>
                                              <div class="form-group">
                                                 <label class="typo__label">Tags</label>
-                                                <multiselect v-model="product.tags" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsTags" :multiple="true" :taggable="true" @tag="addTags"></multiselect>                                     
+                                                <multiselect v-model="product.tags" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsTags" :multiple="true" :taggable="true" @tag="addTags"></multiselect>                             
                                             </div>
                                              <div class="form-group" v-if="product.tags != ''">
                                                 <label class="typo__label ">Enter price for each tag</label>
@@ -246,18 +246,11 @@ Vue.use( CKEditor );
                 }
                 this.product.memory[key] = obj;
             },
-            priceTag:function(tag,key){
-                var price = document.getElementById('priceTags' + key).value
-                var obj = {
-                    name: tag.name,
-                    price: price
-                }
-                this.product.tags[key] = obj;
-            },
             // add tags,memory,color
             addTags (newTag) {
             const tag = {
                 name: newTag,
+                code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000)),
                 price:0
             }
             this.optionsTags.push(tag)
@@ -266,6 +259,7 @@ Vue.use( CKEditor );
             addMemory (newMemory) {
             const tag = {
                 name: newMemory,
+                code: newMemory.substring(0, 2) + Math.floor((Math.random() * 10000000)),
                 price:0
             }
             this.optionsMemory.push(tag)
@@ -274,8 +268,9 @@ Vue.use( CKEditor );
             addColors (newColors) {
             const tag = {
                 name: newColors,
+                code: newColors.substring(0, 2) + Math.floor((Math.random() * 10000000)),
                 price:0,
-                code:'null'
+                codes:'null'
             }
             this.optionsColors.push(tag)
             this.product.colors.push(tag)

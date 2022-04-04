@@ -13,7 +13,7 @@ class CreateResourcesTable extends Migration
      */
     public function up()
     {
-        Schema::create('resources', function (Blueprint $table) {
+        Schema::create('tbl_resources', function (Blueprint $table) {
             $table->id();
             $table->string('alias');
             $table->timestamps();

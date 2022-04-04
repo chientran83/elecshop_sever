@@ -112,7 +112,7 @@ class productController extends Controller
                 foreach(json_decode($request->colors) as $key => $color_item){
                     $arr = array(
                         'name' => $color_item->name,
-                        'code' => $color_item->code,
+                        'code' => $color_item->codes,
                         'price'=> $color_item->price,
                         'product_id'=>$product_new->id
                     );
@@ -282,7 +282,7 @@ class productController extends Controller
                     }else{
                         $arr = array(
                             'name' => $color_item->name,
-                            'code' => $color_item->code,
+                            'code' => $color_item->codes,
                             'price'=> $color_item->price,
                             'product_id'=>$product_item->id
                         );
@@ -325,7 +325,7 @@ class productController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        /* $token = $request->header('token');
+        /* $token=$request->header('token');
         $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
         if(empty($token)){
             return response()->json([
