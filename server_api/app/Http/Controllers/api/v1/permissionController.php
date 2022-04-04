@@ -16,13 +16,10 @@ class permissionController extends Controller
         $new_permission = $this->permission->create([
             'name' => $request->name,
             'key_code' => $request->key_code,
-            'parent_id' => $request->parent_id]);
+            'resource_id' => $request->resource_id]);
         return response()->json([
             'code' => 200,
             'data' => $new_permission
         ],200);
     }
-
-
-    
 }

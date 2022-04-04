@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class permission extends Model
+class resource extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','key_code','resource_id'];
-    protected $table = 'tbl_permissions';
+    protected $fillable = ['alias'];
+    protected $table = 'tbl_resource';
     protected $primaryKey = 'id';
 }
