@@ -19,15 +19,12 @@ class sliderController extends Controller
      */
     public $slider;
     public function __construct(slider $slider){
+        // $this->middleware('auth:api',["except" => ['index','show']]);
         $this->slider = $slider;
     }
-    public function index()
+    public function index($record_number)
     {
-        return new sliderCollection($this->slider->where('status','<>',0)->orderBy('id','desc')->get());
-    }
-    public function paginate()
-    {
-        return new sliderCollection($this->slider->orderBy('id','desc')->paginate(6));
+        return new sliderCollection($this->slider->where('status','<>',0)->paginate($record_number));
     }
 
     /**

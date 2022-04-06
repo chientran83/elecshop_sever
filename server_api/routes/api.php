@@ -27,30 +27,35 @@ use Illuminate\Support\Facades\Route;
 });
  */
 
+ /*  $this->middleware('auth:api', ['except' => ['login', 'store','paginate']]); */
+
  Route::prefix('v1')->group(function(){
      //router product
      Route::prefix('product')->group(function(){
-        Route::get('pagination',[productController::class,'pagination']);
+     Route::get('index/{record_number}',[productController::class,'index']);
      });
-     Route::resource('product',productController::class)->except(['edit','create']);
+     Route::resource('product',productController::class)->except(['edit','create','index']);
      //router category
-     Route::get('category/paginate',[categoryController::class,'paginate'])/* ->middleware('can:admin') */; /* ->middleware('allowedDomains') */
-     Route::resource('category',categoryController::class)->except(['edit','create']);
+     Route::get('category/index/{record_number}',[categoryController::class,'index']);
+     Route::get('category/index/{record_number}',[categoryController::class,'show']);
+     Route::resource('category',categoryController::class)->except(['edit','create'])->except(['index']);
      //router slider
-     Route::get('slider/pagination',[sliderController::class,'paginate']);
-     Route::resource('slider',sliderController::class)->except(['edit','create']);
+     Route::get('slider/index/{record_number}',[sliderController::class,'index']);
+     Route::resource('slider',sliderController::class)->except(['edit','create','index']);
      //router user
-     Route::get('users/pagination',[userController::class,'paginate']);
+     Route::get('users/index/{record_number}',[userController::class,'index']);
      Route::post('users/login',[userController::class,'login'])->name('user.login');
      Route::post('users/logout',[userController::class,'logout'])->name('user.logout');
      Route::post('users/refresh_token',[userController::class,'refresh_token'])->name('user.refresh_token');
-     Route::resource('users',userController::class)->except(['edit','create']);
+     Route::resource('users',userController::class)->except(['edit','create','index']);
      //router role
+     Route::get('role/index/{record_number}',[roleController::class,'index']);
      Route::post('role',[roleController::class,'store']);
+     Route::delete('role/{id}',[roleController::class,'destroy']);
      //router role
+     Route::get('resource',[resourceController::class,'index']);
      Route::post('resource',[resourceController::class,'store']);
      //router permission
      Route::post('permission',[permissionController::class,'store']);
-
  });
 

@@ -18,18 +18,16 @@ class categoryController extends Controller
      */
     public $category;
     public function __construct(category $category){
+        $this->middleware('auth:api',['except' => ['index','show']]);
         $this->category = $category;
-        
     }
-    public function index()
+    public function index($record_number)
     {
-        return new categoryCollection($this->category->orderBy('id','DESC')->get());
+        if(!empty($record_number)){
+            return new categoryCollection($this->category->paginate($record_number));
+        }
+        return new categoryCollection($this->category->paginate($record_number));
     }
-    public function paginate()
-    {
-        return new categoryCollection($this->category->paginate(6));
-    }
-
     /**
      * Store a newly created resource in storage.
      *

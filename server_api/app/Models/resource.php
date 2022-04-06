@@ -11,4 +11,8 @@ class resource extends Model
     protected $fillable = ['alias'];
     protected $table = 'tbl_resources';
     protected $primaryKey = 'id';
+
+    public function permission(){
+        return $this->hasMany(permission::class,'resource_id');
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\Collection;
+use App\Http\Resources\v1\userCollection;
 use App\Http\Resources\v1\userResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,13 +24,9 @@ class userController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($record_number)
     {
-        //
-    }
-    public function paginate()
-    {
-        return new Collection(User::paginate(6));
+        return new userCollection(User::paginate($record_number));
     }
 
     /**
@@ -49,24 +46,31 @@ class userController extends Controller
      */
     public function store(Request $request)
     {
-        $image_path = "";
-        if($request->hasFile('image')){
-            $file = $request->file('image');
-            $image_hash_name = Str::random(20).'.'.$file->extension();
-            $store = $file->storeAs('public/user/1',$image_hash_name);    
-            $image_path = Storage::url($store);
-        }
-        $new_user = User::create(['name' => $request->name,'email' => $request->email,'password' => Hash::make( $request->password),'image_path' => $image_path]);
-        if(empty($new_user)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'register error!'
-            ],500);
-        }else{
+        if($request->password == $request->passwordAgain){
+            $image_path = "";
+            if($request->hasFile('image')){
+                $file = $request->file('image');
+                $image_hash_name = Str::random(20).'.'.$file->extension();
+                $store = $file->storeAs('public/user/1',$image_hash_name);    
+                $image_path = Storage::url($store);
+            }
+            $new_user = User::create(['name' => $request->name,'email' => $request->email,'password' => Hash::make( $request->password),'image_path' => $image_path]);
+            $list_role = json_decode($request->roles);
+            if(!empty($list_role)){
+               foreach($list_role as $item_role){
+                $new_user->role()->attach($item_role->id);
+               }
+            }
             return response()->json([
                 'code' => 201,
                 'data' => new userResource($new_user)
             ],201);
+       
+        }else{
+            return response()->json([
+                'code' => 422,
+                'message' => "Invalid password !"
+            ],422);
         }
     }
     public function login(Request $request)
@@ -153,7 +157,15 @@ class userController extends Controller
             $image_path = Storage::url($store);
         }
         $item_user->update(['name' => $request->name,'email' => $request->email,'image_path' => $image_path]);
+        $list_role = json_decode($request->roles);
+        $roles_id = [];
         $item_user = User::find($id);
+        if(!empty($list_role)){
+           foreach($list_role as $item_role){
+                $roles_id[] = $item_role->id;
+            }
+            $item_user->role()->sync($roles_id);
+        }
         return response()->json([
             'code' => 201,
             'data' => new userResource($item_user)

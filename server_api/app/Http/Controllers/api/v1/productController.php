@@ -28,19 +28,15 @@ class productController extends Controller
     public $color;
     public $memory;
     public function __construct(product $product,tag $tags,color $color,memory $memory){
+        // $this->middleware('auth:api',['except' => ['index','show']]);
         $this->product = $product;
         $this->tags = $tags;
         $this->color = $color;
         $this->memory = $memory;
     }
-    public function index()
+    public function index($record_number)
     {
-        return new productCollection($this->product->OrderBy('id','DESC')->get());
-    }
-
-    public function pagination()
-    {
-        return new productCollection($this->product->OrderBy('id','DESC')->paginate(10));
+        return new productCollection($this->product->OrderBy('id','DESC')->paginate($record_number));
     }
 
     /**
