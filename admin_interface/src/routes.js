@@ -15,6 +15,10 @@ import User from './components/user/User'
 import User_index from './components/user/Index'
 import User_create from './components/user/Create'
 import User_edit from './components/user/Edit'
+import Roles from './components/roles/Roles'
+import Roles_index from './components/roles/Index'
+import Roles_create from './components/roles/Create'
+import Roles_edit from './components/roles/Edit'
 
 export const routes = [
     { path:'/',name:'dashboard',component:Dashboard},
@@ -37,5 +41,10 @@ export const routes = [
         {path:'',name:'user_index',component:User_index},
         {path:'create',name:'user_create',component:User_create},
         {path:'edit/:id',name:'user_edit',component:User_edit}
+    ]},
+    {path:'/roles',name:'roles',component:Roles, children:[
+        {path:'',name:'roles_index',component:Roles_index},
+        {path:'create',name:'roles_create',component:Roles_create},
+        {path:'edit/:id',name:'roles_edit',component:Roles_edit}
     ]}
 ]

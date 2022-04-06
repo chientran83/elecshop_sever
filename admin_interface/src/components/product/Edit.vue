@@ -202,11 +202,13 @@ Vue.use( CKEditor );
                     image_path:""
                 },
                 categories:[],
+                category_record_number: 0,
+                accessories_record_number: 0
             }
         },
         mounted(){
             this.product_id = this.$route.params.id
-            fetch('http://localhost:8000/api/v1/category').then(res => res.json()).then(res => {
+            fetch('http://localhost:8000/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
                 this.categories = res.data
             })
             fetch('http://localhost:8000/api/v1/product/'+this.product_id).then(res => res.json()).then(res => {
@@ -232,7 +234,7 @@ Vue.use( CKEditor );
                 this.product.quantity=res.data.quantity;
                 this.product.image_path=res.data.image_path;
             })
-            fetch('http://localhost:8000/api/v1/product').then(res => res.json()).then(res => {
+            fetch('http://localhost:8000/api/v1/product/index/' + this.accessories_record_number).then(res => res.json()).then(res => {
                 var product_id = this.product.id;
                 var accessories = res.data.filter(function(index,key){
                     return index.id != product_id

@@ -53,16 +53,22 @@
                                                             <th>Id</th>
                                                             <th>Name</th>
                                                             <th>Email</th>
+                                                            <th>Roles</th>
                                                             <th>Image</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="(user,key) in user" v-bind:key="key">
+                                                        <tr v-for="(user,key) in users" v-bind:key="key">
                                                             <td class="col-2" > {{ user.id }} </td>
                                                             <td>{{ user.name }}</td>
-                                                             <td><img v-bind:src="'http://localhost:8000' + user.image_path" style="width:40px; height:40px;" alt=""></td>
                                                             <td>{{ user.email }}</td>
+                                                            <td>
+                                                                <ul>
+                                                                    <li v-for="(role,key) in user.roles" v-bind:key="key">{{role.name}}</li>
+                                                                </ul>
+                                                            </td>
+                                                             <td><img v-bind:src="'http://localhost:8000' + user.image_path" style="width:40px; height:40px;" alt=""></td>
                                                             <td class="col-2">
                                                                 <a>
                                                                     <router-link
@@ -73,7 +79,7 @@
                                                                     </router-link>
                                                                 </a>
                                                                 <button class="btn btn-danger" v-on:click="delete_user(user.id)">
-                                                                    Delete <i class="fas fa-minus"></i>
+                                                                    Delete <i class="fas fa-trash-alt"></i>
                                                                 </button> 
                                                                 
                                                             </td>
@@ -103,19 +109,21 @@ import axios from "axios"
     export default {
         data(){
             return {
-                user: [],
+                users: [],
                 user:{
                     id:"",
                     name:"",
+                    roles:[],
                     image_path:""
                 },
-                paginate:{}
+                paginate:{},
+                user_record_number:6
             }
         },
         mounted(){
             // fetch data user
-            fetch('http://localhost:8000/api/v1/users/pagination').then(res => res.json()).then(res => {
-                this.user = res.data;
+            fetch('http://localhost:8000/api/v1/users/index/'+ this.user_record_number).then(res => res.json()).then(res => {
+                this.users = res.data;
                 var links = res.meta.links;
                 links = links.filter(function(item){
                     return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
@@ -137,7 +145,7 @@ import axios from "axios"
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = 'http://localhost:8000/api/v1/users/pagination';
+                    var link = 'http://localhost:8000/api/v1/users/index/' + this.user_record_number;
                 }
                     fetch(link).then(res => res.json()).then(res => {
                     this.user = res.data;

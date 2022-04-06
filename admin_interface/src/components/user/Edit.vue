@@ -6,7 +6,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">slider manager</h5>
+                            <h5 class="m-b-10">User manager</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
@@ -25,7 +25,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Edit slider</h5>
+                                <h5>Edit user</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -33,32 +33,29 @@
                                          <form>
                                             <div class="form-group">
                                                 <label>Name</label>
-                                                <input type="text" class="form-control" placeholder="Enter name" v-model="slider.name">
+                                                <input type="text" class="form-control" placeholder="Enter name" v-model="user.name">
                                             </div>
                                             <div class="form-group">
-                                                <label for="exampleFormControlTextarea1">Desc</label>
-                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter desc" v-model="slider.desc"></textarea>
+                                                <label>Email</label>
+                                                <input type="text" class="form-control" placeholder="Enter name" v-model="user.email">
                                             </div>
                                             <div class="form-group">
-                                                <label>Status</label>
-                                                <select class="form-control" id="exampleFormControlSelect1" v-model="slider.status">
-                                                    <option value="0">Hidden</option>
-                                                    <option value="1">Display</option>
-                                                </select>
+                                                <label class="typo__label">Roles</label>
+                                                <multiselect v-model="user.roles" :options="optionsRoles" :multiple="true" group-values="libs" group-label="language" :group-select="true" placeholder="Select roles" track-by="name" label="name"><span slot="noResult">Oops! No elements found. Consider changing the search query.</span></multiselect>
                                             </div>
                                              <div class="form-group">
                                                 <label>Image</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img :src="'http://localhost:8000' + slider.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <img :src="'http://localhost:8000' + user.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
                                             </div>
                                             <a>
                                             <router-link
                                             tag="button"
                                             class="btn btn-secondary"
-                                            to="/slider">Thoát</router-link>
+                                            to="/user">Thoát</router-link>
 
                                             </a>
-                                            <button class="btn btn-primary" v-on:click="update_slider()">Submit</button>
+                                            <button class="btn btn-primary" v-on:click="update_user ()">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -74,29 +71,48 @@
 </template>
 <script>
 import axios from 'axios';
+import Multiselect from 'vue-multiselect'
     export default {
+        components: {
+            Multiselect
+        },
         data(){
             return {
-                slider:{
+                 user:{
                     name:"",
-                    desc:"",
-                    status:"",
-                    image_path:""
-                }
+                    email:"",
+                    image_path:"",
+                    roles:[],
+                    password:"",
+                    passwordAgain:"",
+                },
+                optionsRoles: [
+                    {
+                        language: 'choose All',
+                        libs: [
+                        ]
+                    }
+                   
+                ],
             }
         },
         mounted(){
-            fetch('http://localhost:8000/api/v1/slider/' + this.$route.params.id)
+            fetch('http://localhost:8000/api/v1/role/index/'+0)
                 .then(res => res.json())
                 .then(res => {
-                    this.slider.name = res.data.name,
-                    this.slider.desc = res.data.desc
-                    this.slider.status = res.data.status
-                    this.slider.image_path = res.data.image_path
+                    this.optionsRoles[0].libs = res.data
+                });
+            fetch('http://localhost:8000/api/v1/users/' + this.$route.params.id)
+                .then(res => res.json())
+                .then(res => {
+                    this.user.name = res.data.name,
+                    this.user.email = res.data.email
+                    this.user.image_path = res.data.image_path
+                    this.user.roles = res.data.roles
                 })
         },
         methods:{
-            update_slider:function(){
+            update_user:function(){
                 Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -108,12 +124,14 @@ import axios from 'axios';
                 }).then((result) => {
                 if (result.isConfirmed) {
                     var form_data = new FormData();
-                    form_data.append('name',this.slider.name);
-                    form_data.append('desc',this.slider.desc);
-                    form_data.append('status',this.slider.status);
+                    form_data.append('name',this.user.name);
+                    form_data.append('email',this.user.email);
+                    form_data.append('roles',JSON.stringify(this.user.roles));
+                    form_data.append('password',this.user.password);
+                    form_data.append('passwordAgain',this.user.passwordAgain);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
                     form_data.append('_method',"PUT");
-                    axios.post('http://localhost:8000/api/v1/slider/'+this.$route.params.id,form_data,{
+                    axios.post('http://localhost:8000/api/v1/users/'+this.$route.params.id,form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data'
                         }
@@ -121,7 +139,7 @@ import axios from 'axios';
                     .then(res => {
                          Swal.fire(
                         'Updated!',
-                        'New slider has been updated.',
+                        'New user has been updated.',
                         'success'
                         )
                     })

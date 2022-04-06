@@ -59,7 +59,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="(slider,key) in slider" v-bind:key="key">
+                                                        <tr v-for="(slider,key) in sliders" v-bind:key="key">
                                                             <td class="col-2" > {{ slider.id }} </td>
                                                             <td>{{ slider.name }}</td>
                                                             <td class="d-inline-block text-truncate" style="max-width: 200px;">{{ slider.desc }}</td>
@@ -75,7 +75,7 @@
                                                                     </router-link>
                                                                 </a>
                                                                 <button class="btn btn-danger" v-on:click="delete_slider(slider.id)">
-                                                                    Delete <i class="fas fa-minus"></i>
+                                                                    Delete <i class="fas fa-trash-alt"></i>
                                                                 </button> 
                                                                 
                                                             </td>
@@ -105,19 +105,20 @@ import axios from "axios"
     export default {
         data(){
             return {
-                slider: [],
+                sliders: [],
                 slider:{
                     id:"",
                     name:"",
                     desc:""
                 },
-                paginate:{}
+                paginate:{},
+                slider_record_number:6
             }
         },
         mounted(){
             // fetch data slider
-            fetch('http://localhost:8000/api/v1/slider/pagination').then(res => res.json()).then(res => {
-                this.slider = res.data;
+            fetch('http://localhost:8000/api/v1/slider/index/'+this.slider_record_number).then(res => res.json()).then(res => {
+                this.sliders = res.data;
                 var links = res.meta.links;
                 links = links.filter(function(item){
                     return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
@@ -139,7 +140,7 @@ import axios from "axios"
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = 'http://localhost:8000/api/v1/slider/pagination';
+                    var link = 'http://localhost:8000/api/v1/slider/index/'+this.slider_record_number;
                 }
                     fetch(link).then(res => res.json()).then(res => {
                     this.slider = res.data;

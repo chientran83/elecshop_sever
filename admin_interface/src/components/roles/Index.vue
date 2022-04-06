@@ -6,7 +6,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Category manager</h5>
+                                        <h5 class="m-b-10">Role manager</h5>
                                     </div>
                                     <ul class="breadcrumb">
                                         <router-link
@@ -17,7 +17,7 @@
                                             <i class="feather icon-home"></i>
                                         </a>
                                         </router-link>
-                                        <li class="breadcrumb-item"><a >Category list</a></li>
+                                        <li class="breadcrumb-item"><a >Role list</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -33,14 +33,14 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5></h5>
-                                            <span class="d-block m-t-5">List of category</span>
+                                            <span class="d-block m-t-5">List of role</span>
                                         </div>
                                         <div class="col-6">
                                             <a>
                                             <router-link 
                                             tag="button"
                                             class="btn btn-success btn-sm"
-                                            to="/category/create">
+                                            to="/roles/create">
                                                 Create new <i class="fas fa-plus"></i>
                                             </router-link>
                                             </a>
@@ -53,24 +53,32 @@
                                                             <th>Id</th>
                                                             <th>Name</th>
                                                             <th>Desc</th>
+                                                            <th>Status</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="(category,key) in categories" v-bind:key="key">
-                                                            <td class="col-2" > {{ category.id }} </td>
-                                                            <td>{{ category.name }}</td>
-                                                            <td class="d-inline-block text-truncate" style="max-width: 200px;">{{ category.desc }}</td>
+                                                        <tr v-for="(role_item,key) in roles" v-bind:key="key">
+                                                            <td class="col-2" > {{ role_item.id }} </td>
+                                                            <td>{{ role_item.name }}</td>
+                                                            <td class="d-inline-block text-truncate" style="max-width: 200px;">{{ role_item.desc }}</td>
+                                                            <td>
+                                                                <p class="text-success mb-1" v-if="role_item.status === '1'">Open</p>
+                                                                <p class="text-warning mb-1" v-else>Lock</p>
+                                                            </td>
                                                             <td class="col-2">
                                                                 <a>
                                                                     <router-link
                                                                         tag="button"
                                                                         class="btn btn-info"
-                                                                        :to="'/category/edit/' + category.id">
+                                                                        :to="'/role/edit/' + role_item.id">
                                                                         Edit <i class="fas fa-edit"></i>
                                                                     </router-link>
                                                                 </a>
-                                                                <button class="btn btn-danger" v-on:click="delete_category(category.id)">
+                                                                <button class="btn btn-warning" v-on:click="delete_role(role_item.id)">
+                                                                    Permission <i class="fas fa-project-diagram"></i>
+                                                                </button> 
+                                                                <button class="btn btn-danger" v-on:click="delete_role(role_item.id)">
                                                                     Delete <i class="fas fa-trash-alt"></i>
                                                                 </button> 
                                                                 
@@ -80,9 +88,9 @@
                                                 </table>
                                                         <nav aria-label="Page navigation example">                                                 
                                                             <ul class="pagination">
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_category(paginate.prev)">Previous</a></li>
-                                                                <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_category(link.url)">{{ link.label }}</a></li>
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_category(paginate.next)">Next</a></li>
+                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_role(paginate.prev)">Previous</a></li>
+                                                                <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_role(link.url)">{{ link.label }}</a></li>
+                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_role(paginate.next)">Next</a></li>
                                                             </ul>
                                                          </nav>
                                             </div>
@@ -101,20 +109,22 @@ import axios from "axios"
     export default {
         data(){
             return {
-                categories: [],
-                category:{
+                roles: [],
+                role:{
                     id:"",
                     name:"",
-                    desc:""
+                    desc:"",
+                    status:""
+
                 },
-                record_number:6,
-                paginate:{}
+                paginate:{},
+                role_record_number:6
             }
         },
         mounted(){
-            // fetch data category
-            fetch('http://localhost:8000/api/v1/category/index/'+this.record_number).then(res => res.json()).then(res => {
-                this.categories = res.data;
+            // fetch data role
+            fetch('http://localhost:8000/api/v1/role/index/' +this.role_record_number).then(res => res.json()).then(res => {
+                this.roles = res.data;
                 var links = res.meta.links;
                 links = links.filter(function(item){
                     return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
@@ -132,14 +142,14 @@ import axios from "axios"
             })
         },
         methods:{
-            load_data_category:function(url){
+            load_data_role:function(url){
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = 'http://localhost:8000/api/v1/category/index/' + this.record_number;
+                    var link = 'http://localhost:8000/api/v1/role/index/'+this.role_record_number;
                 }
                     fetch(link).then(res => res.json()).then(res => {
-                    this.categories = res.data;
+                    this.roles = res.data;
                     var links = res.meta.links;
                     links = links.filter(function(item,key){
                         return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
@@ -156,7 +166,7 @@ import axios from "axios"
                     }
                 })
             },
-            delete_category:function(id){
+            delete_role:function(id){
                 Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -167,14 +177,14 @@ import axios from "axios"
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:8000/api/v1/category/'+id)
+                    axios.delete('http://localhost:8000/api/v1/role/'+id)
                     .then(res => {
                         Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
                         'success'
                         );
-                        this.load_data_category('');
+                        this.load_data_role('');
                     })
                    
                 }

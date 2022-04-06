@@ -1,0 +1,239 @@
+<template>
+    <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Role manager</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="javascript:">Form Componants</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:">Form Elements</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Create new</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <form>
+                                            <div class="form-group">
+                                                <label>Name</label>
+                                                <input type="text" class="form-control" placeholder="Enter name" v-model="role.name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlTextarea1">Desc</label>
+                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter desc" v-model="role.desc"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlSelect1">Status</label>
+                                                <select class="form-control" id="exampleFormControlSelect1" v-model="role.status">
+                                                    <option value="1">Open</option>
+                                                    <option value="0">Lock</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlSelect1">Select permission</label>
+                                                <div class="card">
+                                                    <div class="card-header" style="background-color:rgb(206 204 204);">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                            <label class="form-check-label" for="exampleCheck1">Choose all permission</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card">
+                                                    <div class="card-header" style="background-color:rgb(119 119 119 / 11%);">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                            <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card">
+                                                    <div class="card-header" style="background-color:rgb(119 119 119 / 11%);">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                            <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card">
+                                                    <div class="card-header" style="background-color:rgb(119 119 119 / 11%);">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                            <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            </div>
+                                                            <div class="form-check col">
+                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <a>
+                                            <router-link
+                                            tag="button"
+                                            class="btn btn-secondary"
+                                            to="/roles">Thoát</router-link>
+
+                                            </a>
+                                            <button class="btn btn-primary" v-on:click="role_store()">Submit</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+
+
+
+        
+    </div>
+</template>
+<script>
+    import axios from 'axios'
+    export default {
+        data(){
+            return {
+                role:{
+                    name:"",
+                    desc:"",
+                    status:1
+                },
+                users: [
+                    { id: "1", name: "jane smith", email: "jane.smith@yahoo.com" },
+                    { id: "2", name: "john doe", email: "jdoe@yahoo.com" },
+                    { id: "3", name: "dave jones", email: "davejones@hotmail.com" },
+                    { id: "4", name: "alex smith", email: "alex@leannon.com" },
+                ],
+                selected: [],
+                allSelected: false,
+            }
+        },
+        methods:{
+            role_store:function(){
+                Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, I agree!'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    var form_data = new FormData();
+                    form_data.append('name',this.role.name);
+                    form_data.append('desc',this.role.desc);
+                    form_data.append('status',this.role.status);
+                    axios.post('http://localhost:8000/api/v1/role',form_data).then(res => {
+                        this.role.name = "";
+                        this.role.desc = "";
+                        this.role.status = "";
+                        Swal.fire(
+                        'Added new!',
+                        'New role has been added.',
+                        'success'
+                        )
+                    })
+                   
+                }
+                })
+               
+            },
+            async selectAll() {
+                if (this.allSelected) {
+                    const selected = this.users.map((u) => u.id);
+                    this.selected = selected;
+                } else {
+                    this.selected = [];
+                }
+            },
+        }
+    }
+</script>
+<style>
+
+</style>

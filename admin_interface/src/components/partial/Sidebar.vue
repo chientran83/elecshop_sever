@@ -73,6 +73,16 @@
                                 <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">User</span>
                             </a>
                     </router-link>
+                    <router-link
+                        tag="li"
+                        class="nav-item"
+                        to="/roles"
+                        active-class="active"
+                        >
+                            <a class="nav-link"><span class="pcoded-micon">
+                                <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Roles</span>
+                            </a>
+                    </router-link>
                 </ul>
             </div>
         </div>

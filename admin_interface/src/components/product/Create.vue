@@ -201,14 +201,16 @@ Vue.use( CKEditor );
                     accessories:[],
                     category_id:""
                 },
-                categories:[]
-            }
+                categories:[],
+                category_record_number:0,
+                product_record_number:6
+                }
         },
         mounted(){
-            fetch('http://localhost:8000/api/v1/category').then(res => res.json()).then(res => {
+            fetch('http://localhost:8000/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
                 this.categories = res.data
             })
-             fetch('http://localhost:8000/api/v1/product').then(res => res.json()).then(res => {
+             fetch('http://localhost:8000/api/v1/product/index/'+0).then(res => res.json()).then(res => {
                 this.optionsAccessories[0].libs = res.data;
             })
         },

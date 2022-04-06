@@ -81,7 +81,7 @@
                                                         </router-link>
                                                     </a>
                                                     <button class="btn btn-danger" v-on:click="delete_product(product.id)">
-                                                        Delete <i class="fas fa-minus"></i>
+                                                        Delete <i class="fas fa-trash-alt"></i>
                                                     </button> 
                                                     
                                                 </td>
@@ -125,11 +125,12 @@ export default {
                 quantity:"",
                 user_id:""
             },
-            paginate:{}
+            paginate:{},
+            product_record_number:6
         }
         },
         mounted(){
-            fetch('http://localhost:8000/api/v1/product/pagination').then(res => res.json())
+            fetch('http://localhost:8000/api/v1/product/index/' + this.product_record_number).then(res => res.json())
                 .then(res => {
                     this.products = res.data;
                     var link_page = res.meta.links.filter(function(index){
@@ -150,7 +151,7 @@ export default {
         methods:{
             load_data_product:function(url){
                 if(url == ''){
-                    var link = 'http://localhost:8000/api/v1/product/pagination';
+                    var link = 'http://localhost:8000/api/v1/product/index/' + this.product_record_number;
                 }else{
                     var link = url
                 }
