@@ -19,7 +19,8 @@ class sliderController extends Controller
      */
     public $slider;
     public function __construct(slider $slider){
-        // $this->middleware('auth:api',["except" => ['index','show']]);
+        /* $this->middleware('auth:api',["except" => ['index','show']]); */
+        $this->middleware('auth:api');
         $this->slider = $slider;
     }
     public function index($record_number)

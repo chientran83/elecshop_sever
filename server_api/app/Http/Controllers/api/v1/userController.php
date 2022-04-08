@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 class userController extends Controller
 {
     public function __construct() {
-       /*  $this->middleware('auth:api', ['except' => ['login', 'store','paginate']]); */
+        // $this->middleware('auth:api', ['except' => ['login', 'store','paginate']]);
     }
     /**
      * Display a listing of the resource.
@@ -121,7 +121,7 @@ class userController extends Controller
             ],201);
         }else{
             return response()->json([
-                'code' => 201,
+                'code' => 404,
                 'message' => 'user not found!'
             ],201);
         }
@@ -136,6 +136,20 @@ class userController extends Controller
     public function edit($id)
     {
         
+    }
+    public function user_login()
+    {
+        if(auth()->check()){
+            return response()->json([
+                'code' => 201,
+                'data' => new userResource(auth()->user()),
+            ],201);
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => 'user not login !'
+            ],201);
+        }
     }
 
     /**
