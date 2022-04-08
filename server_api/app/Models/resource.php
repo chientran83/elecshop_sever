@@ -12,7 +12,10 @@ class resource extends Model
     protected $table = 'tbl_resources';
     protected $primaryKey = 'id';
 
+    public function permissionDefault(){
+        return $this->hasMany(permission::class,'resource_id')->where('role_id',0);
+    }
     public function permission(){
-        return $this->hasMany(permission::class,'resource_id');
+        return $this->hasMany(permission::class,'resource_id')->where('role_id','<>',0);
     }
 }

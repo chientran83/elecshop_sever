@@ -37,7 +37,6 @@ use Illuminate\Support\Facades\Route;
      Route::resource('product',productController::class)->except(['edit','create','index']);
      //router category
      Route::get('category/index/{record_number}',[categoryController::class,'index']);
-     Route::get('category/index/{record_number}',[categoryController::class,'show']);
      Route::resource('category',categoryController::class)->except(['edit','create'])->except(['index']);
      //router slider
      Route::get('slider/index/{record_number}',[sliderController::class,'index']);
@@ -52,9 +51,14 @@ use Illuminate\Support\Facades\Route;
      Route::get('role/index/{record_number}',[roleController::class,'index']);
      Route::post('role',[roleController::class,'store']);
      Route::delete('role/{id}',[roleController::class,'destroy']);
-     //router role
-     Route::get('resource',[resourceController::class,'index']);
+     Route::get('role/{id}',[roleController::class,'show']);
+     Route::put('role/{id}',[roleController::class,'update']);
+     //router resource
+     Route::get('resource/index/{record_number}',[resourceController::class,'index']);
      Route::post('resource',[resourceController::class,'store']);
+     Route::get('resource/{id}',[resourceController::class,'show']);
+     Route::put('resource/{id}',[resourceController::class,'update']);
+     Route::delete('resource/{id}',[resourceController::class,'delete']);
      //router permission
      Route::post('permission',[permissionController::class,'store']);
  });

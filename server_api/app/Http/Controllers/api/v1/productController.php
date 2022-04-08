@@ -265,7 +265,7 @@ class productController extends Controller
                     if($product_color){
                         $arr = array(
                             'name' => $color_item->name,
-                            'code' => $color_item->code,
+                            'code' => $color_item->codes,
                             'price'=> $color_item->price
                         );
                         if($request->hasFile('file'.$key)){
@@ -276,6 +276,11 @@ class productController extends Controller
                         }
                         $product_color->update($arr);
                     }else{
+                        /* return response()->json([
+                            'code' => 201,
+                            'data' => $color_item
+                        ],201); */
+
                         $arr = array(
                             'name' => $color_item->name,
                             'code' => $color_item->codes,

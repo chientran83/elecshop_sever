@@ -14,7 +14,10 @@ class role extends Model
     protected $primaryKey = 'id';
 
     public function permission(){
-        return $this->belongsToMany(permission::class,'tbl_role_permission','role_id','permission_id');
+        return $this->hasMany(permission::class,'role_id');
+    }
+    public function resource(){
+        return $this->belongsToMany(resource::class,'tbl_permissions','role_id','resource_id');
     }
 
 }
