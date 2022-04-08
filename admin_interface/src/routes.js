@@ -19,6 +19,10 @@ import Roles from './components/roles/Roles'
 import Roles_index from './components/roles/Index'
 import Roles_create from './components/roles/Create'
 import Roles_edit from './components/roles/Edit'
+import Permission from './components/permission/Permission'
+import Permission_index from './components/permission/Index'
+import Permission_create from './components/permission/Create'
+import Permission_edit from './components/permission/Edit'
 
 export const routes = [
     { path:'/',name:'dashboard',component:Dashboard},
@@ -46,5 +50,10 @@ export const routes = [
         {path:'',name:'roles_index',component:Roles_index},
         {path:'create',name:'roles_create',component:Roles_create},
         {path:'edit/:id',name:'roles_edit',component:Roles_edit}
+    ]},
+    {path:'/permission',name:'permission',component:Permission, children:[
+        {path:'',name:'permission_index',component:Permission_index},
+        {path:'create',name:'permission_create',component:Permission_create},
+        {path:'edit/:id',name:'permission_edit',component:Permission_edit}
     ]}
 ]

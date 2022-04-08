@@ -235,7 +235,7 @@ Vue.use( CKEditor );
                 var obj = {
                     name: color.name,
                     price: price,
-                    code:code
+                    codes:code
                 }
                 this.product.colorsImage[key] = image;
                 this.product.colors[key] = obj;

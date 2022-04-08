@@ -83,6 +83,16 @@
                                 <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Roles</span>
                             </a>
                     </router-link>
+                    <router-link
+                        tag="li"
+                        class="nav-item"
+                        to="/permission"
+                        active-class="active"
+                        >
+                            <a class="nav-link"><span class="pcoded-micon">
+                                <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Permission</span>
+                            </a>
+                    </router-link>
                 </ul>
             </div>
         </div>

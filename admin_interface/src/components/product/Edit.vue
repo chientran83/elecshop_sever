@@ -107,7 +107,7 @@
                                                         <span class="input-group-text" id="inputGroup-sizing-default">{{color.name}}</span>
                                                     </div>
                                                     <input type="number" v-model="product.colors[key].price" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
-                                                    <input type="text" v-model="product.colors[key].code" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
+                                                    <input type="text" v-model="product.colors[key].codes" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
                                                     <div class="form-control">
                                                         <img :src="'http://localhost:8000'+product.colors[key].image_path " alt="default.jpg" :id="'image_preview_colors' + key" class="col-4" style="height:100%;">
                                                         <input type="file" class="col-8" v-bind:id="'imageColors' + key"  v-on:change="priceColor(color,key); preview_image_color(color,key);">
@@ -218,13 +218,39 @@ Vue.use( CKEditor );
                         "name": res.data.name
                     };
                 })
-                this.product.tags = res.data.tags;
-                this.product.colors=res.data.colors;
-                this.product.memory=res.data.memory;
+                res.data.tags.forEach(tag => {
+                    var tag = {
+                        name: tag.name,
+                        code: tag.name,
+                        pivot:tag.pivot}
+                    this.product.tags.push(tag)
+                    this.optionsTags.push(tag)
+                })
+                res.data.memory.forEach(memory => {
+                    var tag = {
+                        name: memory.name,
+                        code: memory.name,
+                        pivot:memory.pivot}
+                    this.product.memory.push(tag)
+                    this.optionsMemory.push(tag)
+                })
+
+                res.data.colors.forEach((color,key) => {
+                    var obj = {
+                        name: color.name,
+                        code:color.name,
+                        price: color.price,
+                        codes:color.code,
+                        image_path:color.image_path
+                    }
+                    this.product.colors[key] = obj;
+                })
+
+                // this.product.colors=res.data.colors;
+                this.product.tag=res.data.tag;
                 this.product.accessories=res.data.accessories;
                 this.product.id=res.data.id;
                 this.product.name=res.data.name;
-                this.product.tag=res.data.tag;
                 this.product.origin_price=res.data.origin_price;
                 this.product.previous_price=res.data.previous_price;
                 this.product.current_price= res.data.current_price;
@@ -258,7 +284,7 @@ Vue.use( CKEditor );
             },
             priceColor:function(color,key){
                 var price = this.product.colors[key].price
-                var code = this.product.colors[key].code
+                var codes = this.product.colors[key].codes
                 var image = document.getElementById('imageColors' + key).files[0]
                 if(image == ''){
                     image = null;
@@ -266,7 +292,7 @@ Vue.use( CKEditor );
                 var obj = {
                     name: color.name,
                     price: price,
-                    code:code,
+                    codes:codes,
                     image_path:''
                 }
                 this.product.colorsImage[key] = image;
@@ -287,6 +313,7 @@ Vue.use( CKEditor );
             addTags (newTag) {
             const tag = {
                 name: newTag,
+                code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000)),
                 pivot:{
                     price:0
                 }
@@ -297,6 +324,7 @@ Vue.use( CKEditor );
             addMemory (newMemory) {
             const tag = {
                 name: newMemory,
+                code: newMemory.substring(0, 2) + Math.floor((Math.random() * 10000000)),
                 pivot:{
                     price:0
                 }
@@ -307,8 +335,9 @@ Vue.use( CKEditor );
             addColors (newColors) {
             const tag = {
                 name: newColors,
+                code: newColors.substring(0, 2) + Math.floor((Math.random() * 10000000)),
                 price:0,
-                code:'null',
+                codes:'null',
                 image_path:''
             }
             this.optionsColors.push(tag)

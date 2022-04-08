@@ -51,97 +51,24 @@
                                                 <div class="card">
                                                     <div class="card-header" style="background-color:rgb(206 204 204);">
                                                         <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                            <input type="checkbox" class="form-check-input" v-model="allSelected" id="exampleCheck1" v-on:change="selectAll()">
                                                             <label class="form-check-label" for="exampleCheck1">Choose all permission</label>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="card">
+                                                <div class="card" v-for="(resource,key) in resources" v-bind:key="key">
                                                     <div class="card-header" style="background-color:rgb(119 119 119 / 11%);">
                                                         <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                            <label class="form-check-label" for="exampleCheck1">Product</label>
+                                                            <input type="checkbox" class="form-check-input" v-model="resource.checked" v-on:change="selectAllResource(resource)">
+                                                            <label class="form-check-label" for="exampleCheck1">{{resource.alias}}</label>
                                                         </div>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row">
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card">
-                                                    <div class="card-header" style="background-color:rgb(119 119 119 / 11%);">
-                                                        <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                            <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card">
-                                                    <div class="card-header" style="background-color:rgb(119 119 119 / 11%);">
-                                                        <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                            <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-                                                            </div>
-                                                            <div class="form-check col">
-                                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                                <label class="form-check-label" for="exampleCheck1">Product</label>
-
+                                                            <div class="form-check col" v-for="(permission,key) in resource.permissionsDefaults" v-bind:key="key">
+                                                                <input type="checkbox" class="form-check-input" v-model="selected" v-bind:value="permission.id">
+                                                                <label class="form-check-label" for="exampleCheck1">{{ permission.allow }}</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -166,9 +93,6 @@
                 <!-- [ Main Content ] end -->
             </div>
         </div>
-
-
-
         
     </div>
 </template>
@@ -182,15 +106,23 @@
                     desc:"",
                     status:1
                 },
-                users: [
-                    { id: "1", name: "jane smith", email: "jane.smith@yahoo.com" },
-                    { id: "2", name: "john doe", email: "jdoe@yahoo.com" },
-                    { id: "3", name: "dave jones", email: "davejones@hotmail.com" },
-                    { id: "4", name: "alex smith", email: "alex@leannon.com" },
-                ],
-                selected: [],
-                allSelected: false,
+                resources:[],
+                selected:[],
+                allSelected:false
             }
+        },
+        mounted(){
+            fetch('http://localhost:8000/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
+                res.data.forEach(item => {
+                   this.resources.push({
+                        id:item.id,
+                        alias:item.alias,
+                        permissions:item.permissions,
+                        permissionsDefaults:item.permissionsDefaults,
+                        checked:false
+                   }) 
+                })
+            });
         },
         methods:{
             role_store:function(){
@@ -208,6 +140,7 @@
                     form_data.append('name',this.role.name);
                     form_data.append('desc',this.role.desc);
                     form_data.append('status',this.role.status);
+                    form_data.append('permissions',JSON.stringify(this.selected));
                     axios.post('http://localhost:8000/api/v1/role',form_data).then(res => {
                         this.role.name = "";
                         this.role.desc = "";
@@ -223,14 +156,37 @@
                 })
                
             },
-            async selectAll() {
-                if (this.allSelected) {
-                    const selected = this.users.map((u) => u.id);
-                    this.selected = selected;
-                } else {
-                    this.selected = [];
+            selectAll:function(){
+                if(this.allSelected){
+                    this.selected=[];
+                    this.resources.forEach(itemResource => {
+                        itemResource.permissionsDefaults.forEach(itemPermission => {
+                            this.selected.push(itemPermission.id)
+                        })
+                    })
+                }else{
+                    this.selected=[];
                 }
             },
+            selectAllResource:function(resource){
+                if(resource.checked){
+                    resource.permissionsDefaults.forEach(itemPermission => {
+                        if(!this.selected.includes(itemPermission.id)){
+                            this.selected.push(itemPermission.id);
+                        }
+                    })
+                }else{
+                    this.selected = this.selected.filter(itemSelected => {
+                        var result = true;
+                        resource.permissionsDefaults.forEach((itemPermission) => {
+                           if(itemPermission.id == itemSelected){
+                               result = false;
+                           }
+                        })
+                        return result;
+                    })
+                }
+            }
         }
     }
 </script>
