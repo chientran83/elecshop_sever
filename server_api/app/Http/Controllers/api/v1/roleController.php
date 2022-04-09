@@ -17,7 +17,7 @@ class roleController extends Controller
     public $permission;
     public $resource;
     public function __construct(role $role,permission $permission,resource $resource){
-        // $this->middleware('auth:api',['except' => ['index','show']]);
+        $this->middleware('auth:api',['except' => ['index','show']]);
         $this->role = $role;
         $this->permission = $permission;
         $this->resource = $resource;

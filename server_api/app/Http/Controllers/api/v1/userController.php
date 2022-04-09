@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
 class userController extends Controller
 {
     public function __construct() {
-        // $this->middleware('auth:api', ['except' => ['login', 'store','paginate']]);
+        $this->middleware('auth:api', ['except' => ['login', 'store','user_login']]);
     }
     /**
      * Display a listing of the resource.
@@ -65,7 +66,6 @@ class userController extends Controller
                 'code' => 201,
                 'data' => new userResource($new_user)
             ],201);
-       
         }else{
             return response()->json([
                 'code' => 422,
@@ -75,23 +75,27 @@ class userController extends Controller
     }
     public function login(Request $request)
     {
-        if(! $token = auth()->attempt(['email' => $request->email,'password' => $request->password])){  
+        if(! $token = auth()->attempt(['email' => $request->email,'password' => $request->password])){
             return response()->json([
                 'code' => 500,
                 'message' => 'email or password incorrect!'
-            ],500);
+            ]);
         }else{
             return $this->createNewToken($token);
         }
     }
+
     protected function createNewToken($token){
+        $minute = 180;
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            /* getTTL() == 60 , 60 * 60 = 3600 = 1h */
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => auth()->user()
-        ]);
+        ])->withCookie(cookie('elecshop_login', $token , $minute));
     }
+
     public function logout(Request $request)
     {
         auth()->logout();
@@ -111,6 +115,7 @@ class userController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function show($id)
     {
         $user_item = User::find($id);
@@ -118,7 +123,7 @@ class userController extends Controller
             return response()->json([
                 'code' => 201,
                 'data' => new userResource($user_item)
-            ],201);
+            ],201)/* ->withCookie(cookie('name', 'value', 1)) */;
         }else{
             return response()->json([
                 'code' => 404,
@@ -148,7 +153,7 @@ class userController extends Controller
             return response()->json([
                 'code' => 404,
                 'message' => 'user not login !'
-            ],201);
+            ],404);
         }
     }
 

@@ -10,7 +10,7 @@ class permissionController extends Controller
 {
     public $permission;
     public function __construct(permission $permission){
-        // $this->middleware('auth:api',['except' => ['index','show']]);
+        $this->middleware('auth:api');
         $this->permission = $permission;
     }
     public function store(Request $request){

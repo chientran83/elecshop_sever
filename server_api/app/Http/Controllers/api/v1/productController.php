@@ -28,7 +28,7 @@ class productController extends Controller
     public $color;
     public $memory;
     public function __construct(product $product,tag $tags,color $color,memory $memory){
-        // $this->middleware('auth:api',['except' => ['index','show']]);
+        $this->middleware('auth:api',['except' => ['index','show']]);
         $this->product = $product;
         $this->tags = $tags;
         $this->color = $color;
@@ -47,20 +47,6 @@ class productController extends Controller
      */
     public function store(Request $request)
     {
-        /* $token = $request->header('token');
-        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
-        if(empty($token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token not send !'
-            ],500);
-        }elseif(empty($get_session_token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token incorrect !'
-            ],500);
-        }else{ */
-
             $request->validate([
                 'name' => 'required|min:1|max:30|unique:tbl_product',
                 'current_price' => 'required',
@@ -139,7 +125,6 @@ class productController extends Controller
                 'code' => 201,
                 'data' => new productResource($product_new)
             ],201);
-        /* } */
         
     }
 
@@ -151,24 +136,10 @@ class productController extends Controller
      */
     public function show(Request $request,$id)
     {
-        /* $token = $request->header('token');
-        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
-        if(empty($token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token not send !'
-            ],500);
-        }elseif(empty($get_session_token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token incorrect !'
-            ],500);
-        }else{ */
             return response()->json([
                 'code' => 201,
                 'data' => new productResource(product::find($id))
             ],201);
-        /* } */
     }
     /**
      * Update the specified resource in storage.
@@ -179,31 +150,6 @@ class productController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
-        /* $token = $request->header('token');
-        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
-        if(empty($token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token not send !'
-            ],500);
-        }elseif(empty($get_session_token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token incorrect !'
-            ],500);
-        }else{
-            $request->validate([
-                'name' => 'required|min:1|max:30|unique:tbl_product',
-                'current_price' => 'required',
-                'previous_price' => 'required',
-                'origin_price' => 'required',
-                'ram' => 'required',
-                'desc' => 'required|min:1',
-                'isOnSale' => 'required',
-                'quantity' => 'required',
-                'user_id' => 'required',
-            ]); */
             $product_item= $this->product->find($id);
             $request->validate([
                 'name' => 'required|min:1|max:30|unique:tbl_product,name,'.$product_item->id,
@@ -276,10 +222,6 @@ class productController extends Controller
                         }
                         $product_color->update($arr);
                     }else{
-                        /* return response()->json([
-                            'code' => 201,
-                            'data' => $color_item
-                        ],201); */
 
                         $arr = array(
                             'name' => $color_item->name,
@@ -326,19 +268,6 @@ class productController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        /* $token=$request->header('token');
-        $get_session_token = DB::table('tbl_session_token')->where('token',$token)->first();
-        if(empty($token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token not send !'
-            ],500);
-        }elseif(empty($get_session_token)){
-            return response()->json([
-                'code' => 500,
-                'message' => 'token incorrect !'
-            ],500);
-        }else{ */
             $product_item = $this->product->find($id);
             $this->product->find($id)->delete();
             return new productResource($product_item);
@@ -347,6 +276,4 @@ class productController extends Controller
                     'data' => new productResource($product_item)
             ],201);
         }
-        
-    /* } */
 }

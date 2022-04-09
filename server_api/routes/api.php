@@ -39,13 +39,13 @@ use Illuminate\Support\Facades\Route;
      Route::get('category/index/{record_number}',[categoryController::class,'index']);
      Route::resource('category',categoryController::class)->except(['edit','create'])->except(['index']);
      //router slider
-     Route::get('slider/index/{record_number}',[sliderController::class,'index'])->middleware('checkPermission:slider,index');
+     Route::get('slider/index/{record_number}',[sliderController::class,'index'])/* ->middleware('checkPermission:slider,index') */;
      Route::resource('slider',sliderController::class)->except(['edit','create','index']);
      //router user
      Route::get('users/index/{record_number}',[userController::class,'index']);
      Route::get('users/user_login',[userController::class,'user_login']);
      Route::post('users/login',[userController::class,'login'])->name('user.login');
-     Route::post('users/logout',[userController::class,'logout'])->name('user.logout');
+     Route::get('users/logout',[userController::class,'logout'])->name('user.logout');
      Route::post('users/refresh_token',[userController::class,'refresh_token'])->name('user.refresh_token');
      Route::resource('users',userController::class)->except(['edit','create','index']);
      //router role
