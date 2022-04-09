@@ -86,10 +86,30 @@
                     desc:"",
                     status:"",
                     link:"",
-                }
+                },
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+            
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             this.slider.status = 1;
         },
         methods:{
@@ -112,7 +132,8 @@
                     form_data.append('image',document.getElementById('imgInp').files[0]);
                     axios.post('http://localhost:8000/api/v1/slider',form_data,{
                         headers:{
-                            'Content-Type' : 'multipart/form-data'
+                            'Content-Type' : 'multipart/form-data',
+                            "Authorization" : "Bearer " + this.get_cookie
                         }
                     }).then(res => {
                         this.slider.name = "";

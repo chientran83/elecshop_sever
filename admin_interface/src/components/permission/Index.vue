@@ -112,10 +112,29 @@ import axios from "axios"
                     desc:""
                 },
                 resource_record_number:6,
-                paginate:{}
+                paginate:{},
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             // fetch data resource
             fetch('http://localhost:8000/api/v1/resource/index/'+this.resource_record_number).then(res => res.json()).then(res => {
                 this.resources = res.data;
@@ -171,7 +190,7 @@ import axios from "axios"
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:8000/api/v1/resource/'+id)
+                    axios.delete('http://localhost:8000/api/v1/resource/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

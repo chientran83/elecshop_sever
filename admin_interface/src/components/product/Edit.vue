@@ -203,10 +203,29 @@ Vue.use( CKEditor );
                 },
                 categories:[],
                 category_record_number: 0,
-                accessories_record_number: 0
+                accessories_record_number: 0,
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             this.product_id = this.$route.params.id
             fetch('http://localhost:8000/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
                 this.categories = res.data
@@ -379,7 +398,8 @@ Vue.use( CKEditor );
 
                         axios.post('http://localhost:8000/api/v1/product/'+this.product_id,formData,{
                             headers : {
-                                'Content-Type' : 'multipart/form-data;'
+                                'Content-Type' : 'multipart/form-data;',
+                                "Authorization" : "Bearer " + this.get_cookie
                             }})
                             .then(res => {
                                 Swal.fire(

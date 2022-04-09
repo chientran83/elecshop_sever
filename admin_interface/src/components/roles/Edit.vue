@@ -93,7 +93,6 @@
                 <!-- [ Main Content ] end -->
             </div>
         </div>
-                                                    <h1>{{selected}}</h1>
     </div>
 </template>
 <script>
@@ -109,10 +108,29 @@ import axios from 'axios';
                 resources:[],
                 selected:[],
                 allSelected:false,
-                temporaryStorageSelected:[]   //var de checked permission of role
+                temporaryStorageSelected:[],   //var de checked permission of role
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             fetch('http://localhost:8000/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
                 res.data.forEach(item => {
                     this.resources.push({
@@ -162,7 +180,7 @@ import axios from 'axios';
                             desc:this.role.desc,
                             status:this.role.status,
                             permissions:JSON.stringify(this.selected)
-                        })
+                        },{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                         .then(res => {
                             Swal.fire(
                             'Updated!',

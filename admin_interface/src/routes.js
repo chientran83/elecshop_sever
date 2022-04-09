@@ -1,3 +1,5 @@
+import Header from './components/partial/Header'
+import Sidebar from './components/partial/Sidebar'
 import Dashboard from './components/Dashboard'
 import Category from './components/category/Category'
 import Category_index from './components/category/Index'
@@ -23,37 +25,73 @@ import Permission from './components/permission/Permission'
 import Permission_index from './components/permission/Index'
 import Permission_create from './components/permission/Create'
 import Permission_edit from './components/permission/Edit'
+import SignIn from './components/login/SignIn'
 
 export const routes = [
-    { path:'/',name:'dashboard',component:Dashboard},
-    { path:'/category',name:'Category',component:Category, children:[
+    { path:'/',name:'dashboard',components:{
+        default:Dashboard,
+        'header': Header,
+        'sideBar':Sidebar
+    }},
+    { path:'/sign-in',name:'dashboard',component:SignIn},
+
+    { path:'/category',name:'Category',components:{
+        default:Category,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
         { path:'',name:'Category_index',component:Category_index},
         { path:'create',name:'Category_create',component:Category_create},
         { path:'edit/:id',name:'Category_edit',component:Category_edit}
     ]},
-    {path:'/product',name:'Product',component:Product, children:[
+
+    {path:'/product',name:'Product',components:{
+        default:Product,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
         {path:'',name:'Product_index',component:Product_index},
         {path:'create',name:'Product_create',component:Product_create},
         {path:'edit/:id',name:'Product_edit',component:Product_edit}
     ]},
-    {path:'/slider',name:'slider',component:Slider, children:[
+
+    {path:'/slider',name:'slider',components:{
+        default:Slider,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
         {path:'',name:'slider_index',component:Slider_index},
         {path:'create',name:'slider_create',component:Slider_create},
         {path:'edit/:id',name:'slider_edit',component:Slider_edit}
     ]},
-    {path:'/user',name:'user',component:User, children:[
+
+    {path:'/user',name:'user',components:{
+        default:User,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
         {path:'',name:'user_index',component:User_index},
         {path:'create',name:'user_create',component:User_create},
         {path:'edit/:id',name:'user_edit',component:User_edit}
     ]},
-    {path:'/roles',name:'roles',component:Roles, children:[
+
+    {path:'/roles',name:'roles',components:{
+        default:Roles,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
         {path:'',name:'roles_index',component:Roles_index},
         {path:'create',name:'roles_create',component:Roles_create},
         {path:'edit/:id',name:'roles_edit',component:Roles_edit}
     ]},
-    {path:'/permission',name:'permission',component:Permission, children:[
+
+    {path:'/permission',name:'permission',components:{
+        default:Permission,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
         {path:'',name:'permission_index',component:Permission_index},
         {path:'create',name:'permission_create',component:Permission_create},
         {path:'edit/:id',name:'permission_edit',component:Permission_edit}
-    ]}
+    ]},
 ]

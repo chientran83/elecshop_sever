@@ -1936,6 +1936,7 @@ p.text-muted {
 }
 .pcoded-header .dropdown .profile-notification .pro-head img {
   width: 40px;
+  height: 40px;
   margin-right: 10px;
 }
 .pcoded-header .dropdown .profile-notification .pro-head .dud-logout {

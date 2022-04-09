@@ -94,15 +94,34 @@ import Multiselect from 'vue-multiselect'
                     }
                    
                 ],
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             fetch('http://localhost:8000/api/v1/role/index/'+0)
                 .then(res => res.json())
                 .then(res => {
                     this.optionsRoles[0].libs = res.data
                 });
-            fetch('http://localhost:8000/api/v1/users/' + this.$route.params.id)
+            fetch('http://localhost:8000/api/v1/users/' + this.$route.params.id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                 .then(res => res.json())
                 .then(res => {
                     this.user.name = res.data.name,
@@ -133,7 +152,8 @@ import Multiselect from 'vue-multiselect'
                     form_data.append('_method',"PUT");
                     axios.post('http://localhost:8000/api/v1/users/'+this.$route.params.id,form_data,{
                         headers:{
-                            'Content-Type' : 'multipart/form-data'
+                            'Content-Type' : 'multipart/form-data',
+                            "Authorization" : "Bearer " + this.get_cookie
                         }
                     })
                     .then(res => {

@@ -80,10 +80,29 @@ import Multiselect from 'vue-multiselect'
                     { name: 'delete', code: 'delete' },
                     { name: 'index', code: 'index' },
                     { name: 'show', code: 'show' },
-                ]
+                ],
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             fetch('http://localhost:8000/api/v1/resource/' + this.$route.params.id)
                 .then(res => res.json())
                 .then(res => {
@@ -106,6 +125,7 @@ import Multiselect from 'vue-multiselect'
                     })
                     this.permissionOptions = this.permissionOptions.concat(this.permissionOptionsDefault)
                 })
+            
         },
         methods:{
             update_resource:function(){
@@ -119,7 +139,7 @@ import Multiselect from 'vue-multiselect'
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put('http://localhost:8000/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)})
+                    axios.put('http://localhost:8000/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',

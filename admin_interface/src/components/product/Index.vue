@@ -126,10 +126,29 @@ export default {
                 user_id:""
             },
             paginate:{},
-            product_record_number:6
+            product_record_number:6,
+            get_cookie:""
         }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             fetch('http://localhost:8000/api/v1/product/index/' + this.product_record_number).then(res => res.json())
                 .then(res => {
                     this.products = res.data;
@@ -147,6 +166,7 @@ export default {
                         last_page:res.meta.last_page
                     }
             })
+            
         },
         methods:{
             load_data_product:function(url){
@@ -184,7 +204,7 @@ export default {
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:8000/api/v1/product/'+id)
+                    axios.delete('http://localhost:8000/api/v1/product/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

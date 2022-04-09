@@ -108,10 +108,29 @@
                 },
                 resources:[],
                 selected:[],
-                allSelected:false
+                allSelected:false,
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             fetch('http://localhost:8000/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
                 res.data.forEach(item => {
                    this.resources.push({
@@ -141,7 +160,7 @@
                     form_data.append('desc',this.role.desc);
                     form_data.append('status',this.role.status);
                     form_data.append('permissions',JSON.stringify(this.selected));
-                    axios.post('http://localhost:8000/api/v1/role',form_data).then(res => {
+                    axios.post('http://localhost:8000/api/v1/role',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
                         this.role.name = "";
                         this.role.desc = "";
                         this.role.status = "";

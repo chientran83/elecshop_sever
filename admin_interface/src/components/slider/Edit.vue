@@ -87,10 +87,29 @@ import axios from 'axios';
                     status:"",
                     link:"",
                     image_path:""
-                }
+                },
+                get_cookie:""
             }
         },
         mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
             fetch('http://localhost:8000/api/v1/slider/' + this.$route.params.id)
                 .then(res => res.json())
                 .then(res => {
@@ -122,7 +141,8 @@ import axios from 'axios';
                     form_data.append('_method',"PUT");
                     axios.post('http://localhost:8000/api/v1/slider/'+this.$route.params.id,form_data,{
                         headers:{
-                            'Content-Type' : 'multipart/form-data'
+                            'Content-Type' : 'multipart/form-data',
+                            "Authorization" : "Bearer " + this.get_cookie
                         }
                     })
                     .then(res => {

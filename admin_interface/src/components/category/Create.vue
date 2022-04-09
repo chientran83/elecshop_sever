@@ -68,8 +68,29 @@
                 category:{
                     name:"",
                     desc:""
+                },
+                get_cookie:""
+            }
+        },
+        mounted(){
+             // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
                 }
             }
+            fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }
+            })
         },
         methods:{
             category_store:function(){
@@ -86,7 +107,7 @@
                     var form_data = new FormData();
                     form_data.append('name',this.category.name);
                     form_data.append('desc',this.category.desc);
-                    axios.post('http://localhost:8000/api/v1/category',form_data).then(res => {
+                    axios.post('http://localhost:8000/api/v1/category',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
                         this.category.name = "";
                         this.category.desc = "";
                         Swal.fire(

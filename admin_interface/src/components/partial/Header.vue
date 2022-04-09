@@ -16,14 +16,6 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li><a href="javascript:" class="full-screen" onclick="javascript:toggleFullScreen()"><i class="feather icon-maximize"></i></a></li>
-                <li class="nav-item dropdown">
-                    <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown">Dropdown</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="javascript:">Action</a></li>
-                        <li><a class="dropdown-item" href="javascript:">Another action</a></li>
-                        <li><a class="dropdown-item" href="javascript:">Something else here</a></li>
-                    </ul>
-                </li>
                 <li class="nav-item">
                     <div class="main-search">
                         <div class="input-group">
@@ -98,17 +90,15 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
                             <div class="pro-head">
-                                <img src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image">
-                                <span>John Doe</span>
-                                <a href="auth-signin.html" class="dud-logout" title="Logout">
+                                <img :src="'http://localhost:8000' + user_login.image_path" class="img-radius">
+                                <span>{{user_login.name}}</span>
+                                <a class="dud-logout" v-on:click="logOut()" style="cursor: pointer">
                                     <i class="feather icon-log-out"></i>
                                 </a>
                             </div>
                             <ul class="pro-body">
-                                <li><a href="javascript:" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li>
                                 <li><a href="javascript:" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
-                                <li><a href="message.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li>
-                                <li><a href="auth-signin.html" class="dropdown-item"><i class="feather icon-lock"></i> Lock Screen</a></li>
+                                <!-- <li><a href="javascript:" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -119,8 +109,45 @@
 </template>
 
 <script>
+import axios from 'axios';
     export default {
-        
+        data(){
+            return {
+                user_login:{},
+                get_cookie:""
+            }
+        },
+        mounted(){
+            // get token
+            let name = "elecshop_login=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                this.get_cookie = c.substring(name.length, c.length);
+                }
+            }
+            fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                if(res.code == 404){
+                    this.$router.push('/sign-in');
+                }else{
+                    this.user_login = res.data
+                }
+            })
+        },
+        methods:{
+            logOut:function(){
+                /* alert('logout success') */
+                axios.get('http://localhost:8000/api/v1/users/logout',{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    .then(res => {
+                        this.$router.push('/sign-in')
+                    })
+            }
+        }
     }
 </script>
 <style>
