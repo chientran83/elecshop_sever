@@ -25,6 +25,13 @@ import Permission from './components/permission/Permission'
 import Permission_index from './components/permission/Index'
 import Permission_create from './components/permission/Create'
 import Permission_edit from './components/permission/Edit'
+import Order from './components/order/Order'
+import Order_index from './components/order/Index'
+import Order_edit from './components/order/Edit'
+import Coupon from './components/coupon/Coupon'
+import Coupon_index from './components/coupon/Index'
+import Coupon_create from './components/coupon/Create'
+import Coupon_edit from './components/coupon/Edit'
 import SignIn from './components/login/SignIn'
 
 export const routes = [
@@ -93,5 +100,24 @@ export const routes = [
         {path:'',name:'permission_index',component:Permission_index},
         {path:'create',name:'permission_create',component:Permission_create},
         {path:'edit/:id',name:'permission_edit',component:Permission_edit}
+    ]},
+
+    {path:'/coupon',name:'coupon',components:{
+        default:Coupon,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
+        {path:'',name:'coupon_index',component:Coupon_index},
+        {path:'create',name:'coupon_create',component:Coupon_create},
+        {path:'edit/:id',name:'coupon_edit',component:Coupon_edit}
+    ]},
+
+    {path:'/order',name:'order',components:{
+        default:Order,
+        'header': Header,
+        'sideBar':Sidebar
+    }, children:[
+        {path:'',name:'order_index',component:Order_index},
+        {path:'edit/:id',name:'order_edit',component:Order_edit}
     ]},
 ]

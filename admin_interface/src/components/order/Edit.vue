@@ -6,7 +6,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">slider manager</h5>
+                            <h5 class="m-b-10">Category manager</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
@@ -25,44 +25,28 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Edit slider</h5>
+                                <h5>Edit category</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-10">
-                                         <form>
+                                        <form>
                                             <div class="form-group">
                                                 <label>Name</label>
-                                                <input type="text" class="form-control" placeholder="Enter name" v-model="slider.name">
+                                                <input type="text" class="form-control" placeholder="Enter name" v-model="category.name">
                                             </div>
                                             <div class="form-group">
                                                 <label for="exampleFormControlTextarea1">Desc</label>
-                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter desc" v-model="slider.desc"></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Link</label>
-                                                <input type="text" class="form-control" placeholder="Enter name" v-model="slider.link">
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Status</label>
-                                                <select class="form-control" id="exampleFormControlSelect1" v-model="slider.status">
-                                                    <option value="0">Hidden</option>
-                                                    <option value="1">Display</option>
-                                                </select>
-                                            </div>
-                                             <div class="form-group">
-                                                <label>Image</label>
-                                                <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img :src="'http://localhost:8000' + slider.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter desc" v-model="category.desc"></textarea>
                                             </div>
                                             <a>
                                             <router-link
                                             tag="button"
                                             class="btn btn-secondary"
-                                            to="/slider">Thoát</router-link>
+                                            to="/category">Thoát</router-link>
 
                                             </a>
-                                            <button class="btn btn-primary" v-on:click="update_slider()">Submit</button>
+                                            <button class="btn btn-primary" v-on:click="update_category()">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -82,12 +66,9 @@ import axios from 'axios';
     export default {
         data(){
             return {
-                slider:{
+                category:{
                     name:"",
-                    desc:"",
-                    status:"",
-                    link:"",
-                    image_path:""
+                    desc:""
                 },
                 user:null,
                 get_cookie:""
@@ -106,14 +87,11 @@ import axios from 'axios';
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/slider/' + this.$route.params.id)
+                        fetch('http://localhost:8000/api/v1/category/' + this.$route.params.id)
                             .then(res => res.json())
                             .then(res => {
-                                this.slider.name = res.data.name,
-                                this.slider.link = res.data.link,
-                                this.slider.desc = res.data.desc
-                                this.slider.status = res.data.status
-                                this.slider.image_path = res.data.image_path
+                                this.category.name = res.data.name,
+                                this.category.desc = res.data.desc
                             })
                     })
                     .catch(err => {
@@ -123,9 +101,12 @@ import axios from 'axios';
                 this.$router.push('/sign-in')
 
             }
+            
+         
+                
         },
         methods:{
-            update_slider:function(){
+            update_category:function(){
                 Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -136,38 +117,16 @@ import axios from 'axios';
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    var form_data = new FormData();
-                    form_data.append('name',this.slider.name);
-                    form_data.append('link',this.slider.link);
-                    form_data.append('desc',this.slider.desc);
-                    form_data.append('status',this.slider.status);
-                    form_data.append('image',document.getElementById('imgInp').files[0]);
-                    form_data.append('_method',"PUT");
-                    axios.post('http://localhost:8000/api/v1/slider/'+this.$route.params.id,form_data,{
-                        headers:{
-                            'Content-Type' : 'multipart/form-data',
-                            "Authorization" : "Bearer " + this.get_cookie
-                        }
-                    })
+                    axios.put('http://localhost:8000/api/v1/category/'+this.$route.params.id,{name:this.category.name,desc:this.category.desc},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',
-                        'New slider has been updated.',
+                        'New category has been updated.',
                         'success'
                         )
                     })
-                   
                 }
                 })
-            }
-            ,
-            preview_image:function (event){
-                var imgInp = document.getElementById('imgInp').files[0];
-                var output = document.getElementById('output');
-                output.src = URL.createObjectURL(imgInp);
-                output.onload = function() {
-                URL.revokeObjectURL(output.src) // free memory
-                }
             }
         }
     }

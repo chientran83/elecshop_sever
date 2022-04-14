@@ -106,6 +106,7 @@
 </template>
 <script>
 import axios from "axios"
+    import getCookie from '../component/getCookie'
     export default {
         data(){
             return {
@@ -118,47 +119,53 @@ import axios from "axios"
                 },
                 paginate:{},
                 user_record_number:6,
+                user:null,
                 get_cookie:""
             }
         },
         mounted(){
-            // get token
-            let name = "elecshop_login=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                this.get_cookie = c.substring(name.length, c.length);
-                }
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.$router.push('/sign-in')
+                        }else{
+                            this.user = res.data
+                        }
+                    })
+                    .then(()=>{
+                        // fetch data user
+                        fetch('http://localhost:8000/api/v1/users/index/'+ this.user_record_number,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                            this.users = res.data;
+                            var links = res.meta.links;
+                            links = links.filter(function(item){
+                                return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                            })
+                            this.paginate = {
+                                first:res.links.first,
+                                last:res.links.last,
+                                next:res.links.next,
+                                prev:res.links.prev,
+                                links:links,
+                                current_page:res.meta.current_page,
+                                from:res.meta.from,
+                                last_page:res.meta.last_page
+                            }
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }else{
+                this.$router.push('/sign-in')
+
             }
-              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                if(res.code == 404){
-                    this.$router.push('/sign-in');
-                }
-            })
             
-            // fetch data user
-            fetch('http://localhost:8000/api/v1/users/index/'+ this.user_record_number,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                this.users = res.data;
-                var links = res.meta.links;
-                links = links.filter(function(item){
-                    return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                })
-                this.paginate = {
-                    first:res.links.first,
-                    last:res.links.last,
-                    next:res.links.next,
-                    prev:res.links.prev,
-                    links:links,
-                    current_page:res.meta.current_page,
-                    from:res.meta.from,
-                    last_page:res.meta.last_page
-                }
-            })
+
+        
+            
         },
         methods:{
             load_data_user:function(url){

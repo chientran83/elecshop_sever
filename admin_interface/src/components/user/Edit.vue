@@ -72,6 +72,7 @@
 <script>
 import axios from 'axios';
 import Multiselect from 'vue-multiselect'
+    import getCookie from '../component/getCookie'
     export default {
         components: {
             Multiselect
@@ -94,41 +95,47 @@ import Multiselect from 'vue-multiselect'
                     }
                    
                 ],
+                user:null,
                 get_cookie:""
             }
         },
         mounted(){
-            // get token
-            let name = "elecshop_login=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                this.get_cookie = c.substring(name.length, c.length);
-                }
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.$router.push('/sign-in')
+                        }else{
+                            this.user = res.data
+                        }
+                    })
+                    .then(()=>{
+                        verifyLogin.then(() => {
+                            fetch('http://localhost:8000/api/v1/role/index/'+0)
+                                .then(res => res.json())
+                                .then(res => {
+                                    this.optionsRoles[0].libs = res.data
+                                });
+                            fetch('http://localhost:8000/api/v1/users/' + this.$route.params.id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                                .then(res => res.json())
+                                .then(res => {
+                                    this.user.name = res.data.name,
+                                    this.user.email = res.data.email
+                                    this.user.image_path = res.data.image_path
+                                    this.user.roles = res.data.roles
+                                })
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }else{
+                this.$router.push('/sign-in')
+
             }
-              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                if(res.code == 404){
-                    this.$router.push('/sign-in');
-                }
-            })
-            fetch('http://localhost:8000/api/v1/role/index/'+0)
-                .then(res => res.json())
-                .then(res => {
-                    this.optionsRoles[0].libs = res.data
-                });
-            fetch('http://localhost:8000/api/v1/users/' + this.$route.params.id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
-                .then(res => res.json())
-                .then(res => {
-                    this.user.name = res.data.name,
-                    this.user.email = res.data.email
-                    this.user.image_path = res.data.image_path
-                    this.user.roles = res.data.roles
-                })
+
         },
         methods:{
             update_user:function(){

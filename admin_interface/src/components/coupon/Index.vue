@@ -6,7 +6,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Role manager</h5>
+                                        <h5 class="m-b-10">Coupon manager</h5>
                                     </div>
                                     <ul class="breadcrumb">
                                         <router-link
@@ -17,7 +17,7 @@
                                             <i class="feather icon-home"></i>
                                         </a>
                                         </router-link>
-                                        <li class="breadcrumb-item"><a >Role list</a></li>
+                                        <li class="breadcrumb-item"><a >Coupon list</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -33,14 +33,14 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5></h5>
-                                            <span class="d-block m-t-5">List of role</span>
+                                            <span class="d-block m-t-5">List of coupon</span>
                                         </div>
                                         <div class="col-6">
                                             <a>
                                             <router-link 
                                             tag="button"
                                             class="btn btn-success btn-sm"
-                                            to="/roles/create">
+                                            to="/coupon/create">
                                                 Create new <i class="fas fa-plus"></i>
                                             </router-link>
                                             </a>
@@ -51,31 +51,30 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Id</th>
-                                                            <th>Name</th>
-                                                            <th>Desc</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
+                                                            <th>Code</th>
+                                                            <th>Expire</th>
+                                                            <th>Type</th>
+                                                            <th>Value</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="(role_item,key) in roles" v-bind:key="key">
-                                                            <td class="col-2" > {{ role_item.id }} </td>
-                                                            <td>{{ role_item.name }}</td>
-                                                            <td class="d-inline-block text-truncate" style="max-width: 200px;">{{ role_item.desc }}</td>
-                                                            <td>
-                                                                <p class="text-success mb-1" v-if="role_item.status === '1'">Open</p>
-                                                                <p class="text-warning mb-1" v-else>Lock</p>
-                                                            </td>
+                                                        <tr v-for="(coupon,key) in coupons" v-bind:key="key">
+                                                            <td class="col-2" > {{ coupon.id }} </td>
+                                                            <td>{{ coupon.code }}</td>
+                                                            <td>{{ coupon.expire }}</td>
+                                                            <td>{{ coupon.type }}</td>
+                                                            <td v-if="coupon.value == 'percent'">{{ coupon.value }} %</td>
+                                                            <td v-else>{{ coupon.value }} $</td>
                                                             <td class="col-2">
                                                                 <a>
                                                                     <router-link
                                                                         tag="button"
                                                                         class="btn btn-info"
-                                                                        :to="'/roles/edit/' + role_item.id">
+                                                                        :to="'/coupon/edit/' + coupon.id">
                                                                         Edit <i class="fas fa-edit"></i>
                                                                     </router-link>
                                                                 </a>
-                                                                <button class="btn btn-danger" v-on:click="delete_role(role_item.id)">
+                                                                <button class="btn btn-danger" v-on:click="delete_coupon(coupon.id)">
                                                                     Delete <i class="fas fa-trash-alt"></i>
                                                                 </button> 
                                                                 
@@ -85,9 +84,9 @@
                                                 </table>
                                                         <nav aria-label="Page navigation example">                                                 
                                                             <ul class="pagination">
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_role(paginate.prev)">Previous</a></li>
-                                                                <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_role(link.url)">{{ link.label }}</a></li>
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_role(paginate.next)">Next</a></li>
+                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_coupon(paginate.prev)">Previous</a></li>
+                                                                <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_coupon(link.url)">{{ link.label }}</a></li>
+                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_coupon(paginate.next)">Next</a></li>
                                                             </ul>
                                                          </nav>
                                             </div>
@@ -107,72 +106,50 @@ import axios from "axios"
     export default {
         data(){
             return {
-                roles: [],
-                role:{
+                coupons: [],
+                coupon:{
                     id:"",
                     name:"",
-                    desc:"",
-                    status:""
+                    desc:""
                 },
+                record_number:6,
                 paginate:{},
-                role_record_number:6,
-                user:null,
                 get_cookie:""
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
-                    .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        // fetch data role
-                        fetch('http://localhost:8000/api/v1/role/index/' +this.role_record_number).then(res => res.json()).then(res => {
-                            this.roles = res.data;
-                            var links = res.meta.links;
-                            links = links.filter(function(item){
-                                return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                            })
-                            this.paginate = {
-                                first:res.links.first,
-                                last:res.links.last,
-                                next:res.links.next,
-                                prev:res.links.prev,
-                                links:links,
-                                current_page:res.meta.current_page,
-                                from:res.meta.from,
-                                last_page:res.meta.last_page
-                            }
-                        })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+            this.get_cookie = getCookie.getCookie();
             
-
-          
-
+            fetch('http://localhost:8000/api/v1/coupon/index/' + this.record_number,{headers:{'Authorization' : "Bearer " + this.get_cookie}})
+                .then(res => res.json())
+                .then(res => {
+                    this.coupons = res.data;
+                    var links = res.meta.links;
+                    links = links.filter(function(item){
+                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                    })
+                    this.paginate = {
+                        first:res.links.first,
+                        last:res.links.last,
+                        next:res.links.next,
+                        prev:res.links.prev,
+                        links:links,
+                        current_page:res.meta.current_page,
+                        from:res.meta.from,
+                        last_page:res.meta.last_page
+                    }
+                })
+        
         },
         methods:{
-            load_data_role:function(url){
+            load_data_coupon:function(url){
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = 'http://localhost:8000/api/v1/role/index/'+this.role_record_number;
+                    var link = 'http://localhost:8000/api/v1/coupon/index/' + this.record_number;
                 }
-                    fetch(link).then(res => res.json()).then(res => {
-                    this.roles = res.data;
+                    fetch(link,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
+                    this.coupons = res.data;
                     var links = res.meta.links;
                     links = links.filter(function(item,key){
                         return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
@@ -189,7 +166,7 @@ import axios from "axios"
                     }
                 })
             },
-            delete_role:function(id){
+            delete_coupon:function(id){
                 Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -200,14 +177,15 @@ import axios from "axios"
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:8000/api/v1/role/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.delete('http://localhost:8000/api/v1/coupon/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',
                         'Your file has been deleted.',
                         'success'
                         );
-                        this.load_data_role('');
+
+                        this.load_data_coupon('');
                     })
                    
                 }

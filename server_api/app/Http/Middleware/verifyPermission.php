@@ -17,10 +17,6 @@ class verifyPermission
      */
     public function handle(Request $request, Closure $next,$resource,$permission)
     {
-/*         return response()->json([
-            'code' => 401,
-            'message' => $resource . " " . $permission
-        ],422); */
         $result_check = false;
         if(auth()->check()){
             $user_login = auth()->user();
@@ -35,6 +31,7 @@ class verifyPermission
                 }
             }
         }
+        
         if($result_check){
             return $next($request);
         }else{

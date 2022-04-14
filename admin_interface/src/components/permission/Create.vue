@@ -63,8 +63,9 @@
 <script>
     import axios from 'axios'
     import Multiselect from 'vue-multiselect'
+        import getCookie from '../component/getCookie'
     export default {
-         components: {
+        components: {
             Multiselect
         },
         data(){
@@ -80,28 +81,31 @@
                     { name: 'index', code: 'index' },
                     { name: 'show', code: 'show' },
                 ],
+                user:null,
                 get_cookie:""
             }
         },
         mounted(){
-            // get token
-            let name = "elecshop_login=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                this.get_cookie = c.substring(name.length, c.length);
-                }
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.$router.push('/sign-in')
+                        }else{
+                            this.user = res.data
+                        }
+                    })
+                    .then(()=>{
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }else{
+                this.$router.push('/sign-in')
+
             }
-              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                if(res.code == 404){
-                    this.$router.push('/sign-in');
-                }
-            })
             
         },
         methods:{

@@ -14,7 +14,6 @@ class resourceController extends Controller
     public $resource;
     public $permission;
     public function __construct(resource $resource,permission $permission){
-        $this->middleware('auth:api',['except' => ['index','show']]);
         $this->resource = $resource;
         $this->permission = $permission;
     }

@@ -28,7 +28,6 @@ class productController extends Controller
     public $color;
     public $memory;
     public function __construct(product $product,tag $tags,color $color,memory $memory){
-        $this->middleware('auth:api',['except' => ['index','show']]);
         $this->product = $product;
         $this->tags = $tags;
         $this->color = $color;
@@ -36,7 +35,11 @@ class productController extends Controller
     }
     public function index($record_number)
     {
-        return new productCollection($this->product->OrderBy('id','DESC')->paginate($record_number));
+        if($record_number == 0){
+            return new productCollection($this->product->OrderBy('id','DESC')->all());
+        }else{
+            return new productCollection($this->product->OrderBy('id','DESC')->paginate($record_number));
+        }
     }
 
     /**
@@ -53,7 +56,6 @@ class productController extends Controller
                 'previous_price' => 'required',
                 'origin_price' => 'required',
                 'ram' => 'required',
-                'tag' => 'required',
                 'desc' => 'required|min:1',
                 'isOnsale' => 'required',
                 'quantity' => 'required'
@@ -157,7 +159,6 @@ class productController extends Controller
                 'previous_price' => 'required',
                 'origin_price' => 'required',
                 'ram' => 'required',
-                'tag' => 'required',
                 'desc' => 'required|min:1',
                 'isOnsale' => 'required',
                 'quantity' => 'required'
@@ -205,6 +206,7 @@ class productController extends Controller
                     }else{
                         $this->color->find($value->id)->delete();
                     }
+                    
                 }
                 foreach(json_decode($request->colors) as $key => $color_item){
                     $product_color = $this->color->where('name', $color_item->name)->first();

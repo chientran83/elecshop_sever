@@ -89,12 +89,15 @@
                             <i class="icon feather icon-settings"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
-                            <div class="pro-head">
-                                <img :src="'http://localhost:8000' + user_login.image_path" class="img-radius">
-                                <span>{{user_login.name}}</span>
+                            <div class="pro-head" v-if="user">
+                                <img :src="'http://localhost:8000' + user.image_path" class="img-radius">
+                                <span>{{user.name}}</span>
                                 <a class="dud-logout" v-on:click="logOut()" style="cursor: pointer">
                                     <i class="feather icon-log-out"></i>
                                 </a>
+                            </div>
+                            <div class="pro-head" v-else>
+                               <p>Loading...</p>
                             </div>
                             <ul class="pro-body">
                                 <li><a href="javascript:" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
@@ -110,40 +113,39 @@
 
 <script>
 import axios from 'axios';
+import getCookie from '../component/getCookie'
+
     export default {
         data(){
             return {
-                user_login:{},
+                user:null,
                 get_cookie:""
             }
         },
+
         mounted(){
-            // get token
-            let name = "elecshop_login=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                this.get_cookie = c.substring(name.length, c.length);
-                }
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.user = null
+                        }else{
+                            this.user = res.data
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
             }
-            fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                if(res.code == 404){
-                    this.$router.push('/sign-in');
-                }else{
-                    this.user_login = res.data
-                }
-            })
         },
         methods:{
             logOut:function(){
                 /* alert('logout success') */
                 axios.get('http://localhost:8000/api/v1/users/logout',{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
+                        document.cookie = 'elecshop_login' + '=; Max-Age=0'
                         this.$router.push('/sign-in')
                     })
             }

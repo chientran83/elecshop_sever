@@ -6,7 +6,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Resource manager</h5>
+                            <h5 class="m-b-10">Coupon manager</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
@@ -25,28 +25,38 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Edit resource</h5>
+                                <h5>Create new</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-10">
-                                       <form>
+                                        <form>
                                             <div class="form-group">
-                                                <label>Resource name</label>
-                                                <input type="text" class="form-control" placeholder="Enter name" v-model="resource.alias">
+                                                <label>Code</label>
+                                                <input type="text" class="form-control" placeholder="Enter code" v-model="coupon.code">
+                                            </div>
+                                             <div class="form-group">
+                                                <label for="exampleFormControlSelect1">Type</label>
+                                                <select class="form-control" id="exampleFormControlSelect1" v-model="coupon.type">
+                                                    <option value="percent">Percent</option>
+                                                    <option value="number">Number</option>
+                                                </select>
                                             </div>
                                             <div class="form-group">
-                                                <label class="typo__label">Permission</label>
-                                                <multiselect v-model="resource.permissions" tag-placeholder="Add this as new tag" placeholder="Choose permissions" label="name" track-by="code" :options="permissionOptions" :multiple="true" :taggable="true" @tag="addPermission"></multiselect>
+                                                <label>Value</label>
+                                                <input type="number" class="form-control" placeholder="Enter value" v-model="coupon.value">
+                                            </div>
+                                             <div class="form-group">
+                                               <input type="text" id="datepicker">
                                             </div>
                                             <a>
                                             <router-link
                                             tag="button"
                                             class="btn btn-secondary"
-                                            to="/permission">Thoát</router-link>
+                                            to="/coupon">Thoát</router-link>
 
                                             </a>
-                                            <button class="btn btn-primary" v-on:click="update_resource()">Submit</button>
+                                            <button class="btn btn-primary" v-on:click="coupon_store()">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -61,27 +71,17 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
-import Multiselect from 'vue-multiselect'
-    import getCookie from '../component/getCookie'
+    import axios from 'axios'
+        import getCookie from '../component/getCookie'
     export default {
-        components: {
-            Multiselect
-        },
-         data(){
+        data(){
             return {
-                resource:{
-                    alias:"",
-                    permissions:[]
+                coupon:{
+                    code:"",
+                    expire:"",
+                    type:"percent",
+                    value:""
                 },
-                permissionOptions: [],
-                permissionOptionsDefault: [
-                    { name: 'add', code: 'add' },
-                    { name: 'edit', code: 'edit' },
-                    { name: 'delete', code: 'delete' },
-                    { name: 'index', code: 'index' },
-                    { name: 'show', code: 'show' },
-                ],
                 user:null,
                 get_cookie:""
             }
@@ -99,28 +99,7 @@ import Multiselect from 'vue-multiselect'
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/resource/' + this.$route.params.id)
-                            .then(res => res.json())
-                            .then(res => {
-                                this.resource.alias = res.data.alias,
-            
-                                res.data.permissionsDefaults.forEach(permission => {
-                                    var checkExist = this.permissionOptionsDefault.find((permissionDefault,key) => {
-                                        return permissionDefault.name == permission.allow;
-                                    });
-                                    if(checkExist){
-                                        this.resource.permissions.push(checkExist)
-                                    }else{
-                                        const per = {
-                                                name: permission.allow,
-                                                code: permission.id
-                                            }
-                                        this.permissionOptions.push(per)
-                                        this.resource.permissions.push(per)
-                                    }
-                                })
-                                this.permissionOptions = this.permissionOptions.concat(this.permissionOptionsDefault)
-                            })
+                        $( "#datepicker" ).datepicker();
                     })
                     .catch(err => {
                         console.log(err)
@@ -129,12 +108,10 @@ import Multiselect from 'vue-multiselect'
                 this.$router.push('/sign-in')
 
             }
-            
 
-            
         },
         methods:{
-            update_resource:function(){
+            coupon_store:function(){
                 Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -145,27 +122,28 @@ import Multiselect from 'vue-multiselect'
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put('http://localhost:8000/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
-                    .then(res => {
-                         Swal.fire(
-                        'Updated!',
-                        'New resource has been updated.',
+                    var form_data = new FormData();
+                    form_data.append('expire',this.coupon.expire);
+                    form_data.append('code',this.coupon.code);
+                    form_data.append('type',this.coupon.type);
+                    form_data.append('value',this.coupon.value);
+                    axios.post('http://localhost:8000/api/v1/coupon',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                        this.coupon.code = "";
+                        this.coupon.value = 0;
+                        Swal.fire(
+                        'Added new!',
+                        'New coupon has been added.',
                         'success'
                         )
                     })
+                   
                 }
                 })
-            },
-            addPermission (newTag) {
-                const tag = {
-                    name: newTag,
-                    code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
-                }
-                this.permissionOptions.push(tag)
-                this.resource.permissions.push(tag)
+               
             }
         }
     }
 </script>
 <style>
+
 </style>

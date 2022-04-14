@@ -78,12 +78,13 @@
                                     <div class="col-xl-8 col-md-6">
                                         <div class="card Recent-Users">
                                             <div class="card-header">
-                                                <h5>Recent Users</h5>
+                                                <h5>Order</h5>
                                             </div>
                                             <div class="card-block px-0 py-3">
                                                 <div class="table-responsive">
                                                     <table class="table table-hover">
                                                         <tbody>
+
                                                             <tr class="unread">
                                                                 <td><img class="rounded-circle" style="width:40px;" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
                                                                 <td>
@@ -92,50 +93,6 @@
                                                                 </td>
                                                                 <td>
                                                                     <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
-                                                                </td>
-                                                                <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                            </tr>
-                                                            <tr class="unread">
-                                                                <td><img class="rounded-circle" style="width:40px;" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-2.jpg" alt="activity-user"></td>
-                                                                <td>
-                                                                    <h6 class="mb-1">Mathilde Andersen</h6>
-                                                                    <p class="m-0">Lorem Ipsum is simply text of…</p>
-                                                                </td>
-                                                                <td>
-                                                                    <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY 10:35</h6>
-                                                                </td>
-                                                                <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                            </tr>
-                                                            <tr class="unread">
-                                                                <td><img class="rounded-circle" style="width:40px;" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-3.jpg" alt="activity-user"></td>
-                                                                <td>
-                                                                    <h6 class="mb-1">Karla Sorensen</h6>
-                                                                    <p class="m-0">Lorem Ipsum is simply…</p>
-                                                                </td>
-                                                                <td>
-                                                                    <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>9 MAY 17:38</h6>
-                                                                </td>
-                                                                <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                            </tr>
-                                                            <tr class="unread">
-                                                                <td><img class="rounded-circle" style="width:40px;" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                                <td>
-                                                                    <h6 class="mb-1">Ida Jorgensen</h6>
-                                                                    <p class="m-0">Lorem Ipsum is simply text of…</p>
-                                                                </td>
-                                                                <td>
-                                                                    <h6 class="text-muted f-w-300"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>19 MAY 12:56</h6>
-                                                                </td>
-                                                                <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                            </tr>
-                                                            <tr class="unread">
-                                                                <td><img class="rounded-circle" style="width:40px;" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-2.jpg" alt="activity-user"></td>
-                                                                <td>
-                                                                    <h6 class="mb-1">Albert Andersen</h6>
-                                                                    <p class="m-0">Lorem Ipsum is simply dummy…</p>
-                                                                </td>
-                                                                <td>
-                                                                    <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>21 July 12:56</h6>
                                                                 </td>
                                                                 <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
                                                             </tr>
@@ -597,8 +554,37 @@
 </template>
 
 <script>
+import getCookie from './component/getCookie'
 export default {
+    data(){
+        return {
+                get_cookie:"",
+                user: null
+            }
+    },
+    props:['userData'],
+    mounted(){
+        this.get_cookie = getCookie.getCookie('elecshop_login');
+        if(this.get_cookie){
+            fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                .then(res => res.json())
+                .then(res => {
+                    if(res.message || res.code == 404){
+                        this.$router.push('/sign-in')
+                    }else{
+                        this.user = res.data
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }else{
+            this.$router.push('/sign-in')
 
+        }
+    }
+                
+        
 }
 </script>
 

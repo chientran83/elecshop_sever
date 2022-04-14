@@ -97,6 +97,7 @@
 </template>
 <script>
 import axios from 'axios';
+    import getCookie from '../component/getCookie'
     export default {
         data(){
             return {
@@ -109,59 +110,65 @@ import axios from 'axios';
                 selected:[],
                 allSelected:false,
                 temporaryStorageSelected:[],   //var de checked permission of role
+                user:null,
                 get_cookie:""
             }
         },
         mounted(){
-            // get token
-            let name = "elecshop_login=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                this.get_cookie = c.substring(name.length, c.length);
-                }
-            }
-              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                if(res.code == 404){
-                    this.$router.push('/sign-in');
-                }
-            })
-            fetch('http://localhost:8000/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
-                res.data.forEach(item => {
-                    this.resources.push({
-                        id:item.id,
-                        alias:item.alias,
-                        permissions:item.permissions,
-                        permissionsDefaults:item.permissionsDefaults,
-                        checked:false
-                    }) 
-                }),
-            fetch('http://localhost:8000/api/v1/role/' + this.$route.params.id)
-                .then(res => res.json())
-                .then(res => {
-                    this.role.name = res.data.name
-                    this.role.desc = res.data.desc
-                    this.role.status = res.data.status
-                    // add checked checkbox
-                    this.resources.forEach(itemResource => {
-                        itemResource.permissionsDefaults.forEach(itemPermission => {
-                            this.temporaryStorageSelected.push(itemPermission)
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.$router.push('/sign-in')
+                        }else{
+                            this.user = res.data
+                        }
+                    })
+                    .then(()=>{
+                        fetch('http://localhost:8000/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
+                            res.data.forEach(item => {
+                                this.resources.push({
+                                    id:item.id,
+                                    alias:item.alias,
+                                    permissions:item.permissions,
+                                    permissionsDefaults:item.permissionsDefaults,
+                                    checked:false
+                                }) 
+                            }),
+                        fetch('http://localhost:8000/api/v1/role/' + this.$route.params.id)
+                            .then(res => res.json())
+                            .then(res => {
+                                this.role.name = res.data.name
+                                this.role.desc = res.data.desc
+                                this.role.status = res.data.status
+                                // add checked checkbox
+                                this.resources.forEach(itemResource => {
+                                    itemResource.permissionsDefaults.forEach(itemPermission => {
+                                        this.temporaryStorageSelected.push(itemPermission)
+                                    })
+                                })
+                                res.data.permissions.forEach(itemPermission => {
+                                    this.temporaryStorageSelected.forEach(itemSelected => {
+                                        if(itemPermission.resource_id == itemSelected.resource_id && itemPermission.allow == itemSelected.allow) {
+                                            this.selected.push(itemSelected.id)
+                                        }
+                                    });
+                                })
+                            })
                         })
                     })
-                    res.data.permissions.forEach(itemPermission => {
-                        this.temporaryStorageSelected.forEach(itemSelected => {
-                            if(itemPermission.resource_id == itemSelected.resource_id && itemPermission.allow == itemSelected.allow) {
-                                this.selected.push(itemSelected.id)
-                            }
-                        });
+                    .catch(err => {
+                        console.log(err)
                     })
-                })
-            })
+            }else{
+                this.$router.push('/sign-in')
+
+            }
+            
+
+           
         },
         methods:{
             update_role:function(){

@@ -108,6 +108,7 @@
 </template>
 <script>
 import axios from 'axios';
+    import getCookie from '../component/getCookie'
 export default {
     data(){
         return {
@@ -126,46 +127,51 @@ export default {
                 user_id:""
             },
             paginate:{},
+            user:null,
             product_record_number:6,
             get_cookie:""
         }
         },
         mounted(){
-            // get token
-            let name = "elecshop_login=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                this.get_cookie = c.substring(name.length, c.length);
-                }
-            }
-              fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => res.json()).then(res => {
-                if(res.code == 404){
-                    this.$router.push('/sign-in');
-                }
-            })
-            fetch('http://localhost:8000/api/v1/product/index/' + this.product_record_number).then(res => res.json())
-                .then(res => {
-                    this.products = res.data;
-                    var link_page = res.meta.links.filter(function(index){
-                        return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.$router.push('/sign-in')
+                        }else{
+                            this.user = res.data
+                        }
                     })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        prev:res.links.prev,
-                        next:res.links.next,
-                        link_page:link_page,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
-            })
+                    .then(()=>{
+                        fetch('http://localhost:8000/api/v1/product/index/' + this.product_record_number).then(res => res.json())
+                            .then(res => {
+                                this.products = res.data;
+                                var link_page = res.meta.links.filter(function(index){
+                                    return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
+                                })
+                                this.paginate = {
+                                    first:res.links.first,
+                                    last:res.links.last,
+                                    prev:res.links.prev,
+                                    next:res.links.next,
+                                    link_page:link_page,
+                                    current_page:res.meta.current_page,
+                                    from:res.meta.from,
+                                    last_page:res.meta.last_page
+                                }
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }else{
+                this.$router.push('/sign-in')
+
+            }
+            
+
             
         },
         methods:{

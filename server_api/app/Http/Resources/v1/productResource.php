@@ -32,7 +32,7 @@ class productResource extends JsonResource
             'tags' => Resource::collection($this->tags),
             'colors' => colorResource::collection($this->color),
             'memory' => Resource::collection($this->memory),
-            'accessories' => Resource::collection($this->accessories),
+            'accessories' => Resource::collection($this->accessories)
         ];
         // return parent::toArray($request);
     }

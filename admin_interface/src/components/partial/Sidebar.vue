@@ -36,6 +36,16 @@
                     <router-link
                         tag="li"
                         class="nav-item"
+                        to="/order"
+                        active-class="active"
+                        >
+                            <a class="nav-link"><span class="pcoded-micon">
+                                <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Order</span>
+                            </a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="nav-item"
                         to="/category"
                         active-class="active"
                         >
@@ -93,6 +103,16 @@
                                 <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Permission</span>
                             </a>
                     </router-link>
+                    <router-link
+                        tag="li"
+                        class="nav-item"
+                        to="/coupon"
+                        active-class="active"
+                        >
+                            <a class="nav-link"><span class="pcoded-micon">
+                                <i class="feather icon-sidebar"></i></span><span class="pcoded-mtext">Coupon</span>
+                            </a>
+                    </router-link>
                 </ul>
             </div>
         </div>
@@ -101,8 +121,18 @@
 </div>
 </template>
 <script>
+import getCookie from '../component/getCookie'
     export default {
-        
+        data(){
+            return {
+                user:null,
+                get_cookie:""
+
+            }
+        },
+        created() {
+            this.get_cookie = getCookie.getCookie('elecshop_login');
+        }
 
     }
 </script>

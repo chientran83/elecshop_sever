@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 class userController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'store','user_login']]);
+
     }
     /**
      * Display a listing of the resource.
@@ -73,6 +73,7 @@ class userController extends Controller
             ],422);
         }
     }
+    
     public function login(Request $request)
     {
         if(! $token = auth()->attempt(['email' => $request->email,'password' => $request->password])){
@@ -148,12 +149,12 @@ class userController extends Controller
             return response()->json([
                 'code' => 201,
                 'data' => new userResource(auth()->user()),
-            ],201);
+            ]);
         }else{
             return response()->json([
                 'code' => 404,
                 'message' => 'user not login !'
-            ],404);
+            ]);
         }
     }
 

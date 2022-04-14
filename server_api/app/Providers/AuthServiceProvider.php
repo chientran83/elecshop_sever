@@ -26,11 +26,6 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-        // [categoryPolicy::class,'viewAny']
-        
-        Gate::define('update-post', function (User $user) {
-            dd('co nha');
-            /* return $user->id === $post->user_id; */
-        });
+
     }
 }

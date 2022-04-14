@@ -56,4 +56,7 @@ class User extends Authenticatable implements JWTSubject
     public function role(){
         return $this->belongsToMany(role::class,'tbl_user_role','user_id','role_id');
     }
+    public function cart(){
+        return $this->hasOne(cart::class,'user_id');
+    }
 }
