@@ -31,7 +31,13 @@ class resourceController extends Controller
         ],200);
     }
     public function index($record_number){
-        $list_resource = $this->resource->paginate($record_number);
+        if($record_number == 0){
+            $list_resource = $this->resource->all();
+
+        }else{
+            $list_resource = $this->resource->paginate($record_number);
+
+        }
         return new resourcesCollection($list_resource);
     }
     public function show($id){

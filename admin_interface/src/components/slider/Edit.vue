@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content">
+    <div class="pcoded-inner-content" v-if="user">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">

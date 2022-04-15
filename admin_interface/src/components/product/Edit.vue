@@ -1,5 +1,5 @@
 <template>
-<div class="pcoded-inner-content">
+<div class="pcoded-inner-content" v-if="user">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -66,6 +66,7 @@
                                                 <label>Ram</label>
                                                 <input type="number" class="form-control" placeholder="Enter name" v-model="product.ram">
                                             </div>
+                                            
                                             <div class="form-group">
                                                 <label>Tag</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="product.tag">
@@ -98,7 +99,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label class="typo__label">Colors</label>
-                                                <multiselect v-model="product.colors" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsColors" :multiple="true" :taggable="true" @tag="addColors" ></multiselect>                                                
+                                                <multiselect v-model="product.colors" tag-placeholder="Add this as new Color" placeholder="Search or add a tag" label="name" track-by="code" :options="optionsColors" :multiple="true" :taggable="true" @tag="addColors" ></multiselect>                                                
                                             </div> 
                                               <div class="form-group" v-if="product.colors != ''">
                                                 <label class="typo__label">Enter price for each color</label>
@@ -250,17 +251,18 @@ Vue.use( CKEditor );
                                 this.optionsMemory.push(tag)
                             })
             
-                            res.data.colors.forEach((color,key) => {
+                            res.data.colors.forEach((color) => {
                                 var obj = {
                                     name: color.name,
                                     code:color.name,
                                     price: color.price,
                                     codes:color.code,
-                                    image_path:color.image_path
+                                    image_path:color.image_path 
                                 }
-                                this.product.colors[key] = obj;
+
+                                this.product.colors.push(obj)
+                                this.optionsColors.push(obj)
                             })
-                            console.log(this.product.colors)
             
                             // this.product.colors=res.data.colors;
                             this.product.tag=res.data.tag;

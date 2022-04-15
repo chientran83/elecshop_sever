@@ -59,7 +59,13 @@ class roleController extends Controller
         return new roleResource($role_item);
     }
     public function index($record_number){
-        $list_role = $this->role->paginate($record_number);
+        if($record_number == 0){
+            $list_role = $this->role->all();
+            
+        }else{
+            $list_role = $this->role->paginate($record_number);
+
+        }
         if(empty($list_role)){
             return response()->json([
                 'code' => 422,

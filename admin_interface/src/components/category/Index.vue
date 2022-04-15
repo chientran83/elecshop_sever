@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content">
+    <div class="pcoded-inner-content" v-if="user">
                     <!-- [ breadcrumb ] start -->
                     <div class="page-header">
                         <div class="page-block">
@@ -78,13 +78,13 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                        <nav aria-label="Page navigation example">                                                 
-                                                            <ul class="pagination">
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_category(paginate.prev)">Previous</a></li>
-                                                                <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_category(link.url)">{{ link.label }}</a></li>
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_category(paginate.next)">Next</a></li>
-                                                            </ul>
-                                                         </nav>
+                                                    <nav aria-label="Page navigation example">                                                 
+                                                        <ul class="pagination">
+                                                            <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_category(paginate.prev)">Previous</a></li>
+                                                            <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_category(link.url)">{{ link.label }}</a></li>
+                                                            <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_category(paginate.next)">Next</a></li>
+                                                        </ul>
+                                                    </nav>
                                             </div>
                                         </div>
                                     </div>

@@ -22,8 +22,8 @@ class categoryController extends Controller
     }
     public function index($record_number)
     {
-        if(!empty($record_number)){
-            return new categoryCollection($this->category->paginate($record_number));
+        if($record_number == 0){
+            return new categoryCollection($this->category->all());
         }
         return new categoryCollection($this->category->paginate($record_number));
     }

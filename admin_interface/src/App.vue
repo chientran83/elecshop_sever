@@ -1,18 +1,43 @@
 <template>
   <div id="app">
-    <div >
+    <div v-if="user">
       <router-view name="header"></router-view>
       <router-view name="sideBar"></router-view>
-      <router-view ></router-view>
     </div>
+      <div v-else></div>
+      <router-view ></router-view>
   </div>
 </template>
 
 <script>
+import getCookie from './components/component/getCookie'
 export default {
   name: 'App',
   components: {
-   
+    
+  },
+  data(){
+    return {
+      get_cookie:"",
+      user: null
+    }
+  },
+  mounted(){
+      this.get_cookie = getCookie.getCookie('elecshop_login');
+      if(this.get_cookie){
+          fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+              .then(res => res.json())
+              .then(res => {
+                  if(res.message || res.code == 404){
+                      this.user = null
+                  }else{
+                      this.user = res.data
+                  }
+              })
+              .catch(err => {
+                  console.log(err)
+              })
+      }
   }
 }
 </script>

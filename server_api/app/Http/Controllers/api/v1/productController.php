@@ -36,7 +36,7 @@ class productController extends Controller
     public function index($record_number)
     {
         if($record_number == 0){
-            return new productCollection($this->product->OrderBy('id','DESC')->all());
+            return new productCollection($this->product->OrderBy('id','DESC')->get());
         }else{
             return new productCollection($this->product->OrderBy('id','DESC')->paginate($record_number));
         }

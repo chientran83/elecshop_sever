@@ -27,7 +27,13 @@ class userController extends Controller
      */
     public function index($record_number)
     {
-        return new userCollection(User::paginate($record_number));
+        if($record_number == 0){
+            return new userCollection(User::all());
+            
+        }else{
+            return new userCollection(User::paginate($record_number));
+
+        }
     }
 
     /**

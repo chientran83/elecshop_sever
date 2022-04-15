@@ -23,7 +23,13 @@ class sliderController extends Controller
     }
     public function index($record_number)
     {
-        return new sliderCollection($this->slider->where('status','<>',0)->paginate($record_number));
+        if($record_number == 0){
+            return new sliderCollection($this->slider->where('status','<>',0)->get());
+            
+        }else{
+            return new sliderCollection($this->slider->where('status','<>',0)->paginate($record_number));
+            
+        }
     }
 
     /**

@@ -2,7 +2,7 @@
     <!-- sidebar -->
     <!-- header -->
     <!-- [ Main Content ] start -->
-    <div>
+    <div v-if="user">
         <div class="pcoded-main-container">
             <div class="pcoded-wrapper">
                 <div class="pcoded-content">
