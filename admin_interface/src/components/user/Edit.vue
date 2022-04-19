@@ -30,10 +30,18 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-10">
-                                         <form>
+                                         <div>
                                             <div class="form-group">
                                                 <label>Name</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="user.name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Location</label>
+                                                <input type="text" class="form-control" placeholder="Enter location" v-model="user.location">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Phone Number</label>
+                                                <input type="text" class="form-control" placeholder="Enter phoneNumber" v-model="user.phoneNumber">
                                             </div>
                                             <div class="form-group">
                                                 <label>Email</label>
@@ -56,7 +64,7 @@
 
                                             </a>
                                             <button class="btn btn-primary" v-on:click="update_user ()">Submit</button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -83,6 +91,8 @@ import Multiselect from 'vue-multiselect'
                     name:"",
                     email:"",
                     image_path:"",
+                    location:"",
+                    phoneNumber:"",
                     roles:[],
                     password:"",
                     passwordAgain:"",
@@ -122,6 +132,8 @@ import Multiselect from 'vue-multiselect'
                                 .then(res => res.json())
                                 .then(res => {
                                     this.user.name = res.data.name,
+                                    this.user.location = res.data.location,
+                                    this.user.phoneNumber = res.data.phoneNumber,
                                     this.user.email = res.data.email
                                     this.user.image_path = res.data.image_path
                                     this.user.roles = res.data.roles
@@ -152,6 +164,8 @@ import Multiselect from 'vue-multiselect'
                     var form_data = new FormData();
                     form_data.append('name',this.user.name);
                     form_data.append('email',this.user.email);
+                    form_data.append('phoneNumber',this.user.phoneNumber);
+                    form_data.append('location',this.user.location);
                     form_data.append('roles',JSON.stringify(this.user.roles));
                     form_data.append('password',this.user.password);
                     form_data.append('passwordAgain',this.user.passwordAgain);

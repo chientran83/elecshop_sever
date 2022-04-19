@@ -30,7 +30,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-10">
-                                        <form>
+                                        <div>
                                             <div class="form-group">
                                                 <label>Name</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="role.name">
@@ -82,7 +82,7 @@
 
                                             </a>
                                             <button class="btn btn-primary" v-on:click="role_store()">Submit</button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                                 

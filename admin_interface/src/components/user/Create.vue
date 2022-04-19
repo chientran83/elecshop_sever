@@ -30,10 +30,18 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-10">
-                                        <form>
+                                        <div>
                                             <div class="form-group">
                                                 <label>Name</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="user.name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Location</label>
+                                                <input type="text" class="form-control" placeholder="Enter location" v-model="user.location">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Phone number</label>
+                                                <input type="text" class="form-control" placeholder="Enter phoneNumber" v-model="user.phoneNumber">
                                             </div>
                                             <div class="form-group">
                                                 <label>Email</label>
@@ -64,7 +72,7 @@
 
                                             </a>
                                             <button class="btn btn-primary" v-on:click="user_store()">Submit</button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -90,6 +98,8 @@
                 user:{
                     name:"",
                     email:"",
+                    location:"",
+                    phoneNumber:"",
                     roles:[],
                     password:"",
                     passwordAgain:"",
@@ -150,6 +160,8 @@
                 if (result.isConfirmed) {
                     var form_data = new FormData();
                     form_data.append('name',this.user.name);
+                    form_data.append('phoneNumber',this.user.phoneNumber);
+                    form_data.append('location',this.user.location);
                     form_data.append('email',this.user.email);
                     form_data.append('roles',JSON.stringify(this.user.roles));
                     form_data.append('password',this.user.password);
@@ -162,6 +174,8 @@
                         }
                     }).then(res => {
                         this.user.name = "";
+                        this.user.location = "";
+                        this.user.phoneNumber = "";
                         this.user.email = "";
                         this.user.roles = [];
                         this.user.password = "";

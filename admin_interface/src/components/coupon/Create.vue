@@ -30,7 +30,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-10">
-                                        <form>
+                                        <div>
                                             <div class="form-group">
                                                 <label>Code</label>
                                                 <input type="text" class="form-control" placeholder="Enter code" v-model="coupon.code">
@@ -46,8 +46,15 @@
                                                 <label>Value</label>
                                                 <input type="number" class="form-control" placeholder="Enter value" v-model="coupon.value">
                                             </div>
+
+                                            <div class="form-group">
+                                                <label>Expire</label>
+                                                <br>
+                                               <input type="text" id="datepicker" class="datepicker" autocomplete="off">
+                                            </div>
                                              <div class="form-group">
-                                               <input type="text" id="datepicker">
+                                                <label>Quantity</label>
+                                                <input type="number" class="form-control" placeholder="Enter quantity" v-model="coupon.quantity">
                                             </div>
                                             <a>
                                             <router-link
@@ -57,10 +64,9 @@
 
                                             </a>
                                             <button class="btn btn-primary" v-on:click="coupon_store()">Submit</button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -72,15 +78,15 @@
 </template>
 <script>
     import axios from 'axios'
-        import getCookie from '../component/getCookie'
+    import getCookie from '../component/getCookie'
     export default {
         data(){
             return {
                 coupon:{
                     code:"",
-                    expire:"",
                     type:"percent",
-                    value:""
+                    value:"",
+                    quantity:0
                 },
                 user:null,
                 get_cookie:""
@@ -100,6 +106,7 @@
                     })
                     .then(()=>{
                         $( "#datepicker" ).datepicker();
+                        $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
                     })
                     .catch(err => {
                         console.log(err)
@@ -123,13 +130,15 @@
                 }).then((result) => {
                 if (result.isConfirmed) {
                     var form_data = new FormData();
-                    form_data.append('expire',this.coupon.expire);
+                    form_data.append('expire', $("#datepicker" ).val());
                     form_data.append('code',this.coupon.code);
                     form_data.append('type',this.coupon.type);
                     form_data.append('value',this.coupon.value);
+                    form_data.append('quantity',this.coupon.quantity);
                     axios.post('http://localhost:8000/api/v1/coupon',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
                         this.coupon.code = "";
                         this.coupon.value = 0;
+                        this.coupon.quantity = 0;
                         Swal.fire(
                         'Added new!',
                         'New coupon has been added.',

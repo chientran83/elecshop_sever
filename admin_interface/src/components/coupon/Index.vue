@@ -55,6 +55,7 @@
                                                             <th>Expire</th>
                                                             <th>Type</th>
                                                             <th>Value</th>
+                                                            <th>quantity</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -65,6 +66,7 @@
                                                             <td>{{ coupon.type }}</td>
                                                             <td v-if="coupon.value == 'percent'">{{ coupon.value }} %</td>
                                                             <td v-else>{{ coupon.value }} $</td>
+                                                            <td>{{ coupon.quantity }}</td>
                                                             <td class="col-2">
                                                                 <a>
                                                                     <router-link
@@ -82,13 +84,13 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                        <nav aria-label="Page navigation example">                                                 
-                                                            <ul class="pagination">
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_coupon(paginate.prev)">Previous</a></li>
-                                                                <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_coupon(link.url)">{{ link.label }}</a></li>
-                                                                <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_coupon(paginate.next)">Next</a></li>
-                                                            </ul>
-                                                         </nav>
+                                                    <nav aria-label="Page navigation example">                                        
+                                                        <ul class="pagination">
+                                                            <li v-bind:class="{'page-item':true,'disabled':paginate.prev == null}"><a class="page-link" v-on:click="load_data_coupon(paginate.prev)">Previous</a></li>
+                                                            <li v-bind:class="{'page-item':true,'active':link.active}" v-for="(link,key) in paginate.links" v-bind:key="key"><a class="page-link" v-on:click="load_data_coupon(link.url)">{{ link.label }}</a></li>
+                                                            <li v-bind:class="{'page-item':true,'disabled':paginate.next == null}"><a class="page-link" v-on:click="load_data_coupon(paginate.next)">Next</a></li>
+                                                        </ul>
+                                                    </nav>
                                             </div>
                                         </div>
                                     </div>
@@ -102,7 +104,7 @@
 </template>
 <script>
 import axios from "axios"
-    import getCookie from '../component/getCookie'
+import getCookie from '../component/getCookie'
     export default {
         data(){
             return {
@@ -114,32 +116,52 @@ import axios from "axios"
                 },
                 record_number:6,
                 paginate:{},
+                user:null,
                 get_cookie:""
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie();
-            
-            fetch('http://localhost:8000/api/v1/coupon/index/' + this.record_number,{headers:{'Authorization' : "Bearer " + this.get_cookie}})
-                .then(res => res.json())
-                .then(res => {
-                    this.coupons = res.data;
-                    var links = res.meta.links;
-                    links = links.filter(function(item){
-                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+             this.get_cookie = getCookie.getCookie('elecshop_login');
+            if(this.get_cookie){
+                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.message || res.code == 404){
+                            this.$router.push('/sign-in')
+                        }else{
+                            this.user = res.data
+                        }
                     })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        next:res.links.next,
-                        prev:res.links.prev,
-                        links:links,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
-                })
-        
+                    .then(() => {
+                        fetch('http://localhost:8000/api/v1/coupon/index/' + this.record_number,{headers:{'Authorization' : "Bearer " + this.get_cookie}})
+                            .then(res => res.json())
+                            .then(res => {
+                                this.coupons = res.data;
+                                var links = res.meta.links;
+                                links = links.filter(function(item){
+                                    return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                                })
+                                this.paginate = {
+                                    first:res.links.first,
+                                    last:res.links.last,
+                                    next:res.links.next,
+                                    prev:res.links.prev,
+                                    links:links,
+                                    current_page:res.meta.current_page,
+                                    from:res.meta.from,
+                                    last_page:res.meta.last_page
+                                }
+                            })
+                    
+                        
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }else{
+                this.$router.push('/sign-in')
+
+            }
         },
         methods:{
             load_data_coupon:function(url){
