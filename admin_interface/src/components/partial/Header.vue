@@ -90,7 +90,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
                             <div class="pro-head" v-if="user">
-                                <img :src="this.$hostname+'' + user.image_path" class="img-radius">
+                                <img :src="$hostname+'' + user.image_path" class="img-radius">
                                 <span>{{user.name}}</span>
                                 <a class="dud-logout" v-on:click="logOut()" style="cursor: pointer">
                                     <i class="feather icon-log-out"></i>

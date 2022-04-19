@@ -68,7 +68,7 @@
                                                                     <li v-for="(role,key) in user.roles" v-bind:key="key">{{role.name}}</li>
                                                                 </ul>
                                                             </td>
-                                                             <td><img v-bind:src="this.$hostname+'' + user.image_path" style="width:40px; height:40px;" alt=""></td>
+                                                             <td><img v-bind:src="$hostname+ user.image_path" style="width:40px; height:40px;" alt=""></td>
                                                             <td class="col-2">
                                                                 <a>
                                                                     <router-link

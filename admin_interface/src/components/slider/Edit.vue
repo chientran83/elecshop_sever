@@ -53,7 +53,7 @@
                                              <div class="form-group">
                                                 <label>Image</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img :src="this.$hostname+'' + slider.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <img :src="$hostname+ slider.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
                                             </div>
                                             <a>
                                             <router-link

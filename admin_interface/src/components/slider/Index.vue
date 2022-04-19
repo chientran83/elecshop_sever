@@ -63,7 +63,7 @@
                                                             <td class="col-2" > {{ slider.id }} </td>
                                                             <td>{{ slider.name }}</td>
                                                             <td class="d-inline-block text-truncate" style="max-width: 200px;">{{ slider.desc }}</td>
-                                                             <td><img v-bind:src="this.$hostname+'' + slider.image_path" style="width:40px; height:40px;" alt=""></td>
+                                                             <td><img v-bind:src="$hostname+'' + slider.image_path" style="width:40px; height:40px;" alt=""></td>
                                                             <td>{{ slider.status }}</td>
                                                             <td class="col-2">
                                                                 <a>
