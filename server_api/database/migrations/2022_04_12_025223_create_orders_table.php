@@ -16,6 +16,7 @@ class CreateOrdersTable extends Migration
         Schema::create('tbl_orders', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
+            $table->bigInteger('price_total');
             $table->date('date');
             $table->string('status')->default('waitConfirm');
             $table->string('method_payment');

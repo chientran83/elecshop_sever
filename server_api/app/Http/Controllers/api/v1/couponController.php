@@ -18,10 +18,11 @@ class couponController extends Controller
     
     public function index($record_number)
     {
-        /* if(!empty($record_number)){
-            return new Resource($this->coupon->paginate($record_number));
-        } */
-        return new Collection ($this->coupon->paginate($record_number));
+        if($record_number == 0){
+            return new Resource($this->coupon->all());
+        }else{
+            return new Collection ($this->coupon->paginate($record_number));
+        }
     }
     public function store(Request $request)
     {
@@ -29,14 +30,13 @@ class couponController extends Controller
             'code' => $request->code,
             'expire' => $request->expire,
             'type' => $request->type,
-            'value' => $request->value
-
+            'value' => $request->value,
+            'quantity' => $request->quantity
         );
         $coupon_new = $this->coupon->create($data);
         return new Resource($coupon_new);
     }
 
- 
     public function show($id)
     {
         return new Resource($this->coupon->find($id));
@@ -49,7 +49,8 @@ class couponController extends Controller
             'code' => $request->code,
             'expire' => $request->expire,
             'type' => $request->type,
-            'value' => $request->value
+            'value' => $request->value,
+            'quantity' => $request->quantity
         );
         $this->coupon->find($id)->update($data);
         $coupon_item = $this->coupon->find($id);

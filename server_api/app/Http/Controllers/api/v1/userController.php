@@ -4,10 +4,13 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\Collection;
+use App\Http\Resources\v1\Resource;
 use App\Http\Resources\v1\userCollection;
 use App\Http\Resources\v1\userResource;
+use App\Models\deliveryInformation;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -17,14 +20,11 @@ use Illuminate\Support\Facades\Storage;
 
 class userController extends Controller
 {
-    public function __construct() {
-
+    public $users;
+    public function __construct(User $users) {
+        $this->users = $users;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function index($record_number)
     {
         if($record_number == 0){
@@ -36,21 +36,12 @@ class userController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create(Request $request)
     {
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function store(Request $request)
     {
         if($request->password == $request->passwordAgain){
@@ -61,7 +52,13 @@ class userController extends Controller
                 $store = $file->storeAs('public/user/1',$image_hash_name);    
                 $image_path = Storage::url($store);
             }
-            $new_user = User::create(['name' => $request->name,'email' => $request->email,'password' => Hash::make( $request->password),'image_path' => $image_path]);
+            $new_user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make( $request->password),
+                'image_path' => $image_path,
+                'phoneNumber' => $request->phoneNumber,
+                'location' => $request->location]);
             $list_role = json_decode($request->roles);
             if(!empty($list_role)){
                foreach($list_role as $item_role){
@@ -116,12 +113,7 @@ class userController extends Controller
         return $this->createNewToken(auth()->refresh());
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
 
     public function show($id)
     {
@@ -139,15 +131,46 @@ class userController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    
+    public function updateCustomer(Request $request)
     {
-        
+        $item_user = $this->users->find(auth()->user()->id);
+        $image_path = $item_user->image_path;
+        if($request->hasFile('image')){
+            $file = $request->file('image');
+            $image_hash_name = Str::random(20).'.'.$file->extension();
+            $store = $file->storeAs('public/user/1',$image_hash_name);
+            $image_path = Storage::url($store);
+        }
+        $item_user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'image_path' => $image_path,
+            'phoneNumber' => $request->phoneNumber,
+            'location' => $request->location]);
+ 
+        return response()->json([
+            'code' => 201,
+            'data' => new userResource($item_user)
+        ],201);
+    }
+    public function addDeliveryInformation(Request $request)
+    {
+        $item_user = User::find(auth()->user()->id);
+        $newDeliveryInformation = deliveryInformation::create(['user_id' => $item_user->id,'address' => $request->address,'phone' => $request->phone]);
+        return response()->json([
+            'code' => 201,
+            'data' => new Resource($newDeliveryInformation)
+        ],201);
+    }
+    public function deleteDeliveryInformation(Request $request)
+    {
+        $itemDeliveryInformation = deliveryInformation::find($request->id);
+        deliveryInformation::find($request->id)->delete();
+        return response()->json([
+            'code' => 201,
+            'data' => new Resource($itemDeliveryInformation)
+        ],201);
     }
     public function user_login()
     {
@@ -178,10 +201,10 @@ class userController extends Controller
         if($request->hasFile('image')){
             $file = $request->file('image');
             $image_hash_name = Str::random(20).'.'.$file->extension();
-            $store = $file->storeAs('public/user/1',$image_hash_name);    
+            $store = $file->storeAs('public/user/1',$image_hash_name);
             $image_path = Storage::url($store);
         }
-        $item_user->update(['name' => $request->name,'email' => $request->email,'image_path' => $image_path]);
+        $item_user->update(['name' => $request->name,'email' => $request->email,'image_path' => $image_path,'phoneNumber' => $request->phoneNumber,'location' => $request->location]);
         $list_role = json_decode($request->roles);
         $roles_id = [];
         $item_user = User::find($id);
@@ -198,12 +221,6 @@ class userController extends Controller
         
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         User::find($id)->delete();
@@ -211,6 +228,17 @@ class userController extends Controller
             'code' => 201,
             'message' => 'Delete successfully!'
         ],201);
+        
+    }
+
+    public function sendCodeToEmail(Request $request)
+    {
+        /* $userItem = $this->users->where('email',$request->email)->first();
+
+        return response()->json([
+            'code' => 201,
+            'data' => new userResource($item_user)
+        ],201); */
         
     }
 }

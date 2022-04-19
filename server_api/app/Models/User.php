@@ -23,7 +23,9 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'image_path',
-        'password'
+        'password',
+        'phoneNumber',
+        'location'
     ];
 
     /**
@@ -58,5 +60,8 @@ class User extends Authenticatable implements JWTSubject
     }
     public function cart(){
         return $this->hasOne(cart::class,'user_id');
+    }
+    public function deliveryInformation(){
+        return $this->hasMany(deliveryInformation::class,'user_id');
     }
 }

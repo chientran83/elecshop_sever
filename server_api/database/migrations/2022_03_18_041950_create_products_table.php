@@ -20,7 +20,7 @@ class CreateProductsTable extends Migration
             $table->integer('previous_price')->default(0);
             $table->integer('origin_price')->default(0);
             $table->string('image_path')->default('default.jpg');
-            $table->string('ram');
+            $table->string('ram')->nullable();
             $table->string('tag');
             $table->longText('desc');
             $table->integer('isOnSale')->default(0);

@@ -55,7 +55,6 @@ class productController extends Controller
                 'current_price' => 'required',
                 'previous_price' => 'required',
                 'origin_price' => 'required',
-                'ram' => 'required',
                 'desc' => 'required|min:1',
                 'isOnsale' => 'required',
                 'quantity' => 'required'
@@ -158,7 +157,6 @@ class productController extends Controller
                 'current_price' => 'required',
                 'previous_price' => 'required',
                 'origin_price' => 'required',
-                'ram' => 'required',
                 'desc' => 'required|min:1',
                 'isOnsale' => 'required',
                 'quantity' => 'required'

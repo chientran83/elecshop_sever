@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class coupon extends Model
+class deliveryInformation extends Model
 {
     use HasFactory;
-    protected $fillable = ['expire','code','type','value','quantity','usedUser'];
-    protected $table = 'tbl_coupons';
+    protected $fillable = ['user_id','address','phone'];
+    protected $table = 'tbl_delivery_information';
     protected $primaryKey = 'id';
 }

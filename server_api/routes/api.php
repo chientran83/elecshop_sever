@@ -53,6 +53,9 @@ use Illuminate\Support\Facades\Route;
         Route::put('user/{id}',[userController::class,'update']);
         Route::delete('user/{id}',[userController::class,'destroy']);
         Route::get('users/user_login',[userController::class,'user_login']);
+        Route::post('users/updateCustomer',[userController::class,'updateCustomer']);
+        Route::post('users/addDeliveryInformation',[userController::class,'addDeliveryInformation']);
+        Route::get('users/deleteDeliveryInformation',[userController::class,'deleteDeliveryInformation']);
         //router role
         Route::post('role',[roleController::class,'store']);
         Route::delete('role/{id}',[roleController::class,'destroy']);
@@ -88,6 +91,7 @@ use Illuminate\Support\Facades\Route;
     //router user
     Route::post('users/login',[userController::class,'login'])->name('user.login');
     Route::post('user',[userController::class,'store']);
+    Route::post('sendCodeToEmail',[userController::class,'sendCodeToEmail']);
     //router role
     Route::get('role/index/{record_number}',[roleController::class,'index']);
     Route::get('role/{id}',[roleController::class,'show']);
@@ -96,6 +100,8 @@ use Illuminate\Support\Facades\Route;
     Route::get('resource/{id}',[resourceController::class,'show']);
     //router cart
     Route::get('cart',[cartController::class,'show']);
+    //router coupon
+    Route::get('coupon/{id}',[couponController::class,'show']);
     
 });
 
