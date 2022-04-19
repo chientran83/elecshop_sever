@@ -100,7 +100,7 @@ import axios from "axios"
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -111,7 +111,7 @@ import axios from "axios"
                     })
                     .then(()=>{
                         // fetch data order
-                        fetch('http://localhost:8000/api/v1/order/index/'+this.record_number).then(res => res.json()).then(res => {
+                        fetch(this.$hostname+'/api/v1/order/index/'+this.record_number).then(res => res.json()).then(res => {
                             this.categories = res.data;
                             var links = res.meta.links;
                             links = links.filter(function(item){
@@ -146,7 +146,7 @@ import axios from "axios"
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = 'http://localhost:8000/api/v1/order/index/' + this.record_number;
+                    var link = this.$hostname+'/api/v1/order/index/' + this.record_number;
                 }
                     fetch(link).then(res => res.json()).then(res => {
                     this.categories = res.data;
@@ -177,7 +177,7 @@ import axios from "axios"
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:8000/api/v1/order/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.delete(this.$hostname+'/api/v1/order/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

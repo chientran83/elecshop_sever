@@ -566,7 +566,7 @@ export default {
     mounted(){
         this.get_cookie = getCookie.getCookie('elecshop_login');
         if(this.get_cookie){
-            fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+            fetch(this.$hostname + '/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                 .then(res => res.json())
                 .then(res => {
                     if(res.message || res.code == 404){

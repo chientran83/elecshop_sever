@@ -120,7 +120,7 @@
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -131,7 +131,7 @@
                     })
                     .then(()=>{
                         this.user.status = 1;
-                        fetch('http://localhost:8000/api/v1/role/index/'+0)
+                        fetch(this.$hostname+'/api/v1/role/index/'+0)
                             .then(res => res.json())
                             .then(res => {
                                 this.optionsRoles[0].libs = res.data
@@ -167,7 +167,7 @@
                     form_data.append('password',this.user.password);
                     form_data.append('passwordAgain',this.user.passwordAgain);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
-                    axios.post('http://localhost:8000/api/v1/users',form_data,{
+                    axios.post(this.$hostname+'/api/v1/users',form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
                             "Authorization" : "Bearer " + this.get_cookie

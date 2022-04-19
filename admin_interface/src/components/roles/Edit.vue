@@ -117,7 +117,7 @@ import axios from 'axios';
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -127,7 +127,7 @@ import axios from 'axios';
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
+                        fetch(this.$hostname+'/api/v1/resource/index/'+0).then(res => res.json()).then(res => {
                             res.data.forEach(item => {
                                 this.resources.push({
                                     id:item.id,
@@ -137,7 +137,7 @@ import axios from 'axios';
                                     checked:false
                                 }) 
                             }),
-                        fetch('http://localhost:8000/api/v1/role/' + this.$route.params.id)
+                        fetch(this.$hostname+'/api/v1/role/' + this.$route.params.id)
                             .then(res => res.json())
                             .then(res => {
                                 this.role.name = res.data.name
@@ -182,7 +182,7 @@ import axios from 'axios';
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        axios.put('http://localhost:8000/api/v1/role/'+this.$route.params.id,{
+                        axios.put(this.$hostname+'/api/v1/role/'+this.$route.params.id,{
                             name:this.role.name,
                             desc:this.role.desc,
                             status:this.role.status,

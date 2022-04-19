@@ -110,7 +110,7 @@
                                                     <input type="number" v-model="product.colors[key].price" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
                                                     <input type="text" v-model="product.colors[key].codes" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
                                                     <div class="form-control">
-                                                        <img :src="'http://localhost:8000'+product.colors[key].image_path " alt="default.jpg" :id="'image_preview_colors' + key" class="col-4" style="height:100%;">
+                                                        <img :src="this.$hostname+''+product.colors[key].image_path " alt="default.jpg" :id="'image_preview_colors' + key" class="col-4" style="height:100%;">
                                                         <input type="file" class="col-8" v-bind:id="'imageColors' + key"  v-on:change="priceColor(color,key); preview_image_color(color,key);">
                                                     </div>
                                                 </div>                                           
@@ -130,7 +130,7 @@
                                              <div class="form-group">
                                                 <label>MainImage</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img v-bind:src="'http://localhost:8000' + product.image_path" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <img v-bind:src="this.$hostname+'' + product.image_path" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
                                             </div>
                                             <a>
                                             <router-link
@@ -213,7 +213,7 @@ Vue.use( CKEditor );
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -224,11 +224,11 @@ Vue.use( CKEditor );
                     })
                     .then(()=>{
                         this.product_id = this.$route.params.id
-                        fetch('http://localhost:8000/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
+                        fetch(this.$hostname+'/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
                             this.categories = res.data
                         })
-                        fetch('http://localhost:8000/api/v1/product/'+this.product_id).then(res => res.json()).then(res => {
-                             fetch('http://localhost:8000/api/v1/category/'+res.data.category_id).then(res => res.json()).then(res => {
+                        fetch(this.$hostname+'/api/v1/product/'+this.product_id).then(res => res.json()).then(res => {
+                             fetch(this.$hostname+'/api/v1/category/'+res.data.category_id).then(res => res.json()).then(res => {
                                 this.product.category_id = {
                                     "id": res.data.id,
                                     "name": res.data.name
@@ -278,7 +278,7 @@ Vue.use( CKEditor );
                             this.product.quantity=res.data.quantity;
                             this.product.image_path=res.data.image_path;
                         })
-                        fetch('http://localhost:8000/api/v1/product/index/' + this.accessories_record_number).then(res => res.json()).then(res => {
+                        fetch(this.$hostname+'/api/v1/product/index/' + this.accessories_record_number).then(res => res.json()).then(res => {
                             var product_id = this.product.id;
                             var accessories = res.data.filter(function(index,key){
                                 return index.id != product_id
@@ -406,7 +406,7 @@ Vue.use( CKEditor );
                         formData.append('category_id',JSON.stringify(this.product.category_id));
                         formData.append('_method',"PUT");
 
-                        axios.post('http://localhost:8000/api/v1/product/'+this.product_id,formData,{
+                        axios.post(this.$hostname+'/api/v1/product/'+this.product_id,formData,{
                             headers : {
                                 'Content-Type' : 'multipart/form-data;',
                                 "Authorization" : "Bearer " + this.get_cookie

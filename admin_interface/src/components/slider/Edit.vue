@@ -53,7 +53,7 @@
                                              <div class="form-group">
                                                 <label>Image</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img :src="'http://localhost:8000' + slider.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <img :src="this.$hostname+'' + slider.image_path" alt="default.jpg" id="output" class="img-thumbnail" style="width:250px;height:250px;">
                                             </div>
                                             <a>
                                             <router-link
@@ -96,7 +96,7 @@ import axios from 'axios';
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -106,7 +106,7 @@ import axios from 'axios';
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/slider/' + this.$route.params.id)
+                        fetch(this.$hostname+'/api/v1/slider/' + this.$route.params.id)
                             .then(res => res.json())
                             .then(res => {
                                 this.slider.name = res.data.name,
@@ -143,7 +143,7 @@ import axios from 'axios';
                     form_data.append('status',this.slider.status);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
                     form_data.append('_method',"PUT");
-                    axios.post('http://localhost:8000/api/v1/slider/'+this.$route.params.id,form_data,{
+                    axios.post(this.$hostname+'/api/v1/slider/'+this.$route.params.id,form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
                             "Authorization" : "Bearer " + this.get_cookie

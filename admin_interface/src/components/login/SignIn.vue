@@ -63,7 +63,7 @@ export default {
             formData.append('email',this.user.email);
             formData.append('password',this.user.password);
             formData.append('remember_token',this.user.remember_token);
-            axios.post('http://localhost:8000/api/v1/users/login',formData)
+            axios.post(this.$hostname+'/api/v1/users/login',formData)
                 .then(res => {
                     if(res.data.code == 500){
                         this.error.password = res.data.message;

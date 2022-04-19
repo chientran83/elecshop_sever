@@ -89,7 +89,7 @@ import Multiselect from 'vue-multiselect'
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -99,7 +99,7 @@ import Multiselect from 'vue-multiselect'
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/resource/' + this.$route.params.id)
+                        fetch(this.$hostname+'/api/v1/resource/' + this.$route.params.id)
                             .then(res => res.json())
                             .then(res => {
                                 this.resource.alias = res.data.alias,
@@ -145,7 +145,7 @@ import Multiselect from 'vue-multiselect'
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put('http://localhost:8000/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.put(this.$hostname+'/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',

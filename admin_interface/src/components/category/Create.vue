@@ -77,7 +77,7 @@
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -109,7 +109,7 @@
                     var form_data = new FormData();
                     form_data.append('name',this.category.name);
                     form_data.append('desc',this.category.desc);
-                    axios.post('http://localhost:8000/api/v1/category',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                    axios.post(this.$hostname+'/api/v1/category',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
                         this.category.name = "";
                         this.category.desc = "";
                         Swal.fire(

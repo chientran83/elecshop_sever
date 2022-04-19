@@ -95,7 +95,7 @@
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -135,7 +135,7 @@
                     form_data.append('type',this.coupon.type);
                     form_data.append('value',this.coupon.value);
                     form_data.append('quantity',this.coupon.quantity);
-                    axios.post('http://localhost:8000/api/v1/coupon',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                    axios.post(this.$hostname+'/api/v1/coupon',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
                         this.coupon.code = "";
                         this.coupon.value = 0;
                         this.coupon.quantity = 0;

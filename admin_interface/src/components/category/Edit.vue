@@ -78,7 +78,7 @@ import getCookie from '../component/getCookie'
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -88,7 +88,7 @@ import getCookie from '../component/getCookie'
                         }
                     })
                     .then(() => {
-                        fetch('http://localhost:8000/api/v1/category/' + this.$route.params.id)
+                        fetch(this.$hostname+'/api/v1/category/' + this.$route.params.id)
                         .then(res => res.json())
                         .then(res => {
                             this.category.name = res.data.name,
@@ -117,7 +117,7 @@ import getCookie from '../component/getCookie'
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put('http://localhost:8000/api/v1/category/'+this.$route.params.id,{name:this.category.name,desc:this.category.desc},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.put(this.$hostname+'/api/v1/category/'+this.$route.params.id,{name:this.category.name,desc:this.category.desc},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',

@@ -90,7 +90,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
                             <div class="pro-head" v-if="user">
-                                <img :src="'http://localhost:8000' + user.image_path" class="img-radius">
+                                <img :src="this.$hostname+'' + user.image_path" class="img-radius">
                                 <span>{{user.name}}</span>
                                 <a class="dud-logout" v-on:click="logOut()" style="cursor: pointer">
                                     <i class="feather icon-log-out"></i>
@@ -126,7 +126,7 @@ import getCookie from '../component/getCookie'
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -143,7 +143,7 @@ import getCookie from '../component/getCookie'
         methods:{
             logOut:function(){
                 /* alert('logout success') */
-                axios.get('http://localhost:8000/api/v1/users/logout',{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                axios.get(this.$hostname+'/api/v1/users/logout',{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                         document.cookie = 'elecshop_login' + '=; Max-Age=0'
                         this.$router.push('/sign-in')

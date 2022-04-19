@@ -68,7 +68,7 @@
                                                 <td>{{product.current_price}}</td>
                                                 <td>{{product.previous_price}}</td>
                                                 <td>{{product.origin_price}}</td>
-                                                <td><img v-bind:src="'http://localhost:8000' + product.image_path" style="width:40px; height:40px;" alt=""></td>
+                                                <td><img v-bind:src="this.$hostname+'' + product.image_path" style="width:40px; height:40px;" alt=""></td>
                                                 <td>{{ product.isOnSale }}</td>
                                                 <td>{{product.quantity}}</td>
                                                 <td class="col-2">
@@ -135,7 +135,7 @@ export default {
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -145,7 +145,7 @@ export default {
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/product/index/' + this.product_record_number).then(res => res.json())
+                        fetch(this.$hostname+'/api/v1/product/index/' + this.product_record_number).then(res => res.json())
                             .then(res => {
                                 this.products = res.data;
                                 var link_page = res.meta.links.filter(function(index){
@@ -177,7 +177,7 @@ export default {
         methods:{
             load_data_product:function(url){
                 if(url == ''){
-                    var link = 'http://localhost:8000/api/v1/product/index/' + this.product_record_number;
+                    var link = this.$hostname+'/api/v1/product/index/' + this.product_record_number;
                 }else{
                     var link = url
                 }
@@ -210,7 +210,7 @@ export default {
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('http://localhost:8000/api/v1/product/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.delete(this.$hostname+'/api/v1/product/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

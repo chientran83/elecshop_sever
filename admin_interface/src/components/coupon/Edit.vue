@@ -97,7 +97,7 @@ import getCookie from '../component/getCookie'
             
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -109,7 +109,7 @@ import getCookie from '../component/getCookie'
                     .then(()=>{
                         $( "#datepicker" ).datepicker();
                         $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-                        fetch('http://localhost:8000/api/v1/coupon/' + this.$route.params.id)
+                        fetch(this.$hostname+'/api/v1/coupon/' + this.$route.params.id)
                             .then(res => res.json())
                             .then(res => {
                                 this.coupon.code = res.data.code,
@@ -140,7 +140,7 @@ import getCookie from '../component/getCookie'
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put('http://localhost:8000/api/v1/coupon/'+this.$route.params.id,{
+                    axios.put(this.$hostname+'/api/v1/coupon/'+this.$route.params.id,{
                         code:this.coupon.code,
                         type:this.coupon.type,
                         value:this.coupon.value,

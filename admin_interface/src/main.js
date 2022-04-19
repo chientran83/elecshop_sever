@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import { routes } from './routes'
 
 Vue.config.productionTip = false
+Vue.prototype.$hostname = 'http://localhost:8000'
 
 Vue.use(VueRouter)
 const router = new VueRouter({

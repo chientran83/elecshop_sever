@@ -233,12 +233,8 @@ class userController extends Controller
 
     public function sendCodeToEmail(Request $request)
     {
-        /* $userItem = $this->users->where('email',$request->email)->first();
-
-        return response()->json([
-            'code' => 201,
-            'data' => new userResource($item_user)
-        ],201); */
+        
+        
         
     }
 }

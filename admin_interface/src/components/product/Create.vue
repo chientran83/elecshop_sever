@@ -213,7 +213,7 @@ Vue.use( CKEditor );
             get_cookie:""
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -223,10 +223,10 @@ Vue.use( CKEditor );
                         }
                     })
                     .then(()=>{
-                        fetch('http://localhost:8000/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
+                        fetch(this.$hostname+'/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
                             this.categories = res.data
                         })
-                         fetch('http://localhost:8000/api/v1/product/index/'+0).then(res => res.json()).then(res => {
+                         fetch(this.$hostname+'/api/v1/product/index/'+0).then(res => res.json()).then(res => {
                             this.optionsAccessories[0].libs = res.data;
                         })
                     })
@@ -335,7 +335,7 @@ Vue.use( CKEditor );
                         formData.append('memory',JSON.stringify(this.product.memory));
                         formData.append('accessories',JSON.stringify(this.product.accessories));
                         formData.append('category_id',JSON.stringify(this.product.category_id));
-                        axios.post('http://localhost:8000/api/v1/product',formData,{
+                        axios.post(this.$hostname+'/api/v1/product',formData,{
                             headers: {
                                 'Content-Type': 'multipart/form-data',
                                 "Authorization" : "Bearer " + this.get_cookie

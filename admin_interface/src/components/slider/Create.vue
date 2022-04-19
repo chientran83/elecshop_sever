@@ -96,7 +96,7 @@
             
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
+                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => res.json())
                     .then(res => {
                         if(res.message || res.code == 404){
@@ -134,7 +134,7 @@
                     form_data.append('status',this.slider.status);
                     form_data.append('link',this.slider.link);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
-                    axios.post('http://localhost:8000/api/v1/slider',form_data,{
+                    axios.post(this.$hostname+'/api/v1/slider',form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
                             "Authorization" : "Bearer " + this.get_cookie
