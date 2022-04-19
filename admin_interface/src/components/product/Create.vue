@@ -30,7 +30,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div v-on:submit.prevent="product_store()">
+                                        <div>
                                             <div class="form-group">
                                                 <label>Name</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="product.name">
@@ -140,7 +140,7 @@
                                             class="btn btn-secondary"
                                             to="/product">Thoát</router-link>
                                             </a>
-                                            <button class="btn btn-primary" type="submit">Submit</button>
+                                            <button class="btn btn-primary" v-on:click="product_store()">Submit</button>
                                         </div>
                                     </div>
                                 </div>
