@@ -110,7 +110,7 @@
                                                     <input type="number" v-model="product.colors[key].price" v-bind:id="'priceColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter price">
                                                     <input type="text" v-model="product.colors[key].codes" v-bind:id="'codeColors' + key" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" v-on:keyup="priceColor(color,key)" placeholder="Enter code">
                                                     <div class="form-control">
-                                                        <img :src="this.$hostname+''+product.colors[key].image_path " alt="default.jpg" :id="'image_preview_colors' + key" class="col-4" style="height:100%;">
+                                                        <img :src="$hostname+''+product.colors[key].image_path " alt="default.jpg" :id="'image_preview_colors' + key" class="col-4" style="height:100%;">
                                                         <input type="file" class="col-8" v-bind:id="'imageColors' + key"  v-on:change="priceColor(color,key); preview_image_color(color,key);">
                                                     </div>
                                                 </div>                                           
@@ -130,7 +130,7 @@
                                              <div class="form-group">
                                                 <label>MainImage</label>
                                                 <input type="file" class="form-control" id="imgInp" v-on:change="preview_image()">
-                                                <img v-bind:src="this.$hostname+'' + product.image_path" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
+                                                <img v-bind:src="$hostname+'' + product.image_path" alt="default.jpg" id="blah" class="img-thumbnail" style="width:250px;height:250px;">
                                             </div>
                                             <a>
                                             <router-link

@@ -68,7 +68,7 @@
                                                 <td>{{product.current_price}}</td>
                                                 <td>{{product.previous_price}}</td>
                                                 <td>{{product.origin_price}}</td>
-                                                <td><img v-bind:src="this.$hostname+'' + product.image_path" style="width:40px; height:40px;" alt=""></td>
+                                                <td><img v-bind:src="$hostname+'' + product.image_path" style="width:40px; height:40px;" alt=""></td>
                                                 <td>{{ product.isOnSale }}</td>
                                                 <td>{{product.quantity}}</td>
                                                 <td class="col-2">

@@ -558,6 +558,32 @@ import getCookie from './component/getCookie'
 export default {
     data(){
         return {
+                categories: []
+            }
+    },
+    props:['userData'],
+    mounted(){
+        fetch(this.$hostname+'/api/v1/category/index/'+this.record_number).then(res => res.json()).then(res => {
+            this.categories = res.data;
+            var links = res.meta.links;
+            links = links.filter(function(item){
+                return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+            })
+            this.paginate = {
+                first:res.links.first,
+                last:res.links.last,
+                next:res.links.next,
+                prev:res.links.prev,
+                links:links,
+                current_page:res.meta.current_page,
+                from:res.meta.from,
+                last_page:res.meta.last_page
+            }
+        })
+    }
+
+   /*  data(){
+        return {
                 get_cookie:"",
                 user: null
             }
@@ -582,7 +608,7 @@ export default {
             this.$router.push('/sign-in')
 
         }
-    }
+    } */
                 
         
 }
