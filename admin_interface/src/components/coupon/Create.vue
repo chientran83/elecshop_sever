@@ -93,28 +93,23 @@
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                  getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id,"")
-                    .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        $( "#datepicker" ).datepicker();
-                        $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
-
+            const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                $( "#datepicker" ).datepicker();
+                $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
+            })
+            .catch(err => {
+                console.log(err)
+            })
+             
         },
         methods:{
             coupon_store:function(){

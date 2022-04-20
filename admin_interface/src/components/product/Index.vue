@@ -134,44 +134,37 @@ export default {
         }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-               getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+             const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                getApi(this.$hostname+'/api/v1/product/index/',this.product_record_number,"")
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        getApi(this.$hostname+'/api/v1/product/index/',this.product_record_number,"")
-                            .then(res => {
-                                this.products = res.data;
-                                var link_page = res.meta.links.filter(function(index){
-                                    return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
-                                })
-                                this.paginate = {
-                                    first:res.links.first,
-                                    last:res.links.last,
-                                    prev:res.links.prev,
-                                    next:res.links.next,
-                                    link_page:link_page,
-                                    current_page:res.meta.current_page,
-                                    from:res.meta.from,
-                                    last_page:res.meta.last_page
-                                }
+                        this.products = res.data;
+                        var link_page = res.meta.links.filter(function(index){
+                            return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
                         })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
-            
-
+                        this.paginate = {
+                            first:res.links.first,
+                            last:res.links.last,
+                            prev:res.links.prev,
+                            next:res.links.next,
+                            link_page:link_page,
+                            current_page:res.meta.current_page,
+                            from:res.meta.from,
+                            last_page:res.meta.last_page
+                        }
+                })
+            })
+            .catch(err => {
+                console.log(err)
+            })
             
         },
         methods:{

@@ -1,13 +1,14 @@
-export const getApi = async (url,param,token) => {
+export const getApi = (url,param,token) => {
     try {
         if(token != ""){
             var headers = {headers:{"Authorization" : "Bearer " + token,'Content-Type': 'application/json','Accept': 'application/json'}}  
         }else{
             var headers = {headers:{'Content-Type': 'application/json','Accept': 'application/json'}}
         }
-        const response = await fetch(url + param, headers);
-        const json = await response.json();
-        return json;
+        return fetch(url + param, headers)
+            .then(res => res.json())
+            .then(res => {  
+                return res})
     } catch {
         return {
         success: false,

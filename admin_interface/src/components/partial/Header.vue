@@ -125,20 +125,15 @@ import {getApi} from '../component/getApi'
         },
 
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                  getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
-                    .then(res => {
-                        if(res.message || res.code == 404){
-                            this.user = null
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }
+            const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
         },
         methods:{
             logOut:function(){

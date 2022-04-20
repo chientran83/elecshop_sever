@@ -116,56 +116,51 @@ import axios from 'axios';
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+            const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                getApi(this.$hostname+'/api/v1/resource/index/',0,this.get_cookie)
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        getApi(this.$hostname+'/api/v1/resource/index/',0,this.get_cookie)
-                            .then(res => {
-                                res.data.forEach(item => {
-                                    this.resources.push({
-                                        id:item.id,
-                                        alias:item.alias,
-                                        permissions:item.permissions,
-                                        permissionsDefaults:item.permissionsDefaults,
-                                        checked:false
-                                    }) 
-                                }),
-                        getApi(this.$hostname+'/api/v1/role/', this.$route.params.id,"")
-                            .then(res => {
-                                this.role.name = res.data.name
-                                this.role.desc = res.data.desc
-                                this.role.status = res.data.status
-                                // add checked checkbox
-                                this.resources.forEach(itemResource => {
-                                    itemResource.permissionsDefaults.forEach(itemPermission => {
-                                        this.temporaryStorageSelected.push(itemPermission)
-                                    })
-                                })
-                                res.data.permissions.forEach(itemPermission => {
-                                    this.temporaryStorageSelected.forEach(itemSelected => {
-                                        if(itemPermission.resource_id == itemSelected.resource_id && itemPermission.allow == itemSelected.allow) {
-                                            this.selected.push(itemSelected.id)
-                                        }
-                                    });
-                                })
+                        res.data.forEach(item => {
+                            this.resources.push({
+                                id:item.id,
+                                alias:item.alias,
+                                permissions:item.permissions,
+                                permissionsDefaults:item.permissionsDefaults,
+                                checked:false
+                            }) 
+                        }),
+                getApi(this.$hostname+'/api/v1/role/', this.$route.params.id,"")
+                    .then(res => {
+                        this.role.name = res.data.name
+                        this.role.desc = res.data.desc
+                        this.role.status = res.data.status
+                        // add checked checkbox
+                        this.resources.forEach(itemResource => {
+                            itemResource.permissionsDefaults.forEach(itemPermission => {
+                                this.temporaryStorageSelected.push(itemPermission)
                             })
                         })
+                        res.data.permissions.forEach(itemPermission => {
+                            this.temporaryStorageSelected.forEach(itemSelected => {
+                                if(itemPermission.resource_id == itemSelected.resource_id && itemPermission.allow == itemSelected.allow) {
+                                    this.selected.push(itemSelected.id)
+                                }
+                            });
+                        })
                     })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+                })
+            })
+            .catch(err => {
+                console.log(err)
+            })
             
 
            

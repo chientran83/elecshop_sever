@@ -122,45 +122,41 @@ import {getApi} from '../component/getApi'
             }
         },
         mounted(){
-             this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+             const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(() => {
+                getApi(this.$hostname+'/api/v1/coupon/index/',this.record_number,this.get_cookie)
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
+                        this.coupons = res.data;
+                        var links = res.meta.links;
+                        links = links.filter(function(item){
+                            return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                        })
+                        this.paginate = {
+                            first:res.links.first,
+                            last:res.links.last,
+                            next:res.links.next,
+                            prev:res.links.prev,
+                            links:links,
+                            current_page:res.meta.current_page,
+                            from:res.meta.from,
+                            last_page:res.meta.last_page
                         }
                     })
-                    .then(() => {
-                        getApi(this.$hostname+'/api/v1/coupon/index/',this.record_number,this.get_cookie)
-                            .then(res => {
-                                this.coupons = res.data;
-                                var links = res.meta.links;
-                                links = links.filter(function(item){
-                                    return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                                })
-                                this.paginate = {
-                                    first:res.links.first,
-                                    last:res.links.last,
-                                    next:res.links.next,
-                                    prev:res.links.prev,
-                                    links:links,
-                                    current_page:res.meta.current_page,
-                                    from:res.meta.from,
-                                    last_page:res.meta.last_page
-                                }
-                            })
-                    
-                        
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+            
+                
+            })
+            .catch(err => {
+                console.log(err)
+            })
+           
         },
         methods:{
             load_data_coupon:function(url){

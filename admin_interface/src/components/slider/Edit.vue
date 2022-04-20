@@ -95,34 +95,30 @@ import axios from 'axios';
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+             const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                getApi(this.$hostname+'/api/v1/slider/',this.$route.params.id,"")
+                    .then(res => res.json())
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
+                        this.slider.name = res.data.name,
+                        this.slider.link = res.data.link,
+                        this.slider.desc = res.data.desc
+                        this.slider.status = res.data.status
+                        this.slider.image_path = res.data.image_path
                     })
-                    .then(()=>{
-                        getApi(this.$hostname+'/api/v1/slider/',this.$route.params.id,"")
-                            .then(res => res.json())
-                            .then(res => {
-                                this.slider.name = res.data.name,
-                                this.slider.link = res.data.link,
-                                this.slider.desc = res.data.desc
-                                this.slider.status = res.data.status
-                                this.slider.image_path = res.data.image_path
-                            })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+           
         },
         methods:{
             update_slider:function(){

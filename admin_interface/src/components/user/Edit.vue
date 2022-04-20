@@ -111,40 +111,36 @@ import getCookie from '../component/getCookie'
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
-                    .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        verifyLogin.then(() => {
-                            getApi(this.$hostname+'/api/v1/role/index/',0,this.get_cookie)
-                                .then(res => {
-                                    this.optionsRoles[0].libs = res.data
-                                });
-                            getApi(this.$hostname+'/api/v1/users/',this.$route.params.id,this.get_cookie)
-                                .then(res => {
-                                    this.user.name = res.data.name
-                                    this.user.location = res.data.location
-                                    this.user.phoneNumber = res.data.phoneNumber
-                                    this.user.email = res.data.email
-                                    this.user.image_path = res.data.image_path
-                                    this.user.roles = res.data.roles
-                                })
+            const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                verifyLogin.then(() => {
+                    getApi(this.$hostname+'/api/v1/role/index/',0,this.get_cookie)
+                        .then(res => {
+                            this.optionsRoles[0].libs = res.data
+                        });
+                    getApi(this.$hostname+'/api/v1/users/',this.$route.params.id,this.get_cookie)
+                        .then(res => {
+                            this.user.name = res.data.name
+                            this.user.location = res.data.location
+                            this.user.phoneNumber = res.data.phoneNumber
+                            this.user.email = res.data.email
+                            this.user.image_path = res.data.image_path
+                            this.user.roles = res.data.roles
                         })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+                })
+            })
+            .catch(err => {
+                console.log(err)
+            })
+           
 
         },
         methods:{

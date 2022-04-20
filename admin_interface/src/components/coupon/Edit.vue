@@ -81,7 +81,6 @@
 import axios from 'axios';
 import getCookie from '../component/getCookie'
 import {getApi} from '../component/getApi'
-    getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
     export default {
         data(){
             return {
@@ -97,35 +96,31 @@ import {getApi} from '../component/getApi'
         },
         mounted(){
             
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-               getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+             const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                $( "#datepicker" ).datepicker();
+                $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
+                getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id,"")
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        $( "#datepicker" ).datepicker();
-                        $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-                        getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id,"")
-                            .then(res => {
-                                this.coupon.code = res.data.code,
-                                this.coupon.type = res.data.type;
-                                this.coupon.value = res.data.value;
-                                this.coupon.quantity = res.data.quantity;
-                                $("#datepicker" ).val(res.data.expire);
-                        })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+                        this.coupon.code = res.data.code,
+                        this.coupon.type = res.data.type;
+                        this.coupon.value = res.data.value;
+                        this.coupon.quantity = res.data.quantity;
+                        $("#datepicker" ).val(res.data.expire);
+                })
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            
                 
         },
         methods:{

@@ -211,34 +211,28 @@ Vue.use( CKEditor );
                 }
         },
         mounted(){
-            get_cookie:""
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+             const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                getApi(this.$hostname+'/api/v1/category/index/', this.category_record_number,"")
+                .then(res => {
+                        this.categories = res.data
+                    })
+                getApi(this.$hostname+'/api/v1/product/index/',0,"")
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
+                        this.optionsAccessories[0].libs = res.data;
                     })
-                    .then(()=>{
-                        getApi(this.$hostname+'/api/v1/category/index/', this.category_record_number,"")
-                        .then(res => {
-                                this.categories = res.data
-                            })
-                        getApi(this.$hostname+'/api/v1/product/index/',0,"")
-                            .then(res => {
-                                this.optionsAccessories[0].libs = res.data;
-                            })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+            })
+            .catch(err => {
+                console.log(err)
+            })
             
         },
         

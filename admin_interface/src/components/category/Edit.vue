@@ -77,25 +77,20 @@ import { getApi } from '../component/getApi';
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-
-                getApi(this.$hostname + '/api/v1/users/user_login',"",this.get_cookie).then(res => {
-                    if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                }).then(()=>{
-                    getApi(this.$hostname + '/api/v1/category/',this.$route.params.id,"").then(res=>{
-                         this.category.name = res.data.name,
-                        this.category.desc = res.data.desc
-                    })
-                });
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+            const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            }).then(()=>{
+                getApi(this.$hostname + '/api/v1/category/',this.$route.params.id,"").then(res=>{
+                    this.category.name = res.data.name,
+                    this.category.desc = res.data.desc
+                })
+            });
                 
                 
         },

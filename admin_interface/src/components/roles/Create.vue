@@ -116,37 +116,32 @@
             }
         },
         mounted(){
-            this.get_cookie = getCookie.getCookie('elecshop_login');
-            if(this.get_cookie){
-                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
+             const verifyLogin = this.$verifyLogin()
+            verifyLogin.then(res => {
+                if(res.success) {
+                    this.user = res.data;
+                    this.get_cookie = res.token;
+                }else{
+                    this.$router.push('/sign-in')
+                }
+            })
+            .then(()=>{
+                getApi(this.$hostname+'/api/v1/resource/index',0,"")
                     .then(res => {
-                        if(res.message || res.code == 404){
-                            this.$router.push('/sign-in')
-                        }else{
-                            this.user = res.data
-                        }
-                    })
-                    .then(()=>{
-                        getApi(this.$hostname+'/api/v1/resource/index',0,"")
-                            .then(res => {
-                                res.data.forEach(item => {
-                                this.resources.push({
-                                        id:item.id,
-                                        alias:item.alias,
-                                        permissions:item.permissions,
-                                        permissionsDefaults:item.permissionsDefaults,
-                                        checked:false
-                                }) 
-                                })
-                            });
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            }else{
-                this.$router.push('/sign-in')
-
-            }
+                        res.data.forEach(item => {
+                        this.resources.push({
+                                id:item.id,
+                                alias:item.alias,
+                                permissions:item.permissions,
+                                permissionsDefaults:item.permissionsDefaults,
+                                checked:false
+                        }) 
+                        })
+                    });
+            })
+            .catch(err => {
+                console.log(err)
+            })
         },
         methods:{
             role_store:function(){
