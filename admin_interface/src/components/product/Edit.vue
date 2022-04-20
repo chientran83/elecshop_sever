@@ -158,6 +158,7 @@ import CKEditor from 'ckeditor4-vue';
 import axios from 'axios';
 import Multiselect from 'vue-multiselect'
     import getCookie from '../component/getCookie'
+    import {getApi} from '../component/getApi'
 
 Vue.use( CKEditor );
     export default {
@@ -213,8 +214,7 @@ Vue.use( CKEditor );
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')
@@ -224,67 +224,70 @@ Vue.use( CKEditor );
                     })
                     .then(()=>{
                         this.product_id = this.$route.params.id
-                        fetch(this.$hostname+'/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
-                            this.categories = res.data
-                        })
-                        fetch(this.$hostname+'/api/v1/product/'+this.product_id).then(res => res.json()).then(res => {
-                             fetch(this.$hostname+'/api/v1/category/'+res.data.category_id).then(res => res.json()).then(res => {
-                                this.product.category_id = {
-                                    "id": res.data.id,
-                                    "name": res.data.name
-                                };
+                        getApi(this.$hostname+'/api/v1/category/index/',this.category_record_number,"")
+                            .then(res => {
+                                this.categories = res.data
                             })
-                            res.data.tags.forEach(tag => {
-                                var tag = {
-                                    name: tag.name,
-                                    code: tag.name,
-                                    pivot:tag.pivot}
-                                this.product.tags.push(tag)
-                                this.optionsTags.push(tag)
-                            })
-                            res.data.memory.forEach(memory => {
-                                var tag = {
-                                    name: memory.name,
-                                    code: memory.name,
-                                    pivot:memory.pivot}
-                                this.product.memory.push(tag)
-                                this.optionsMemory.push(tag)
-                            })
-            
-                            res.data.colors.forEach((color) => {
-                                var obj = {
-                                    name: color.name,
-                                    code:color.name,
-                                    price: color.price,
-                                    codes:color.code,
-                                    image_path:color.image_path 
-                                }
+                        getApi(this.$hostname+'/api/v1/product/',this.product_id,"")
+                            .then(res => {
+                                fetch(this.$hostname+'/api/v1/category/'+res.data.category_id).then(res => res.json()).then(res => {
+                                    this.product.category_id = {
+                                        "id": res.data.id,
+                                        "name": res.data.name
+                                    };
+                                })
+                                res.data.tags.forEach(tag => {
+                                    var tag = {
+                                        name: tag.name,
+                                        code: tag.name,
+                                        pivot:tag.pivot}
+                                    this.product.tags.push(tag)
+                                    this.optionsTags.push(tag)
+                                })
+                                res.data.memory.forEach(memory => {
+                                    var tag = {
+                                        name: memory.name,
+                                        code: memory.name,
+                                        pivot:memory.pivot}
+                                    this.product.memory.push(tag)
+                                    this.optionsMemory.push(tag)
+                                })
+                
+                                res.data.colors.forEach((color) => {
+                                    var obj = {
+                                        name: color.name,
+                                        code:color.name,
+                                        price: color.price,
+                                        codes:color.code,
+                                        image_path:color.image_path 
+                                    }
 
-                                this.product.colors.push(obj)
-                                this.optionsColors.push(obj)
+                                    this.product.colors.push(obj)
+                                    this.optionsColors.push(obj)
+                                })
+                
+                                // this.product.colors=res.data.colors;
+                                this.product.tag=res.data.tag;
+                                this.product.accessories=res.data.accessories;
+                                this.product.id=res.data.id;
+                                this.product.name=res.data.name;
+                                this.product.origin_price=res.data.origin_price;
+                                this.product.previous_price=res.data.previous_price;
+                                this.product.current_price= res.data.current_price;
+                                this.product.ram=res.data.ram;
+                                this.product.isOnsale=res.data.isOnSale;
+                                this.product.desc=res.data.desc;
+                                this.product.quantity=res.data.quantity;
+                                this.product.image_path=res.data.image_path;
                             })
-            
-                            // this.product.colors=res.data.colors;
-                            this.product.tag=res.data.tag;
-                            this.product.accessories=res.data.accessories;
-                            this.product.id=res.data.id;
-                            this.product.name=res.data.name;
-                            this.product.origin_price=res.data.origin_price;
-                            this.product.previous_price=res.data.previous_price;
-                            this.product.current_price= res.data.current_price;
-                            this.product.ram=res.data.ram;
-                            this.product.isOnsale=res.data.isOnSale;
-                            this.product.desc=res.data.desc;
-                            this.product.quantity=res.data.quantity;
-                            this.product.image_path=res.data.image_path;
-                        })
-                        fetch(this.$hostname+'/api/v1/product/index/' + this.accessories_record_number).then(res => res.json()).then(res => {
-                            var product_id = this.product.id;
-                            var accessories = res.data.filter(function(index,key){
-                                return index.id != product_id
+                        getApi(this.$hostname+'/api/v1/product/index/',this.accessories_record_number,"")
+                            .then(res => {
+                                var product_id = this.product.id;
+                                var accessories = res.data.filter(function(index,key){
+                                    return index.id != product_id
+                                })
+                                this.optionsAccessories[0].libs = accessories;
                             })
-                            this.optionsAccessories[0].libs = accessories;
-                        })
                     })
                     .catch(err => {
                         console.log(err)

@@ -11,6 +11,8 @@
 
 <script>
 import getCookie from './components/component/getCookie'
+import {getApi} from './components/component/getApi'
+
 export default {
   name: 'App',
   components: {
@@ -25,17 +27,13 @@ export default {
   mounted(){
       this.get_cookie = getCookie.getCookie('elecshop_login');
       if(this.get_cookie){
-          fetch('http://localhost:8000/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-              .then(res => res.json())
+          getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
               .then(res => {
                   if(res.message || res.code == 404){
                       this.user = null
                   }else{
                       this.user = res.data
                   }
-              })
-              .catch(err => {
-                  console.log(err)
               })
       }
   }

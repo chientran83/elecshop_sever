@@ -160,6 +160,7 @@ import CKEditor from 'ckeditor4-vue';
 import axios from 'axios';
 import Multiselect from 'vue-multiselect'
     import getCookie from '../component/getCookie'
+    import {getApi} from '../component/getApi'
 
 Vue.use( CKEditor );
     export default {
@@ -213,8 +214,7 @@ Vue.use( CKEditor );
             get_cookie:""
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')
@@ -223,12 +223,14 @@ Vue.use( CKEditor );
                         }
                     })
                     .then(()=>{
-                        fetch(this.$hostname+'/api/v1/category/index/' + this.category_record_number).then(res => res.json()).then(res => {
-                            this.categories = res.data
-                        })
-                         fetch(this.$hostname+'/api/v1/product/index/'+0).then(res => res.json()).then(res => {
-                            this.optionsAccessories[0].libs = res.data;
-                        })
+                        getApi(this.$hostname+'/api/v1/category/index/', this.category_record_number,"")
+                        .then(res => {
+                                this.categories = res.data
+                            })
+                        getApi(this.$hostname+'/api/v1/product/index/',0,"")
+                            .then(res => {
+                                this.optionsAccessories[0].libs = res.data;
+                            })
                     })
                     .catch(err => {
                         console.log(err)

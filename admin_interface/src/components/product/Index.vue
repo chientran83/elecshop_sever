@@ -109,6 +109,7 @@
 <script>
 import axios from 'axios';
     import getCookie from '../component/getCookie'
+    import {getApi} from '../component/getApi'
 export default {
     data(){
         return {
@@ -135,8 +136,7 @@ export default {
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+               getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')
@@ -145,7 +145,7 @@ export default {
                         }
                     })
                     .then(()=>{
-                        fetch(this.$hostname+'/api/v1/product/index/' + this.product_record_number).then(res => res.json())
+                        getApi(this.$hostname+'/api/v1/product/index/',this.product_record_number,"")
                             .then(res => {
                                 this.products = res.data;
                                 var link_page = res.meta.links.filter(function(index){
@@ -181,23 +181,23 @@ export default {
                 }else{
                     var link = url
                 }
-                 fetch(link).then(res => res.json())
-                .then(res => {
-                    this.products = res.data;
-                    var link_page = res.meta.links.filter(function(index){
-                        return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
+                getApi(link,"","")
+                    .then(res => {
+                        this.products = res.data;
+                        var link_page = res.meta.links.filter(function(index){
+                            return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
+                        })
+                        this.paginate = {
+                            first:res.links.first,
+                            last:res.links.last,
+                            prev:res.links.prev,
+                            next:res.links.next,
+                            link_page:link_page,
+                            current_page:res.meta.current_page,
+                            from:res.meta.from,
+                            last_page:res.meta.last_page
+                        }
                     })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        prev:res.links.prev,
-                        next:res.links.next,
-                        link_page:link_page,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
-                })
             },
             delete_product:function(id){
                 Swal.fire({

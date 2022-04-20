@@ -103,6 +103,7 @@
 <script>
 import axios from "axios"
     import getCookie from '../component/getCookie'
+    import {getApi} from '../component/getApi'
     export default {
         data(){
             return {
@@ -121,8 +122,7 @@ import axios from "axios"
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')
@@ -132,7 +132,8 @@ import axios from "axios"
                     })
                     .then(()=>{
                         // fetch data slider
-                        fetch(this.$hostname+'/api/v1/slider/index/'+this.slider_record_number).then(res => res.json()).then(res => {
+                        getApi(this.$hostname+'/api/v1/slider/index/',this.slider_record_number,"")
+                            .then(res => {
                             this.sliders = res.data;
                             var links = res.meta.links;
                             links = links.filter(function(item){
@@ -169,22 +170,23 @@ import axios from "axios"
                 }else{
                     var link = this.$hostname+'/api/v1/slider/index/'+this.slider_record_number;
                 }
-                    fetch(link).then(res => res.json()).then(res => {
-                    this.slider = res.data;
-                    var links = res.meta.links;
-                    links = links.filter(function(item,key){
-                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                    })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        prev:res.links.prev,
-                        next:res.links.next,
-                        links:links,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
+                    getApi(link,"","")
+                        .then(res => {
+                        this.slider = res.data;
+                        var links = res.meta.links;
+                        links = links.filter(function(item,key){
+                            return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                        })
+                        this.paginate = {
+                            first:res.links.first,
+                            last:res.links.last,
+                            prev:res.links.prev,
+                            next:res.links.next,
+                            links:links,
+                            current_page:res.meta.current_page,
+                            from:res.meta.from,
+                            last_page:res.meta.last_page
+                        }
                 })
             },
             delete_slider:function(id){

@@ -79,6 +79,7 @@
 <script>
     import axios from 'axios'
         import getCookie from '../component/getCookie'
+        import {getApi} from '../component/getApi'
     export default {
         data(){
             return {
@@ -96,8 +97,7 @@
             
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')

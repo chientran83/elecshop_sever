@@ -104,6 +104,7 @@
 <script>
 import axios from "axios"
     import getCookie from '../component/getCookie'
+    import {getApi} from '../component/getApi'
     export default {
         data(){
             return {
@@ -123,8 +124,7 @@ import axios from "axios"
         mounted(){
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+                getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')
@@ -134,23 +134,24 @@ import axios from "axios"
                     })
                     .then(()=>{
                         // fetch data role
-                        fetch(this.$hostname+'/api/v1/role/index/' +this.role_record_number).then(res => res.json()).then(res => {
-                            this.roles = res.data;
-                            var links = res.meta.links;
-                            links = links.filter(function(item){
-                                return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                        getApi(this.$hostname+'/api/v1/role/index/',this.role_record_number,"")
+                            .then(res => {
+                                this.roles = res.data;
+                                var links = res.meta.links;
+                                links = links.filter(function(item){
+                                    return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                                })
+                                this.paginate = {
+                                    first:res.links.first,
+                                    last:res.links.last,
+                                    next:res.links.next,
+                                    prev:res.links.prev,
+                                    links:links,
+                                    current_page:res.meta.current_page,
+                                    from:res.meta.from,
+                                    last_page:res.meta.last_page
+                                }
                             })
-                            this.paginate = {
-                                first:res.links.first,
-                                last:res.links.last,
-                                next:res.links.next,
-                                prev:res.links.prev,
-                                links:links,
-                                current_page:res.meta.current_page,
-                                from:res.meta.from,
-                                last_page:res.meta.last_page
-                            }
-                        })
                     })
                     .catch(err => {
                         console.log(err)
@@ -171,23 +172,24 @@ import axios from "axios"
                 }else{
                     var link = this.$hostname+'/api/v1/role/index/'+this.role_record_number;
                 }
-                    fetch(link).then(res => res.json()).then(res => {
-                    this.roles = res.data;
-                    var links = res.meta.links;
-                    links = links.filter(function(item,key){
-                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                getApi(link,"","")
+                    .then(res => {
+                        this.roles = res.data;
+                        var links = res.meta.links;
+                        links = links.filter(function(item,key){
+                            return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
+                        })
+                        this.paginate = {
+                            first:res.links.first,
+                            last:res.links.last,
+                            prev:res.links.prev,
+                            next:res.links.next,
+                            links:links,
+                            current_page:res.meta.current_page,
+                            from:res.meta.from,
+                            last_page:res.meta.last_page
+                        }
                     })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        prev:res.links.prev,
-                        next:res.links.next,
-                        links:links,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
-                })
             },
             delete_role:function(id){
                 Swal.fire({

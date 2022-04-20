@@ -80,6 +80,8 @@
 <script>
 import axios from 'axios';
 import getCookie from '../component/getCookie'
+import {getApi} from '../component/getApi'
+    getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
     export default {
         data(){
             return {
@@ -97,8 +99,7 @@ import getCookie from '../component/getCookie'
             
             this.get_cookie = getCookie.getCookie('elecshop_login');
             if(this.get_cookie){
-                fetch(this.$hostname+'/api/v1/users/user_login',{headers:{"Authorization" : "Bearer " + this.get_cookie,'Content-Type': 'application/json','Accept': 'application/json'}})
-                    .then(res => res.json())
+               getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
                     .then(res => {
                         if(res.message || res.code == 404){
                             this.$router.push('/sign-in')
@@ -109,8 +110,7 @@ import getCookie from '../component/getCookie'
                     .then(()=>{
                         $( "#datepicker" ).datepicker();
                         $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-                        fetch(this.$hostname+'/api/v1/coupon/' + this.$route.params.id)
-                            .then(res => res.json())
+                        getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id,"")
                             .then(res => {
                                 this.coupon.code = res.data.code,
                                 this.coupon.type = res.data.type;
