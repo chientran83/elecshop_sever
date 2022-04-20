@@ -218,7 +218,6 @@ class userController extends Controller
             'code' => 201,
             'data' => new userResource($item_user)
         ],201);
-        
     }
 
     public function destroy($id)
@@ -233,7 +232,90 @@ class userController extends Controller
 
     public function sendCodeToEmail(Request $request)
     {
+        $userItem = $this->users->where('email',$request->email)->first();
+        if($userItem){
+            $code = "";
+            for($i = 0;$i < 8;$i++){
+                $code .= rand(1, 9);
+            }
+            $userItem->update(['code_get_password' => $code]);
+            $details = [
+                'title' => 'Mail from Elecshop',
+                'body' => 'This is a password recovery feature via user is email, please do not share this code.',
+                'code' => $code
+            ];
+            \Mail::to($request->email)->send(new \App\Mail\sendCodeToEmail($details));
+           
+            return response()->json([
+                'code' => 200,
+                'message' => "send code to Email success !"
+            ],200);
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => "Email does not exist !"
+            ],404);
+        }
         
+        
+    }
+
+    public function verifyCodeUser(Request $request)
+    {
+        $userItem = $this->users->where('email',$request->email)->first();
+        if($userItem){
+            if($userItem->code_get_password = $request->code_get_password){
+                return response()->json([
+                    'code' => 200,
+                    'message' => "Code correct !"
+                ],200);
+            }else{
+                return response()->json([
+                    'code' => 404,
+                    'message' => "Code not correct !"
+                ],404);
+            }
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => "Email does not exist !"
+            ],404);
+        }
+        
+        
+    }
+
+    public function passwordRetrieval(Request $request)
+    {
+        $userItem = $this->users->where('email',$request->email)->first();
+        if($userItem){
+            if($userItem->code_get_password = $request->code_get_password){
+                if($request->password == $request->password2){
+                    $userItem->update([
+                        'password' => Hash::make($request->password)
+                    ]);
+                    return response()->json([
+                        'code' => 200,
+                        'message' => "Change password success !"
+                    ],200);
+                }else{
+                    return response()->json([
+                        'code' => 403,
+                        'message' => "Password incorrect !"
+                    ],403);
+                }
+            }else{
+                return response()->json([
+                    'code' => 404,
+                    'message' => "Code not correct !"
+                ],404);
+            }
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => "Email does not exist !"
+            ],404);
+        }
         
         
     }

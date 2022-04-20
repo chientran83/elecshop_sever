@@ -92,6 +92,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('users/login',[userController::class,'login'])->name('user.login');
     Route::post('user',[userController::class,'store']);
     Route::post('users/sendCodeToEmail',[userController::class,'sendCodeToEmail']);
+    Route::post('users/verifyCodeUser',[userController::class,'verifyCodeUser']);
+    Route::post('users/passwordRetrieval',[userController::class,'passwordRetrieval']);
     //router role
     Route::get('role/index/{record_number}',[roleController::class,'index']);
     Route::get('role/{id}',[roleController::class,'show']);
