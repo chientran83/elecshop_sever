@@ -21,6 +21,9 @@ class sendCodeToEmail extends Mailable
         $this->details = $details;
     }
 
+    public function product(){
+        return $this->belongsToMany(product::class,'tbl_order_product','order_id','product_id');
+    }
     /**
      * Build the message.
      *

@@ -46,8 +46,8 @@ use Illuminate\Support\Facades\Route;
         Route::put('slider/{id}',[sliderController::class,'update']);
         Route::delete('slider/{id}',[sliderController::class,'destroy']);
         //router user
-        Route::get('users/logout',[userController::class,'logout'])->name('user.logout');
-        Route::post('users/refresh_token',[userController::class,'refresh_token'])->name('user.refresh_token');
+        /* Route::post('user/logout',[userController::class,'logout']); */
+        Route::post('users/refresh_token',[userController::class,'refresh_token']);
         Route::get('users/index/{record_number}',[userController::class,'index']);
         Route::get('user/{id}',[userController::class,'show']);
         Route::put('user/{id}',[userController::class,'update']);
@@ -56,6 +56,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('users/updateCustomer',[userController::class,'updateCustomer']);
         Route::post('users/addDeliveryInformation',[userController::class,'addDeliveryInformation']);
         Route::get('users/deleteDeliveryInformation',[userController::class,'deleteDeliveryInformation']);
+        Route::get('users/logout',[userController::class,'logout']);
         //router role
         Route::post('role',[roleController::class,'store']);
         Route::delete('role/{id}',[roleController::class,'destroy']);
@@ -65,6 +66,7 @@ use Illuminate\Support\Facades\Route;
         Route::put('resource/{id}',[resourceController::class,'update']);
         Route::delete('resource/{id}',[resourceController::class,'delete']);
         //router cart
+        Route::get('cart',[cartController::class,'show']);
         Route::post('cart',[cartController::class,'add_product']);
         Route::put('cart',[cartController::class,'update_product']);
         Route::delete('cart',[cartController::class,'delete_product']);
@@ -78,7 +80,6 @@ use Illuminate\Support\Facades\Route;
     });
 
     // NOT REQUIRE LOGIN
-
     //router product
     Route::get('product/index/{record_number}',[productController::class,'index'])/* ->middleware('checkPermission:slider,index') */;
     Route::get('product/{id}',[productController::class,'show']);
@@ -100,8 +101,6 @@ use Illuminate\Support\Facades\Route;
     //router resource
     Route::get('resource/index/{record_number}',[resourceController::class,'index']);
     Route::get('resource/{id}',[resourceController::class,'show']);
-    //router cart
-    Route::get('cart',[cartController::class,'show']);
     //router coupon
     Route::get('coupon/{id}',[couponController::class,'show']);
     

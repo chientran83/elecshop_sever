@@ -100,7 +100,7 @@ class userController extends Controller
         ])->withCookie(cookie('elecshop_login', $token , $minute));
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         auth()->logout();
         return response()->json([
