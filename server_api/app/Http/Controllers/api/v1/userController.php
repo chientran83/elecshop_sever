@@ -157,7 +157,7 @@ class userController extends Controller
     public function addDeliveryInformation(Request $request)
     {
         $item_user = User::find(auth()->user()->id);
-        $newDeliveryInformation = deliveryInformation::create(['user_id' => $item_user->id,'address' => $request->address,'phone' => $request->phone]);
+        $newDeliveryInformation = deliveryInformation::create(['name'=>$request->name,'user_id' => $item_user->id,'address' => $request->address,'phone' => $request->phone]);
         return response()->json([
             'code' => 201,
             'data' => new Resource($newDeliveryInformation)
@@ -235,7 +235,7 @@ class userController extends Controller
         $userItem = $this->users->where('email',$request->email)->first();
         if($userItem){
             $code = "";
-            for($i = 0;$i < 8;$i++){
+            for($i = 0;$i < 4;$i++){
                 $code .= rand(1, 9);
             }
             $userItem->update(['code_get_password' => $code]);
@@ -264,10 +264,10 @@ class userController extends Controller
     {
         $userItem = $this->users->where('email',$request->email)->first();
         if($userItem){
-            if($userItem->code_get_password = $request->code_get_password){
+            if($userItem->code_get_password == $request->code_get_password){
                 return response()->json([
                     'code' => 200,
-                    'message' => "Code correct !"
+                    'message' => "Code correct!"
                 ],200);
             }else{
                 return response()->json([
