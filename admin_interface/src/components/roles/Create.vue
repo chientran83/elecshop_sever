@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -98,9 +98,9 @@
 </template>
 <script>
     import axios from 'axios'
-        import getCookie from '../component/getCookie'
-        import {getApi} from '../component/getApi'
+    import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 role:{
@@ -110,38 +110,26 @@
                 },
                 resources:[],
                 selected:[],
-                allSelected:false,
-                user:null,
-                get_cookie:""
+                allSelected:false
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/resource/index',0,"")
-                    .then(res => {
-                        res.data.forEach(item => {
-                        this.resources.push({
-                                id:item.id,
-                                alias:item.alias,
-                                permissions:item.permissions,
-                                permissionsDefaults:item.permissionsDefaults,
-                                checked:false
-                        }) 
-                        })
-                    });
-            })
-            .catch(err => {
-                console.log(err)
-            })
+            getApi(this.$hostname+'/api/v1/resource/index',0)
+                .then(res => {
+                    res.data.forEach(item => {
+                    this.resources.push({
+                            id:item.id,
+                            alias:item.alias,
+                            permissions:item.permissions,
+                            permissionsDefaults:item.permissionsDefaults,
+                            checked:false
+                    }) 
+                    })
+                })
+            
+                .catch(err => {
+                    console.log(err)
+                })
         },
         methods:{
             role_store:function(){
@@ -160,7 +148,7 @@
                     form_data.append('desc',this.role.desc);
                     form_data.append('status',this.role.status);
                     form_data.append('permissions',JSON.stringify(this.selected));
-                    axios.post(this.$hostname+'/api/v1/role',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                    axios.post(this.$hostname+'/api/v1/role',form_data,{headers:{"Authorization" : "Bearer " + this.userLogin.token}}).then(res => {
                         this.role.name = "";
                         this.role.desc = "";
                         this.role.status = "";

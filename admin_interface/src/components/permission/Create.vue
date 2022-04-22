@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -63,8 +63,6 @@
 <script>
     import axios from 'axios'
     import Multiselect from 'vue-multiselect'
-        import getCookie from '../component/getCookie'
-        import {getApi} from '../component/getApi'
     export default {
         components: {
             Multiselect
@@ -81,21 +79,10 @@
                     { name: 'delete', code: 'delete' },
                     { name: 'index', code: 'index' },
                     { name: 'show', code: 'show' },
-                ],
-                user:null,
-                get_cookie:""
+                ]
             }
         },
         mounted(){
-            const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
             
         },
         methods:{
@@ -113,7 +100,7 @@
                     var form_data = new FormData();
                     form_data.append('alias',this.resource.alias);
                     form_data.append('permissions',JSON.stringify(this.resource.permissions));
-                    axios.post(this.$hostname+'/api/v1/resource',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                    axios.post(this.$hostname+'/api/v1/resource',form_data,{headers:{"Authorization" : "Bearer " + this.userLogin.token}}).then(res => {
                         this.resource.alias = "";
                         this.resource.permissions = [];
                         Swal.fire(

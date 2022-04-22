@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content"  v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -62,9 +62,8 @@
 </template>
 <script>
     import axios from 'axios'
-    import getCookie from '../component/getCookie'
-    import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 category:{
@@ -76,15 +75,7 @@
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
+
         },
         methods:{
             category_store:function(){
@@ -101,7 +92,7 @@
                     var form_data = new FormData();
                     form_data.append('name',this.category.name);
                     form_data.append('desc',this.category.desc);
-                    axios.post(this.$hostname+'/api/v1/category',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                    axios.post(this.$hostname+'/api/v1/category',form_data,{headers:{"Authorization" : "Bearer " + this.userLogin.token}}).then(res => {
                         this.category.name = "";
                         this.category.desc = "";
                         Swal.fire(

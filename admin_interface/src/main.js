@@ -12,9 +12,9 @@ var hostname = 'http://localhost:8000'
 
 Vue.prototype.$verifyLogin = ()=>{
   var getCookies = getCookie.getCookie('elecshop_login');
-    return getApi(hostname +'/api/v1/users/user_login',"",getCookies)
+    return getApi(hostname +'/api/v1/users/user_login',"")
       .then(res => {
-          if(getCookies == "" || res.code == 404){
+          if(getCookies == "" || res.code == 404 || res.message){
             return {
               success:false
             }

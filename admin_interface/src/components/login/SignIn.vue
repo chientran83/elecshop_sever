@@ -42,6 +42,7 @@
 <script>
 import axios from 'axios'
 export default {
+    props:['userLogin'],
     data(){
         return {
             user:{
@@ -56,6 +57,12 @@ export default {
         }
     },
     mounted(){
+        const verifyLogin = this.$verifyLogin()
+        verifyLogin.then(res => {
+            if(res.success) {
+                 this.$router.push({ path: '/' })
+            }
+        })
     },
     methods:{
         singIn:function(){
@@ -69,11 +76,21 @@ export default {
                         this.error.password = res.data.message;
                         this.user.password = "";
                     }else{
-                          const d = new Date();
-                            d.setTime(d.getTime() + (3*24*60*60*1000));
-                            let expires = "expires="+ d.toUTCString();
-                            document.cookie = "elecshop_login=" + res.data.access_token + ";" + expires + ";path=/";
-                            this.$router.push('/')
+                        const d = new Date();
+                        d.setTime(d.getTime() + (3*24*60*60*1000));
+                        let expires = "expires="+ d.toUTCString();
+                        document.cookie = "elecshop_login=" + res.data.access_token + ";" + expires + ";path=/";
+
+                        const verifyLogin = this.$verifyLogin()
+                        verifyLogin.then(res => {
+                            if(res.success) {
+                                this.$emit('eventname', {
+                                    data:res.data,
+                                    token:res.token
+                                })
+                                this.$router.push({ path: '/' })
+                            }
+                        })
                     }
                 })
         }

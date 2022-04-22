@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -78,8 +78,8 @@
 </template>
 <script>
     import axios from 'axios'
-    import getCookie from '../component/getCookie'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 coupon:{
@@ -93,22 +93,8 @@
             }
         },
         mounted(){
-            const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                $( "#datepicker" ).datepicker();
-                $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-            })
-            .catch(err => {
-                console.log(err)
-            })
+            $( "#datepicker" ).datepicker();
+            $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
              
         },
         methods:{
@@ -129,7 +115,7 @@
                     form_data.append('type',this.coupon.type);
                     form_data.append('value',this.coupon.value);
                     form_data.append('quantity',this.coupon.quantity);
-                    axios.post(this.$hostname+'/api/v1/coupon',form_data,{headers:{"Authorization" : "Bearer " + this.get_cookie}}).then(res => {
+                    axios.post(this.$hostname+'/api/v1/coupon',form_data,{headers:{"Authorization" : "Bearer " + this.userLogin.token}}).then(res => {
                         this.coupon.code = "";
                         this.coupon.value = 0;
                         this.coupon.quantity = 0;

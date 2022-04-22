@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -78,8 +78,7 @@
 </template>
 <script>
 import axios from 'axios';
-    import getCookie from '../component/getCookie'
-     import {getApi} from '../component/getApi'
+import {getApi} from '../component/getApi'
     export default {
         data(){
             return {
@@ -89,32 +88,21 @@ import axios from 'axios';
                     status:"",
                     link:"",
                     image_path:""
-                },
-                user:null,
-                get_cookie:""
+                }
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/slider/',this.$route.params.id,"")
-                    .then(res => res.json())
-                    .then(res => {
-                        this.slider.name = res.data.name,
-                        this.slider.link = res.data.link,
-                        this.slider.desc = res.data.desc
-                        this.slider.status = res.data.status
-                        this.slider.image_path = res.data.image_path
-                    })
-            })
+           
+            getApi(this.$hostname+'/api/v1/slider/',this.$route.params.id)
+                .then(res => res.json())
+                .then(res => {
+                    this.slider.name = res.data.name,
+                    this.slider.link = res.data.link,
+                    this.slider.desc = res.data.desc
+                    this.slider.status = res.data.status
+                    this.slider.image_path = res.data.image_path
+                })
+           
             .catch(err => {
                 console.log(err)
             })
@@ -142,7 +130,7 @@ import axios from 'axios';
                     axios.post(this.$hostname+'/api/v1/slider/'+this.$route.params.id,form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
-                            "Authorization" : "Bearer " + this.get_cookie
+                            "Authorization" : "Bearer " + this.userLogin.token
                         }
                     })
                     .then(res => {

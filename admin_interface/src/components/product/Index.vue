@@ -1,5 +1,5 @@
 <template>
-     <div class="pcoded-inner-content" v-if="user">
+     <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -108,9 +108,9 @@
 </template>
 <script>
 import axios from 'axios';
-    import getCookie from '../component/getCookie'
-    import {getApi} from '../component/getApi'
+import {getApi} from '../component/getApi'
 export default {
+    props:['userLogin'],
     data(){
         return {
             products:[],
@@ -128,40 +128,29 @@ export default {
                 user_id:""
             },
             paginate:{},
-            user:null,
-            product_record_number:6,
-            get_cookie:""
+            product_record_number:6
         }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
+           
+            getApi(this.$hostname+'/api/v1/product/index/',this.product_record_number)
+                .then(res => {
+                    this.products = res.data;
+                    var link_page = res.meta.links.filter(function(index){
+                        return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
+                    })
+                    this.paginate = {
+                        first:res.links.first,
+                        last:res.links.last,
+                        prev:res.links.prev,
+                        next:res.links.next,
+                        link_page:link_page,
+                        current_page:res.meta.current_page,
+                        from:res.meta.from,
+                        last_page:res.meta.last_page
+                    }
             })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/product/index/',this.product_record_number,"")
-                    .then(res => {
-                        this.products = res.data;
-                        var link_page = res.meta.links.filter(function(index){
-                            return index.label != "&laquo; Previous" && index.label != "Next &raquo;";
-                        })
-                        this.paginate = {
-                            first:res.links.first,
-                            last:res.links.last,
-                            prev:res.links.prev,
-                            next:res.links.next,
-                            link_page:link_page,
-                            current_page:res.meta.current_page,
-                            from:res.meta.from,
-                            last_page:res.meta.last_page
-                        }
-                })
-            })
+          
             .catch(err => {
                 console.log(err)
             })
@@ -174,7 +163,7 @@ export default {
                 }else{
                     var link = url
                 }
-                getApi(link,"","")
+                getApi(link,"")
                     .then(res => {
                         this.products = res.data;
                         var link_page = res.meta.links.filter(function(index){
@@ -203,7 +192,7 @@ export default {
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete(this.$hostname+'/api/v1/product/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.delete(this.$hostname+'/api/v1/product/'+id,{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

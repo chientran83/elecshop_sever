@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -62,36 +62,25 @@
 </template>
 <script>
 import axios from 'axios';
-    import getCookie from '../component/getCookie'
      import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 category:{
                     name:"",
                     desc:""
-                },
-                user:null,
-                get_cookie:""
+                }
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/category/', this.$route.params.id,"")
-                    .then(res => {
-                        this.category.name = res.data.name,
-                        this.category.desc = res.data.desc
-                    })
-            })
+           
+            getApi(this.$hostname+'/api/v1/category/', this.$route.params.id)
+                .then(res => {
+                    this.category.name = res.data.name,
+                    this.category.desc = res.data.desc
+                })
+         
             .catch(err => {
                 console.log(err)
             })
@@ -110,7 +99,7 @@ import axios from 'axios';
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(this.$hostname+'/api/v1/category/'+this.$route.params.id,{name:this.category.name,desc:this.category.desc},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.put(this.$hostname+'/api/v1/category/'+this.$route.params.id,{name:this.category.name,desc:this.category.desc},{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',

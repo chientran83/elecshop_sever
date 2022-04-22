@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -79,9 +79,9 @@
 </template>
 <script>
 import axios from 'axios';
-import getCookie from '../component/getCookie'
 import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 coupon:{
@@ -89,34 +89,21 @@ import {getApi} from '../component/getApi'
                     type:"percent",
                     value:"",
                     quantity:0
-                },
-                user:null,
-                get_cookie:""
+                }
             }
         },
         mounted(){
-            
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
+            $( "#datepicker" ).datepicker();
+            $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
+            getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id)
+                .then(res => {
+                    this.coupon.code = res.data.code,
+                    this.coupon.type = res.data.type;
+                    this.coupon.value = res.data.value;
+                    this.coupon.quantity = res.data.quantity;
+                    $("#datepicker" ).val(res.data.expire);
             })
-            .then(()=>{
-                $( "#datepicker" ).datepicker();
-                $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-                getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id,"")
-                    .then(res => {
-                        this.coupon.code = res.data.code,
-                        this.coupon.type = res.data.type;
-                        this.coupon.value = res.data.value;
-                        this.coupon.quantity = res.data.quantity;
-                        $("#datepicker" ).val(res.data.expire);
-                })
-            })
+        
             .catch(err => {
                 console.log(err)
             })
@@ -141,7 +128,7 @@ import {getApi} from '../component/getApi'
                         value:this.coupon.value,
                         quantity:this.coupon.quantity,
                         expire: $("#datepicker" ).val()
-                        },{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                        },{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',

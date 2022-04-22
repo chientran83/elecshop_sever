@@ -1,39 +1,49 @@
 <template>
   <div id="app">
     <div v-if="user">
-      <router-view name="header"></router-view>
-      <router-view name="sideBar"></router-view>
+        <router-view name="header" v-bind:userLogin="user" v-if="user"></router-view>
+        <router-view name="sideBar" v-bind:userLogin="user"  v-if="user"></router-view>
     </div>
-      <div v-else></div>
-      <router-view ></router-view>
+    <div v-else>
+      <!-- <div class="loader-bg">
+          <div class="loader-track">
+              <div class="loader-fill"></div>
+          </div>
+      </div> -->
+    </div>
+    <router-view v-bind:userLogin="user" @eventname="updateUserLogin"></router-view>
   </div>
 </template>
-
 <script>
-import getCookie from './components/component/getCookie'
 import {getApi} from './components/component/getApi'
 export default {
   name: 'App',
   components: {
+    
   },
   data(){
     return {
-      get_cookie:"",
       user: null
     }
   },
-  mounted(){
-      this.get_cookie = getCookie.getCookie('elecshop_login');
-      if(this.get_cookie){
-            getApi(this.$hostname+'/api/v1/users/user_login',"",this.get_cookie)
-                .then(res => {
-                    if(res.message || res.code == 404){
-                        this.user = null
-                    }else{
-                        this.user = res.data
-                    }
-                })
+  created(){
+    const verifyLogin = this.$verifyLogin()
+    verifyLogin.then(res => {
+      if(res.success) {
+        this.user = {
+          data:res.data,
+            token:res.token
+          }
+      }else{
+        /* this.$router.push({ path: '/sign-in' }) */
       }
+    })
+  },
+  methods: {
+     updateUserLogin(variable) {
+        console.log(variable)
+        this.user = variable
+    }
   }
 }
 </script>

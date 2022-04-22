@@ -1,5 +1,5 @@
 <template>
-<div class="pcoded-inner-content" v-if="user">
+<div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -159,14 +159,14 @@ import Vue from 'vue';
 import CKEditor from 'ckeditor4-vue';
 import axios from 'axios';
 import Multiselect from 'vue-multiselect'
-    import getCookie from '../component/getCookie'
-    import {getApi} from '../component/getApi'
+import {getApi} from '../component/getApi'
 
 Vue.use( CKEditor );
     export default {
         components: {
             Multiselect
         },
+        props:['userLogin'],
         data(){
             return {
                 optionsTags: [
@@ -205,31 +205,19 @@ Vue.use( CKEditor );
                 },
                 categories:[],
                 category_record_number:0,
-                product_record_number:6,
-                user:null,
-                get_cookie:""
+                product_record_number:6
                 }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/category/index/', this.category_record_number,"")
+            getApi(this.$hostname+'/api/v1/category/index/', this.category_record_number)
+            .then(res => {
+                    this.categories = res.data
+                })
+            getApi(this.$hostname+'/api/v1/product/index/',0)
                 .then(res => {
-                        this.categories = res.data
-                    })
-                getApi(this.$hostname+'/api/v1/product/index/',0,"")
-                    .then(res => {
-                        this.optionsAccessories[0].libs = res.data;
-                    })
-            })
+                    this.optionsAccessories[0].libs = res.data;
+                })
+         
             .catch(err => {
                 console.log(err)
             })
@@ -334,7 +322,7 @@ Vue.use( CKEditor );
                         axios.post(this.$hostname+'/api/v1/product',formData,{
                             headers: {
                                 'Content-Type': 'multipart/form-data',
-                                "Authorization" : "Bearer " + this.get_cookie
+                                "Authorization" : "Bearer " + this.userLogin.token
                             }})
                             .then(res => {
                                 Swal.fire(

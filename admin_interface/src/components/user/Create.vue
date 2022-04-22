@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -88,12 +88,12 @@
 <script>
     import axios from 'axios'
     import Multiselect from 'vue-multiselect'
-    import getCookie from '../component/getCookie'
     import {getApi} from '../component/getApi'
     export default {
         components: {
             Multiselect
         },
+        props:['userLogin'],
         data(){
             return {
                 user:{
@@ -113,27 +113,15 @@
                             ]
                     }
                    
-                ],
-                user:null,
-                get_cookie:""
+                ]
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                this.user.status = 1;
-                getApi(this.$hostname+'/api/v1/role/index/',0,"")
-                    .then(res => {
-                        this.optionsRoles[0].libs = res.data
-                });
+            
+            this.user.status = 1;
+            getApi(this.$hostname+'/api/v1/role/index/',0,"")
+                .then(res => {
+                    this.optionsRoles[0].libs = res.data
             })
             .catch(err => {
                 console.log(err)
@@ -164,7 +152,7 @@
                     axios.post(this.$hostname+'/api/v1/users',form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
-                            "Authorization" : "Bearer " + this.get_cookie
+                            "Authorization" : "Bearer " + this.userLogin.token
                         }
                     }).then(res => {
                         this.user.name = "";

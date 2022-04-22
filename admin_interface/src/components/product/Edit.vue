@@ -1,5 +1,5 @@
 <template>
-<div class="pcoded-inner-content" v-if="user">
+<div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -157,7 +157,6 @@ import Vue from 'vue';
 import CKEditor from 'ckeditor4-vue';
 import axios from 'axios';
 import Multiselect from 'vue-multiselect'
-    import getCookie from '../component/getCookie'
     import {getApi} from '../component/getApi'
 
 Vue.use( CKEditor );
@@ -165,6 +164,7 @@ Vue.use( CKEditor );
         components: {
             Multiselect
         },
+        props:['userLogin'],
         data(){
             return {
                 optionsTags: [
@@ -206,88 +206,78 @@ Vue.use( CKEditor );
                 },
                 categories:[],
                 category_record_number: 0,
-                accessories_record_number: 0,
-                user:null,
-                get_cookie:""
+                accessories_record_number: 0
             }
         },
         mounted(){
-            const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                this.product_id = this.$route.params.id
-                getApi(this.$hostname+'/api/v1/category/index/',this.category_record_number,"")
-                    .then(res => {
-                        this.categories = res.data
-                    })
-                getApi(this.$hostname+'/api/v1/product/',this.product_id,"")
-                    .then(res => {
-                        fetch(this.$hostname+'/api/v1/category/'+res.data.category_id).then(res => res.json()).then(res => {
+          
+            this.product_id = this.$route.params.id
+            getApi(this.$hostname+'/api/v1/category/index/',this.category_record_number)
+                .then(res => {
+                    this.categories = res.data
+                })
+            getApi(this.$hostname+'/api/v1/product/',this.product_id)
+                .then(res => {
+                    getApi(this.$hostname+'/api/v1/category/',res.data.category_id)
+                        .then(res => {
                             this.product.category_id = {
                                 "id": res.data.id,
                                 "name": res.data.name
                             };
                         })
-                        res.data.tags.forEach(tag => {
-                            var tag = {
-                                name: tag.name,
-                                code: tag.name,
-                                pivot:tag.pivot}
-                            this.product.tags.push(tag)
-                            this.optionsTags.push(tag)
-                        })
-                        res.data.memory.forEach(memory => {
-                            var tag = {
-                                name: memory.name,
-                                code: memory.name,
-                                pivot:memory.pivot}
-                            this.product.memory.push(tag)
-                            this.optionsMemory.push(tag)
-                        })
-        
-                        res.data.colors.forEach((color) => {
-                            var obj = {
-                                name: color.name,
-                                code:color.name,
-                                price: color.price,
-                                codes:color.code,
-                                image_path:color.image_path 
-                            }
+                    res.data.tags.forEach(tag => {
+                        var tag = {
+                            name: tag.name,
+                            code: tag.name,
+                            pivot:tag.pivot}
+                        this.product.tags.push(tag)
+                        this.optionsTags.push(tag)
+                    })
+                    res.data.memory.forEach(memory => {
+                        var tag = {
+                            name: memory.name,
+                            code: memory.name,
+                            pivot:memory.pivot}
+                        this.product.memory.push(tag)
+                        this.optionsMemory.push(tag)
+                    })
+    
+                    res.data.colors.forEach((color) => {
+                        var obj = {
+                            name: color.name,
+                            code:color.name,
+                            price: color.price,
+                            codes:color.code,
+                            image_path:color.image_path 
+                        }
 
-                            this.product.colors.push(obj)
-                            this.optionsColors.push(obj)
-                        })
-        
-                        // this.product.colors=res.data.colors;
-                        this.product.tag=res.data.tag;
-                        this.product.accessories=res.data.accessories;
-                        this.product.id=res.data.id;
-                        this.product.name=res.data.name;
-                        this.product.origin_price=res.data.origin_price;
-                        this.product.previous_price=res.data.previous_price;
-                        this.product.current_price= res.data.current_price;
-                        this.product.ram=res.data.ram;
-                        this.product.isOnsale=res.data.isOnSale;
-                        this.product.desc=res.data.desc;
-                        this.product.quantity=res.data.quantity;
-                        this.product.image_path=res.data.image_path;
+                        this.product.colors.push(obj)
+                        this.optionsColors.push(obj)
                     })
-                getApi(this.$hostname+'/api/v1/product/index/',this.accessories_record_number,"")
-                    .then(res => {
-                        var product_id = this.product.id;
-                        var accessories = res.data.filter(function(index,key){
-                            return index.id != product_id
-                        })
-                        this.optionsAccessories[0].libs = accessories;
+    
+                    // this.product.colors=res.data.colors;
+                    this.product.tag=res.data.tag;
+                    this.product.accessories=res.data.accessories;
+                    this.product.id=res.data.id;
+                    this.product.name=res.data.name;
+                    this.product.origin_price=res.data.origin_price;
+                    this.product.previous_price=res.data.previous_price;
+                    this.product.current_price= res.data.current_price;
+                    this.product.ram=res.data.ram;
+                    this.product.isOnsale=res.data.isOnSale;
+                    this.product.desc=res.data.desc;
+                    this.product.quantity=res.data.quantity;
+                    this.product.image_path=res.data.image_path;
+                })
+            getApi(this.$hostname+'/api/v1/product/index/',this.accessories_record_number)
+                .then(res => {
+                    var product_id = this.product.id;
+                    var accessories = res.data.filter(function(index,key){
+                        return index.id != product_id
                     })
-            })
+                    this.optionsAccessories[0].libs = accessories;
+                })
+           
             .catch(err => {
                 console.log(err)
             })
@@ -408,7 +398,7 @@ Vue.use( CKEditor );
                         axios.post(this.$hostname+'/api/v1/product/'+this.product_id,formData,{
                             headers : {
                                 'Content-Type' : 'multipart/form-data;',
-                                "Authorization" : "Bearer " + this.get_cookie
+                                "Authorization" : "Bearer " + this.userLogin.token
                             }})
                             .then(res => {
                                 Swal.fire(

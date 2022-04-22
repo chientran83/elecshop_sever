@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -97,9 +97,9 @@
 </template>
 <script>
 import axios from 'axios';
-    import getCookie from '../component/getCookie'
     import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 role:{
@@ -110,54 +110,43 @@ import axios from 'axios';
                 resources:[],
                 selected:[],
                 allSelected:false,
-                temporaryStorageSelected:[],   //var de checked permission of role
-                user:null,
-                get_cookie:""
+                temporaryStorageSelected:[]   //var de checked permission of role
             }
         },
         mounted(){
-            const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/resource/index/',0,this.get_cookie)
-                    .then(res => {
-                        res.data.forEach(item => {
-                            this.resources.push({
-                                id:item.id,
-                                alias:item.alias,
-                                permissions:item.permissions,
-                                permissionsDefaults:item.permissionsDefaults,
-                                checked:false
-                            }) 
-                        }),
-                getApi(this.$hostname+'/api/v1/role/', this.$route.params.id,"")
-                    .then(res => {
-                        this.role.name = res.data.name
-                        this.role.desc = res.data.desc
-                        this.role.status = res.data.status
-                        // add checked checkbox
-                        this.resources.forEach(itemResource => {
-                            itemResource.permissionsDefaults.forEach(itemPermission => {
-                                this.temporaryStorageSelected.push(itemPermission)
-                            })
+           
+            getApi(this.$hostname+'/api/v1/resource/index/',0)
+                .then(res => {
+                    res.data.forEach(item => {
+                        this.resources.push({
+                            id:item.id,
+                            alias:item.alias,
+                            permissions:item.permissions,
+                            permissionsDefaults:item.permissionsDefaults,
+                            checked:false
+                        }) 
+                    }),
+            getApi(this.$hostname+'/api/v1/role/', this.$route.params.id)
+                .then(res => {
+                    this.role.name = res.data.name
+                    this.role.desc = res.data.desc
+                    this.role.status = res.data.status
+                    // add checked checkbox
+                    this.resources.forEach(itemResource => {
+                        itemResource.permissionsDefaults.forEach(itemPermission => {
+                            this.temporaryStorageSelected.push(itemPermission)
                         })
-                        res.data.permissions.forEach(itemPermission => {
-                            this.temporaryStorageSelected.forEach(itemSelected => {
-                                if(itemPermission.resource_id == itemSelected.resource_id && itemPermission.allow == itemSelected.allow) {
-                                    this.selected.push(itemSelected.id)
-                                }
-                            });
-                        })
+                    })
+                    res.data.permissions.forEach(itemPermission => {
+                        this.temporaryStorageSelected.forEach(itemSelected => {
+                            if(itemPermission.resource_id == itemSelected.resource_id && itemPermission.allow == itemSelected.allow) {
+                                this.selected.push(itemSelected.id)
+                            }
+                        });
                     })
                 })
             })
+          
             .catch(err => {
                 console.log(err)
             })
@@ -182,7 +171,7 @@ import axios from 'axios';
                             desc:this.role.desc,
                             status:this.role.status,
                             permissions:JSON.stringify(this.selected)
-                        },{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                        },{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                         .then(res => {
                             Swal.fire(
                             'Updated!',

@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -63,12 +63,12 @@
 <script>
 import axios from 'axios'
 import Multiselect from 'vue-multiselect'
-    import getCookie from '../component/getCookie'
     import {getApi} from '../component/getApi'
     export default {
         components: {
             Multiselect
         },
+        props:['userLogin'],
          data(){
             return {
                 resource:{
@@ -82,44 +82,32 @@ import Multiselect from 'vue-multiselect'
                     { name: 'delete', code: 'delete' },
                     { name: 'index', code: 'index' },
                     { name: 'show', code: 'show' },
-                ],
-                user:null,
-                get_cookie:""
+                ]
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                getApi(this.$hostname+'/api/v1/resource/',this.$route.params.id,"")
-                    .then(res => {
-                        this.resource.alias = res.data.alias,
-    
-                        res.data.permissionsDefaults.forEach(permission => {
-                            var checkExist = this.permissionOptionsDefault.find((permissionDefault,key) => {
-                                return permissionDefault.name == permission.allow;
-                            });
-                            if(checkExist){
-                                this.resource.permissions.push(checkExist)
-                            }else{
-                                const per = {
-                                        name: permission.allow,
-                                        code: permission.id
-                                    }
-                                this.permissionOptions.push(per)
-                                this.resource.permissions.push(per)
-                            }
-                        })
-                        this.permissionOptions = this.permissionOptions.concat(this.permissionOptionsDefault)
+            getApi(this.$hostname+'/api/v1/resource/',this.$route.params.id)
+                .then(res => {
+                    this.resource.alias = res.data.alias,
+
+                    res.data.permissionsDefaults.forEach(permission => {
+                        var checkExist = this.permissionOptionsDefault.find((permissionDefault,key) => {
+                            return permissionDefault.name == permission.allow;
+                        });
+                        if(checkExist){
+                            this.resource.permissions.push(checkExist)
+                        }else{
+                            const per = {
+                                    name: permission.allow,
+                                    code: permission.id
+                                }
+                            this.permissionOptions.push(per)
+                            this.resource.permissions.push(per)
+                        }
                     })
-            })
+                    this.permissionOptions = this.permissionOptions.concat(this.permissionOptionsDefault)
+                })
+            
             .catch(err => {
                 console.log(err)
             })
@@ -140,7 +128,7 @@ import Multiselect from 'vue-multiselect'
                 confirmButtonText: 'Yes, I agree!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.put(this.$hostname+'/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)},{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.put(this.$hostname+'/api/v1/resource/'+this.$route.params.id,{alias:this.resource.alias, permissions:JSON.stringify(this.resource.permissions)},{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                          Swal.fire(
                         'Updated!',

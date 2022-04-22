@@ -89,15 +89,12 @@
                             <i class="icon feather icon-settings"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
-                            <div class="pro-head" v-if="user">
-                                <img :src="$hostname+'' + user.image_path" class="img-radius">
-                                <span>{{user.name}}</span>
+                            <div class="pro-head">
+                                <img :src="$hostname+'' + userLogin.data.image_path" class="img-radius">
+                                <span>{{userLogin.data.name}}</span>
                                 <a class="dud-logout" v-on:click="logOut()" style="cursor: pointer">
                                     <i class="feather icon-log-out"></i>
                                 </a>
-                            </div>
-                            <div class="pro-head" v-else>
-                               <p>Loading...</p>
                             </div>
                             <ul class="pro-body">
                                 <li><a href="javascript:" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
@@ -113,35 +110,24 @@
 
 <script>
 import axios from 'axios';
-import getCookie from '../component/getCookie'
-import {getApi} from '../component/getApi'
-
     export default {
+        props:['userLogin'],
         data(){
             return {
-                user:null,
-                get_cookie:""
+              
             }
         },
 
         mounted(){
-            const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
+            
         },
         methods:{
             logOut:function(){
-                /* alert('logout success') */
-                axios.get(this.$hostname+'/api/v1/users/logout',{headers:{"Authorization" : "Bearer " + this.get_cookie}})
-                    .then(res => {
+                axios.get(this.$hostname+'/api/v1/users/logout',{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
+                    .then(() => {
                         document.cookie = 'elecshop_login' + '=; Max-Age=0'
-                        this.$router.push('/sign-in')
+                        this.$emit('updateUserLogin', null)
+                        this.$router.push({ path: '/sign-in' })
                     })
             }
         }

@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
                     <!-- [ breadcrumb ] start -->
                     <div class="page-header">
                         <div class="page-block">
@@ -81,9 +81,9 @@
 </template>
 <script>
 import axios from "axios"
-    import getCookie from '../component/getCookie'
     import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 categories: [],
@@ -93,45 +93,33 @@ import axios from "axios"
                     desc:""
                 },
                 record_number:6,
-                paginate:{},
-                user:null,
-                get_cookie:""
+                paginate:{}
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                // fetch data order
-                getApi(this.$hostname+'/api/v1/order/index/',this.record_number,"")
-                    .then(res => {
-                        this.categories = res.data;
-                        var links = res.meta.links;
-                        links = links.filter(function(item){
-                            return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                        })
-                        this.paginate = {
-                            first:res.links.first,
-                            last:res.links.last,
-                            next:res.links.next,
-                            prev:res.links.prev,
-                            links:links,
-                            current_page:res.meta.current_page,
-                            from:res.meta.from,
-                            last_page:res.meta.last_page
-                        }
+            
+            // fetch data order
+            getApi(this.$hostname+'/api/v1/order/index/',this.record_number)
+                .then(res => {
+                    this.categories = res.data;
+                    var links = res.meta.links;
+                    links = links.filter(function(item){
+                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
                     })
-            })
-            .catch(err => {
-                console.log(err)
-            })
+                    this.paginate = {
+                        first:res.links.first,
+                        last:res.links.last,
+                        next:res.links.next,
+                        prev:res.links.prev,
+                        links:links,
+                        current_page:res.meta.current_page,
+                        from:res.meta.from,
+                        last_page:res.meta.last_page
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
              
         },
         methods:{
@@ -141,7 +129,7 @@ import axios from "axios"
                 }else{
                     var link = this.$hostname+'/api/v1/order/index/' + this.record_number;
                 }
-                getApi(link,"","")
+                getApi(link,"")
                   .then(res => {
                     this.categories = res.data;
                     var links = res.meta.links;
@@ -171,7 +159,7 @@ import axios from "axios"
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete(this.$hostname+'/api/v1/order/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.delete(this.$hostname+'/api/v1/order/'+id,{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

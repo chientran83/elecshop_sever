@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
                     <!-- [ breadcrumb ] start -->
                     <div class="page-header">
                         <div class="page-block">
@@ -103,9 +103,9 @@
 </template>
 <script>
 import axios from "axios"
-    import getCookie from '../component/getCookie'
     import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 roles: [],
@@ -116,42 +116,31 @@ import axios from "axios"
                     status:""
                 },
                 paginate:{},
-                role_record_number:6,
-                user:null,
-                get_cookie:""
+                role_record_number:6
             }
         },
         mounted(){
-             const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                // fetch data role
-                getApi(this.$hostname+'/api/v1/role/index/',this.role_record_number,"")
-                    .then(res => {
-                        this.roles = res.data;
-                        var links = res.meta.links;
-                        links = links.filter(function(item){
-                            return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                        })
-                        this.paginate = {
-                            first:res.links.first,
-                            last:res.links.last,
-                            next:res.links.next,
-                            prev:res.links.prev,
-                            links:links,
-                            current_page:res.meta.current_page,
-                            from:res.meta.from,
-                            last_page:res.meta.last_page
-                        }
+             
+            // fetch data role
+            getApi(this.$hostname+'/api/v1/role/index/',this.role_record_number)
+                .then(res => {
+                    this.roles = res.data;
+                    var links = res.meta.links;
+                    links = links.filter(function(item){
+                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
                     })
-            })
+                    this.paginate = {
+                        first:res.links.first,
+                        last:res.links.last,
+                        next:res.links.next,
+                        prev:res.links.prev,
+                        links:links,
+                        current_page:res.meta.current_page,
+                        from:res.meta.from,
+                        last_page:res.meta.last_page
+                    }
+                })
+          
             .catch(err => {
                 console.log(err)
             })
@@ -165,7 +154,7 @@ import axios from "axios"
                 }else{
                     var link = this.$hostname+'/api/v1/role/index/'+this.role_record_number;
                 }
-                getApi(link,"","")
+                getApi(link,"")
                     .then(res => {
                         this.roles = res.data;
                         var links = res.meta.links;
@@ -195,7 +184,7 @@ import axios from "axios"
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete(this.$hostname+'/api/v1/role/'+id,{headers:{"Authorization" : "Bearer " + this.get_cookie}})
+                    axios.delete(this.$hostname+'/api/v1/role/'+id,{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

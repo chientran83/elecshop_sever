@@ -1,5 +1,5 @@
 <template>
-    <div class="pcoded-inner-content" v-if="user">
+    <div class="pcoded-inner-content" v-if="userLogin">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
             <div class="page-block">
@@ -81,11 +81,11 @@
 import axios from 'axios';
 import Multiselect from 'vue-multiselect'
 import {getApi} from '../component/getApi'
-import getCookie from '../component/getCookie'
     export default {
         components: {
             Multiselect
         },
+        props:['userLogin'],
         data(){
             return {
                  user:{
@@ -105,38 +105,25 @@ import getCookie from '../component/getCookie'
                         ]
                     }
                    
-                ],
-                user:null,
-                get_cookie:""
+                ]
             }
         },
         mounted(){
-            const verifyLogin = this.$verifyLogin()
-            verifyLogin.then(res => {
-                if(res.success) {
-                    this.user = res.data;
-                    this.get_cookie = res.token;
-                }else{
-                    this.$router.push('/sign-in')
-                }
-            })
-            .then(()=>{
-                verifyLogin.then(() => {
-                    getApi(this.$hostname+'/api/v1/role/index/',0,this.get_cookie)
-                        .then(res => {
-                            this.optionsRoles[0].libs = res.data
-                        });
-                    getApi(this.$hostname+'/api/v1/users/',this.$route.params.id,this.get_cookie)
-                        .then(res => {
-                            this.user.name = res.data.name
-                            this.user.location = res.data.location
-                            this.user.phoneNumber = res.data.phoneNumber
-                            this.user.email = res.data.email
-                            this.user.image_path = res.data.image_path
-                            this.user.roles = res.data.roles
-                        })
+ 
+            getApi(this.$hostname+'/api/v1/role/index/',0)
+                .then(res => {
+                    this.optionsRoles[0].libs = res.data
+                });
+            getApi(this.$hostname+'/api/v1/users/',this.$route.params.id)
+                .then(res => {
+                    this.user.name = res.data.name
+                    this.user.location = res.data.location
+                    this.user.phoneNumber = res.data.phoneNumber
+                    this.user.email = res.data.email
+                    this.user.image_path = res.data.image_path
+                    this.user.roles = res.data.roles
                 })
-            })
+               
             .catch(err => {
                 console.log(err)
             })
@@ -168,7 +155,7 @@ import getCookie from '../component/getCookie'
                     axios.post(this.$hostname+'/api/v1/users/'+this.$route.params.id,form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
-                            "Authorization" : "Bearer " + this.get_cookie
+                            "Authorization" : "Bearer " + this.userLogin.token
                         }
                     })
                     .then(res => {

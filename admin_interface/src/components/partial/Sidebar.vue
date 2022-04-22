@@ -1,15 +1,6 @@
 <template>
 <div>
-<!-- [ Header ] end -->
-            <!-- [ Pre-loader ] start -->
-    <!-- <div class="loader-bg">
-        <div class="loader-track">
-            <div class="loader-fill"></div>
-        </div>
-    </div> -->
-    <!-- [ Pre-loader ] End -->
-<!-- [ navigation menu ] start -->
-    <nav class="pcoded-navbar">
+    <nav class="pcoded-navbar" v-if="userLogin">
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
                 <a href="index.html" class="b-brand">
@@ -121,17 +112,18 @@
 </div>
 </template>
 <script>
-import getCookie from '../component/getCookie'
     export default {
+        props:['userLogin'],
         data(){
             return {
-                user:null,
-                get_cookie:""
-
+               
             }
         },
-        created() {
-            this.get_cookie = getCookie.getCookie('elecshop_login');
+        
+        mounted(){
+            /* if(this.userLogin == null){
+                this.$router.push('/sign-in')
+            } */
         }
 
     }
