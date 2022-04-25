@@ -17,26 +17,30 @@ class cartController extends Controller
         $this->cart = $cart;
         $this->product = $product;
     }
+    
     public function show(Request $request){
         $user_login = auth()->user();
         $cart =  $user_login->cart;
         return new cartResource($cart);
     }
+
     public function add_product(Request $request){
         $user_login = auth()->user();
         $cart =  $user_login->cart;
+        $table_cart_product = DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('product_id',$request->product_id)->first();
+        
         if($cart->product->contains('id',$request->product_id)){
-            $table_cart_product = DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('product_id',$request->product_id)->first();
             DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('product_id',$request->product_id)->update(['quantity' => $table_cart_product->quantity + $request->quantity]);
+
         }else{
             $cart->product()->attach($request->product_id,['quantity' => $request->quantity]);
             $cart->update(['quantity'=>$cart->quantity+1]);
         }
-
         $user_login = auth()->user();
         $cart =  $user_login->cart;
         return new cartResource($cart);
     }
+
     public function update_product(Request $request){
         $user_login = auth()->user();
         $cart =  $user_login->cart;
@@ -46,6 +50,7 @@ class cartController extends Controller
         $cart =  $user_login->cart;
         return new cartResource($cart);
     }
+
     public function delete_product(Request $request){
         $user_login = auth()->user();
         $cart =  $user_login->cart;

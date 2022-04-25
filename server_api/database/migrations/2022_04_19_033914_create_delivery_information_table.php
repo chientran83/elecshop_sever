@@ -15,6 +15,7 @@ class CreateDeliveryInformationTable extends Migration
     {
         Schema::create('tbl_delivery_information',function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('address');
             $table->string('phone');
             $table->string('user_id');

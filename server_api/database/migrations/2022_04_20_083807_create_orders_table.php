@@ -13,18 +13,18 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('tbl_orders', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
             $table->bigInteger('product_id');
-            $table->bigInteger('coupon_id');
+            $table->bigInteger('coupon_id')->nullable();
             $table->bigInteger('price_total');
             $table->bigInteger('deliveryInformation_id');
-            $table->bigInteger('quantity');
+            $table->bigInteger('quantity')->default(1);
             $table->string('method_payment');
-            $table->bigInteger('color_id');
-            $table->bigInteger('tags_id');
-            $table->bigInteger('memory_id');
+            $table->bigInteger('color_id')->nullable();
+            $table->bigInteger('tags_id')->nullable();
+            $table->bigInteger('memory_id')->nullable();
             $table->date('date');
             $table->string('status')->default(0);
             $table->timestamps();

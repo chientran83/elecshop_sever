@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\v1\cartController;
 use App\Http\Controllers\api\v1\categoryController;
 use App\Http\Controllers\api\v1\couponController;
+use App\Http\Controllers\api\v1\orderController;
 use App\Http\Controllers\api\v1\permissionController;
 use App\Http\Controllers\api\v1\productController;
 use App\Http\Controllers\api\v1\resourceController;
@@ -46,7 +47,6 @@ use Illuminate\Support\Facades\Route;
         Route::put('slider/{id}',[sliderController::class,'update']);
         Route::delete('slider/{id}',[sliderController::class,'destroy']);
         //router user
-        /* Route::post('user/logout',[userController::class,'logout']); */
         Route::post('users/refresh_token',[userController::class,'refresh_token']);
         Route::get('users/index/{record_number}',[userController::class,'index']);
         Route::get('user/{id}',[userController::class,'show']);
@@ -103,6 +103,8 @@ use Illuminate\Support\Facades\Route;
     Route::get('resource/{id}',[resourceController::class,'show']);
     //router coupon
     Route::get('coupon/{id}',[couponController::class,'show']);
+    //router order
+    Route::post('order',[orderController::class,'store']);
     
 });
 

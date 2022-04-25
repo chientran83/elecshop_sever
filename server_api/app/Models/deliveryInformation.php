@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class deliveryInformation extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id','address','phone'];
+    protected $fillable = ['name','user_id','address','phone'];
     protected $table = 'tbl_delivery_information';
     protected $primaryKey = 'id';
 }

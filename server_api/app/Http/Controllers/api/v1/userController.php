@@ -7,6 +7,7 @@ use App\Http\Resources\v1\Collection;
 use App\Http\Resources\v1\Resource;
 use App\Http\Resources\v1\userCollection;
 use App\Http\Resources\v1\userResource;
+use App\Models\cart;
 use App\Models\deliveryInformation;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,8 +22,10 @@ use Illuminate\Support\Facades\Storage;
 class userController extends Controller
 {
     public $users;
-    public function __construct(User $users) {
+    public $cart;
+    public function __construct(User $users,cart $cart) {
         $this->users = $users;
+        $this->cart = $cart;
     }
  
     public function index($record_number)
@@ -60,6 +63,7 @@ class userController extends Controller
                 'phoneNumber' => $request->phoneNumber,
                 'location' => $request->location]);
             $list_role = json_decode($request->roles);
+            $this->cart->create(['user_id'=>$new_user->id,'quantity'=>0]);
             if(!empty($list_role)){
                foreach($list_role as $item_role){
                 $new_user->role()->attach($item_role->id);
@@ -291,8 +295,13 @@ class userController extends Controller
         if($userItem){
             if($userItem->code_get_password = $request->code_get_password){
                 if($request->password == $request->password2){
+                    $code = "";
+                    for($i = 0;$i < 4;$i++){
+                        $code .= rand(1, 9);
+                    }
                     $userItem->update([
-                        'password' => Hash::make($request->password)
+                        'password' => Hash::make($request->password),
+                        'code_get_password' => $code
                     ]);
                     return response()->json([
                         'code' => 200,

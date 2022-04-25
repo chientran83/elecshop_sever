@@ -18,6 +18,9 @@ class AddTableCartProduct extends Migration
             $table->bigInteger('cart_id');
             $table->bigInteger('product_id');
             $table->bigInteger('quantity');
+            $table->bigInteger('memory_id')->nullable();
+            $table->bigInteger('color_id')->nullable();
+            $table->bigInteger('tag_id')->nullable();
             $table->timestamps();
         });
     }
