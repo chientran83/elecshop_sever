@@ -9,6 +9,7 @@ use App\Http\Resources\v1\userCollection;
 use App\Http\Resources\v1\userResource;
 use App\Models\cart;
 use App\Models\deliveryInformation;
+use App\Models\statistic;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,10 +24,13 @@ use Carbon\Carbon;
 class userController extends Controller
 {
     public $users;
-    public $cart;
-    public function __construct(User $users,cart $cart) {
+    public $cart;    
+    public $statistic;    
+
+    public function __construct(User $users,cart $cart,statistic $statistic) {
         $this->users = $users;
         $this->cart = $cart;
+        $this->statistic = $statistic;
     }
  
     public function index($record_number)
@@ -63,6 +67,22 @@ class userController extends Controller
                 'image_path' => $image_path,
                 'phoneNumber' => $request->phoneNumber,
                 'location' => $request->location]);
+
+            if($new_user){
+                if($new_user){
+                
+                    $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+                    $getStatistic = $this->statistic->where('date',$timeNow)->first();
+                    // save profit
+                    if($getStatistic){
+                        $getStatistic->update(['newUser' => $getStatistic->newUser + 1]);
+                    }else{
+                        $this->statistic->create(['date' => $timeNow ,'newUser' => 1]);
+                    }
+    
+                    // end save statistic
+                }
+            }    
             $list_role = json_decode($request->roles);
             $this->cart->create(['user_id'=>$new_user->id,'quantity'=>0]);
             if(!empty($list_role)){

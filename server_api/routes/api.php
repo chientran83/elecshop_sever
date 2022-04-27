@@ -81,8 +81,10 @@ use Illuminate\Support\Facades\Route;
         Route::get('order/index/{recordNumber}',[orderController::class,'index']);
         Route::get('order/indexForAdmin/{recordNumber}',[orderController::class,'indexForAdmin']);
         Route::get('order/{id}',[orderController::class,'show']);
-        Route::post('order/changeStatus',[orderController::class,'changeStatus']);
-        Route::post('order/rejectOrder',[orderController::class,'rejectOrder']);
+        Route::post('order/changeStatusOrder',[orderController::class,'changeStatusOrder']);
+        Route::delete('order/rejectOrder/{id}',[orderController::class,'rejectOrder']);
+        Route::post('order/cancelOrder',[orderController::class,'cancelOrder']);
+        Route::post('order/acceptOrder',[orderController::class,'acceptOrder']);
     });
 
     // NOT REQUIRE LOGIN
@@ -97,7 +99,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('slider/{id}',[sliderController::class,'show']);
     //router user
     Route::post('users/login',[userController::class,'login'])->name('user.login');
-    Route::post('user',[userController::class,'store']);
+    Route::post('users',[userController::class,'store']);
     Route::post('users/sendCodeToEmail',[userController::class,'sendCodeToEmail']);
     Route::post('users/verifyCodeUser',[userController::class,'verifyCodeUser']);
     Route::post('users/passwordRetrieval',[userController::class,'passwordRetrieval']);
@@ -110,8 +112,6 @@ use Illuminate\Support\Facades\Route;
     //router coupon
     Route::get('coupon/{id}',[couponController::class,'show']);
     //router order
-    Route::post('order',[orderController::class,'store']);
-    
+    Route::post('order',[orderController::class,'store']); 
 });
-
 

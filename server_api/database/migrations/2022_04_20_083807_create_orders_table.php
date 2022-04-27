@@ -21,7 +21,7 @@ class CreateOrdersTable extends Migration
             $table->bigInteger('price_total');
             $table->bigInteger('deliveryInformation_id');
             $table->bigInteger('quantity')->default(1);
-            $table->string('method_payment');
+            $table->string('method_payment')->default('postpaid');
             $table->bigInteger('color_id')->nullable();
             $table->bigInteger('tags_id')->nullable();
             $table->bigInteger('memory_id')->nullable();

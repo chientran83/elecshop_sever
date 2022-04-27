@@ -12,6 +12,7 @@ use App\Models\deliveryInformation;
 use App\Models\memory;
 use App\Models\order;
 use App\Models\product;
+use App\Models\statistic;
 use App\Models\tag;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -28,8 +29,9 @@ class orderController extends Controller
     public $memory;
     public $tag;
     public $user;
+    public $statistic;
 
-    public function __construct(order $order,product $product,coupon $coupon,deliveryInformation $deliveryInformation,color $color,memory $memory,tag $tag,User $user){
+    public function __construct(order $order,product $product,coupon $coupon,deliveryInformation $deliveryInformation,color $color,memory $memory,tag $tag,User $user,statistic $statistic){
         $this->order = $order;
         $this->product = $product;
         $this->coupon = $coupon;
@@ -38,6 +40,7 @@ class orderController extends Controller
         $this->memory = $memory;
         $this->tag = $tag;
         $this->user = $user;
+        $this->statistic = $statistic;
     }
     public function store(Request $request){
         $request->validate([
@@ -51,14 +54,13 @@ class orderController extends Controller
             'date' => Carbon::now()->toDateTimeString(),
             'status' => 0
         );
-
         if($request->product_id){
             $product = $this->product->find($request->product_id);
             if($product){
                 
                 $arr['product_id'] = $request->product_id;
                 $price_total = $product->current_price * $request->quantity;
-                $profit = $product->origin_price * $request->quantity;
+                $profit = $price_total - ($product->origin_price * $request->quantity);
 
                 if($request->color_id){
                     $color = $this->color->where('id',$request->color_id)->where('product_id',$request->product_id)->first();
@@ -67,7 +69,6 @@ class orderController extends Controller
                         $price_total += $color->price;
                     }
                 }
-
                 if($request->memory_id){
                     $memory = DB::table('tbl_product_memory')->where('memory_id',$request->memory_id)->where('product_id',$request->product_id)->first();
                     if($memory){
@@ -75,6 +76,7 @@ class orderController extends Controller
                         $price_total += $memory->price;
                     }
                 }
+
                 if($request->tags_id){
                     $tag = DB::table('tbl_product_tag')->where('tag_id',$request->tags_id)->where('product_id',$request->product_id)->first();
                     
@@ -156,9 +158,41 @@ class orderController extends Controller
                         'message' => 'invalid information !'
                     ],403);
                 }
-                
                 $arr['price_total'] = $price_total;
                 $newOrder = $this->order->create($arr);
+
+                // save profit
+
+                $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+                $getStatistic = $this->statistic->where('date',$timeNow)->first();
+                if($getStatistic){
+                    $StaticDataArr = array(
+                        'profit' =>  $getStatistic->profit + $profit,
+                        'quantitySold' => $getStatistic->quantitySold + $request->quantity
+                    );
+                    if($request->method_payment == 'postpaid'){
+                        $StaticDataArr['paymentLater'] =  $getStatistic->paymentLater + 1;
+                    }else{
+                        $StaticDataArr['paymentOnline'] =  $getStatistic->paymentOnline + 1;
+                    }
+                    $getStatistic->update($StaticDataArr);
+                }else{
+                    $StaticDataArr = array(
+                        'date' => $timeNow,
+                        'profit' => $profit,
+                        'quantitySold' => $request->quantity
+                    );
+                    if($request->method_payment == 'postpaid'){
+                        $StaticDataArr['paymentLater'] = 1;
+                    }else{
+                        $StaticDataArr['paymentOnline'] = 1;
+
+                    }
+                    $this->statistic->create($StaticDataArr);
+                }
+
+                // end save statistic
+
                 return response()->json([
                     'code' => 200,
                     'data' => new orderResource($newOrder)
@@ -194,7 +228,7 @@ class orderController extends Controller
     public function show(Request $request){
         return new orderResource($this->order->where('id',$request->id)->first());
     }
-    public function changeStatus(Request $request){
+    public function changeStatusOrder(Request $request){
         $orderItem = $this->order->where('id',$request->id)->first();
         if($orderItem){
             if($orderItem->status < 3){
@@ -208,11 +242,48 @@ class orderController extends Controller
             ],404);
         }
     }
+
+    // admin delete order
     public function rejectOrder(Request $request){
+        $orderItem = $this->order->where('id',$request->id)->first();
+        if($orderItem){
+            $this->order->where('id',$request->id)->delete();
+            return 1;
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => 'order undefined !'
+            ],404);
+        }
+        
+    }
+
+    // user cancel order
+    public function cancelOrder(Request $request){
         $orderItem = $this->order->where('id',$request->id)->first();
         if($orderItem){
             if($orderItem->status == 0){
                 $this->order->where('id',$request->id)->update(['status' => 4]);
+                return new orderResource($this->order->where('id',$request->id)->first());
+            }else{
+                return response()->json([
+                    'code' => 400,
+                    'message' => 'order confirmed , not reject !'
+                ],400);
+            }
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => 'order undefined !'
+            ],404);
+        }
+    }
+
+    public function acceptOrder(Request $request){
+        $orderItem = $this->order->where('id',$request->id)->first();
+        if($orderItem){
+            if($orderItem->status == 0){
+                $this->order->where('id',$request->id)->update(['status' => 1]);
                 return new orderResource($this->order->where('id',$request->id)->first());
             }else{
                 return response()->json([

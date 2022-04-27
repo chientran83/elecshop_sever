@@ -9,12 +9,14 @@ use Illuminate\Http\Request;
 use App\Http\Resources\v1\productResource;
 use App\Models\color;
 use App\Models\memory;
+use App\Models\statistic;
 use App\Models\tag;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class productController extends Controller
 {
@@ -27,11 +29,13 @@ class productController extends Controller
     public $tags;
     public $color;
     public $memory;
-    public function __construct(product $product,tag $tags,color $color,memory $memory){
+    public $statistic;
+    public function __construct(product $product,tag $tags,color $color,memory $memory,statistic $statistic){
         $this->product = $product;
         $this->tags = $tags;
         $this->color = $color;
         $this->memory = $memory;
+        $this->statistic = $statistic;
     }
     public function index($record_number)
     {
@@ -83,6 +87,21 @@ class productController extends Controller
             }
 
             $product_new = $this->product->create($data);
+
+            if($product_new){
+                
+                $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+                $getStatistic = $this->statistic->where('date',$timeNow)->first();
+                // save profit
+
+                if($getStatistic){
+                    $getStatistic->update(['quantityPurchased' => $getStatistic->quantityPurchased + $request->quantity]);
+                }else{
+                    $this->statistic->create(['date' => $timeNow ,'quantityPurchased' => $request->quantity]);
+                }
+
+                // end save statistic
+            }
 
             if($request->tags){
                 foreach(json_decode($request->tags) as $tag_item){
@@ -269,6 +288,18 @@ class productController extends Controller
     public function destroy(Request $request, $id)
     {
             $product_item = $this->product->find($id);
+            if($product_item){
+                // save profit
+                if($product_item->quantity >= 1){
+                    $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+                    $getStatistic = $this->statistic->where('date',$timeNow)->first();
+                    if($getStatistic){
+                        $getStatistic->update(['quantityPurchased' => $getStatistic->quantityPurchased - $product_item->quantity]);
+                    }
+
+                }
+                // end save statistic
+            }
             $this->product->find($id)->delete();
             return new productResource($product_item);
                 return response()->json([
