@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class userController extends Controller
 {
@@ -242,11 +243,12 @@ class userController extends Controller
             for($i = 0;$i < 4;$i++){
                 $code .= rand(1, 9);
             }
-            $userItem->update(['code_get_password' => $code]);
+            $userItem->update(['code_get_password' => $code,'expired_code' => Carbon::now('Asia/Ho_Chi_Minh')->addMinutes(2)->toDateTimeString()]);
             $details = [
                 'title' => 'Mail from Elecshop',
                 'body' => 'This is a password recovery feature via user is email, please do not share this code.',
                 'code' => $code
+                
             ];
             \Mail::to($request->email)->send(new \App\Mail\sendCodeToEmail($details));
            
@@ -294,24 +296,31 @@ class userController extends Controller
         $userItem = $this->users->where('email',$request->email)->first();
         if($userItem){
             if($userItem->code_get_password = $request->code_get_password){
-                if($request->password == $request->password2){
-                    $code = "";
-                    for($i = 0;$i < 4;$i++){
-                        $code .= rand(1, 9);
-                    }
-                    $userItem->update([
-                        'password' => Hash::make($request->password),
-                        'code_get_password' => $code
-                    ]);
+                if($userItem->expired_code < Carbon::now('Asia/Ho_Chi_Minh')->toDateTimeString()){
                     return response()->json([
-                        'code' => 200,
-                        'message' => "Change password success !"
-                    ],200);
+                        'code' => 404,
+                        'message' => "Code expire !"
+                    ],404);
                 }else{
-                    return response()->json([
-                        'code' => 403,
-                        'message' => "Password incorrect !"
-                    ],403);
+                    if($request->password == $request->password2){
+                        $code = "";
+                        for($i = 0;$i < 4;$i++){
+                            $code .= rand(1, 9);
+                        }
+                        $userItem->update([
+                            'password' => Hash::make($request->password),
+                            'code_get_password' => $code
+                        ]);
+                        return response()->json([
+                            'code' => 200,
+                            'message' => "Change password success !"
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'code' => 403,
+                            'message' => "Password incorrect !"
+                        ],403);
+                    }
                 }
             }else{
                 return response()->json([

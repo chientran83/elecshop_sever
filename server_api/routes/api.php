@@ -77,6 +77,12 @@ use Illuminate\Support\Facades\Route;
         Route::delete('coupon/{id}',[couponController::class,'destroy']);
         //router permission
         Route::post('permission',[permissionController::class,'store']);
+        //router order
+        Route::get('order/index/{recordNumber}',[orderController::class,'index']);
+        Route::get('order/indexForAdmin/{recordNumber}',[orderController::class,'indexForAdmin']);
+        Route::get('order/{id}',[orderController::class,'show']);
+        Route::post('order/changeStatus',[orderController::class,'changeStatus']);
+        Route::post('order/rejectOrder',[orderController::class,'rejectOrder']);
     });
 
     // NOT REQUIRE LOGIN

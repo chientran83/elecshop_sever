@@ -26,7 +26,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'phoneNumber',
         'location',
-        'code_get_password'
+        'code_get_password',
+        'expired_code'
     ];
 
     /**
@@ -64,5 +65,8 @@ class User extends Authenticatable implements JWTSubject
     }
     public function deliveryInformation(){
         return $this->hasMany(deliveryInformation::class,'user_id');
+    }
+    public function order(){
+        return $this->hasMany(order::class,'user_id');
     }
 }
