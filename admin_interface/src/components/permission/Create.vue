@@ -67,6 +67,7 @@
         components: {
             Multiselect
         },
+        props:['userLogin'],
         data(){
             return {
                 resource:{

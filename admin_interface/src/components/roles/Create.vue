@@ -114,7 +114,7 @@
             }
         },
         mounted(){
-            getApi(this.$hostname+'/api/v1/resource/index',0)
+            getApi('api/v1/resource/index',0)
                 .then(res => {
                     res.data.forEach(item => {
                     this.resources.push({

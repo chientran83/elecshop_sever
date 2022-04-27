@@ -34,8 +34,6 @@ export default {
           data:res.data,
             token:res.token
           }
-      }else{
-        /* this.$router.push({ path: '/sign-in' }) */
       }
     })
   },

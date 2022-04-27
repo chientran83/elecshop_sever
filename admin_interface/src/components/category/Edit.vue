@@ -76,7 +76,7 @@ import { getApi } from '../component/getApi';
             }
         },
         mounted(){
-            getApi(this.$hostname + '/api/v1/category/',this.$route.params.id).then(res=>{
+            getApi('api/v1/category/',this.$route.params.id).then(res=>{
                 this.category.name = res.data.name,
                 this.category.desc = res.data.desc
             }) 

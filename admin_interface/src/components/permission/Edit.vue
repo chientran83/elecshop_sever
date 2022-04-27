@@ -86,7 +86,7 @@ import Multiselect from 'vue-multiselect'
             }
         },
         mounted(){
-            getApi(this.$hostname+'/api/v1/resource/',this.$route.params.id)
+            getApi('api/v1/resource/',this.$route.params.id)
                 .then(res => {
                     this.resource.alias = res.data.alias,
 

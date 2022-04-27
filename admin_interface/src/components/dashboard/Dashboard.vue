@@ -1,6 +1,11 @@
 <template>
-    <div >
-         <router-view v-bind:userLogin="userLogin" ></router-view>
+     <div class="pcoded-main-container" v-if="userLogin">
+        <div class="pcoded-wrapper">
+            <div class="pcoded-content">
+                <router-view v-bind:userLogin="userLogin"></router-view>
+            </div>
+        </div>
+
     </div>
 </template>
 

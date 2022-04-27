@@ -108,6 +108,7 @@
 import axios from "axios"
 import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 users: [],
@@ -123,7 +124,7 @@ import {getApi} from '../component/getApi'
         },
         mounted(){
             
-            getApi(this.$hostname+'/api/v1/users/index/',this.user_record_number)
+            getApi('api/v1/users/index/',this.user_record_number)
                 .then(res => {
                     this.users = res.data;
                     var links = res.meta.links;

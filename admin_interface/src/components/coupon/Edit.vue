@@ -95,7 +95,7 @@ import {getApi} from '../component/getApi'
         mounted(){
             $( "#datepicker" ).datepicker();
             $( "#datepicker" ).datepicker("option", "dateFormat",'yy-mm-dd');
-            getApi(this.$hostname+'/api/v1/coupon/',this.$route.params.id)
+            getApi('api/v1/coupon/',this.$route.params.id)
                 .then(res => {
                     this.coupon.code = res.data.code,
                     this.coupon.type = res.data.type;

@@ -93,7 +93,7 @@ import {getApi} from '../component/getApi'
         },
         mounted(){
            
-            getApi(this.$hostname+'/api/v1/slider/',this.$route.params.id)
+            getApi('api/v1/slider/',this.$route.params.id)
                 .then(res => res.json())
                 .then(res => {
                     this.slider.name = res.data.name,

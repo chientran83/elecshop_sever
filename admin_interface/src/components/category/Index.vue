@@ -115,7 +115,7 @@ import {getApi} from '../component/getApi'
             }
         },
         mounted(){
-            getApi(this.$hostname+'/api/v1/category/index/',this.record_number)
+            getApi('api/v1/category/index/',this.record_number)
                 .then(res => {
                     this.categories = res.data;
                     var links = res.meta.links;
@@ -145,7 +145,7 @@ import {getApi} from '../component/getApi'
                 }else{
                     var link = this.$hostname+'/api/v1/category/index/' + this.record_number;
                 }
-                getApi(link,0).then(res => res.json()).then(res => {
+                getApi(link,"").then(res => {
                     this.categories = res.data;
                     var links = res.meta.links;
                     links = links.filter(function(item,key){
@@ -161,8 +161,6 @@ import {getApi} from '../component/getApi'
                         from:res.meta.from,
                         last_page:res.meta.last_page
                         }
-                    }).catch(()=>{
-                        this.$router.push('/sign-in')
                     })
             },
             delete_category:function(id){

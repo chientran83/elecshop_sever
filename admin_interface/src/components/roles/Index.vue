@@ -122,7 +122,7 @@ import axios from "axios"
         mounted(){
              
             // fetch data role
-            getApi(this.$hostname+'/api/v1/role/index/',this.role_record_number)
+            getApi('api/v1/role/index/',this.role_record_number)
                 .then(res => {
                     this.roles = res.data;
                     var links = res.meta.links;

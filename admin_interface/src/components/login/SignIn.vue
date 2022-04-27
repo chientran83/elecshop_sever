@@ -32,7 +32,7 @@
                         </div>
                     </div>
                     <button class="btn btn-primary shadow-2 mb-4" v-on:click="singIn()">Login</button>
-                    <p class="mb-2 text-muted">Forgot password? <a href="#">Reset</a></p>
+                    <!-- <p class="mb-2 text-muted">Forgot password? <a href="#">Reset</a></p> -->
                 </div>
             </div>
         </div>

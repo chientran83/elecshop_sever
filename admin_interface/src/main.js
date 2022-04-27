@@ -8,11 +8,10 @@ import {getApi} from './components/component/getApi'
 Vue.config.productionTip = false
 
 Vue.prototype.$hostname = 'http://localhost:8000'
-var hostname = 'http://localhost:8000'
 
 Vue.prototype.$verifyLogin = ()=>{
   var getCookies = getCookie.getCookie('elecshop_login');
-    return getApi(hostname +'/api/v1/users/user_login',"")
+    return getApi('api/v1/users/user_login',"")
       .then(res => {
           if(getCookies == "" || res.code == 404 || res.message){
             return {

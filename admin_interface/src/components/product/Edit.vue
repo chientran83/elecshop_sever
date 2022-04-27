@@ -30,7 +30,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div v-on:submit.prevent="product_store()">
+                                        <div>
                                             <div class="form-group">
                                                 <label>Name</label>
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="product.name">
@@ -138,7 +138,7 @@
                                             class="btn btn-secondary"
                                             to="/product">Thoát</router-link>
                                             </a>
-                                            <button class="btn btn-primary" type="submit">Submit</button>
+                                            <button class="btn btn-primary" v-on:click="product_store()">Submit</button>
                                         </div>
                                     </div>
                                 </div>
@@ -212,13 +212,13 @@ Vue.use( CKEditor );
         mounted(){
           
             this.product_id = this.$route.params.id
-            getApi(this.$hostname+'/api/v1/category/index/',this.category_record_number)
+            getApi('api/v1/category/index/',this.category_record_number)
                 .then(res => {
                     this.categories = res.data
                 })
-            getApi(this.$hostname+'/api/v1/product/',this.product_id)
+            getApi('api/v1/product/',this.product_id)
                 .then(res => {
-                    getApi(this.$hostname+'/api/v1/category/',res.data.category_id)
+                    getApi('api/v1/category/',res.data.category_id)
                         .then(res => {
                             this.product.category_id = {
                                 "id": res.data.id,
@@ -269,7 +269,7 @@ Vue.use( CKEditor );
                     this.product.quantity=res.data.quantity;
                     this.product.image_path=res.data.image_path;
                 })
-            getApi(this.$hostname+'/api/v1/product/index/',this.accessories_record_number)
+            getApi('api/v1/product/index/',this.accessories_record_number)
                 .then(res => {
                     var product_id = this.product.id;
                     var accessories = res.data.filter(function(index,key){
@@ -433,7 +433,7 @@ Vue.use( CKEditor );
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <!-- New step!
-     Add Multiselect CSS. Can be added as a static asset or inside a component. -->
+Add Multiselect CSS. Can be added as a static asset or inside a component. -->
 
 <style>
   

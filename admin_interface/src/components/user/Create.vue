@@ -119,7 +119,7 @@
         mounted(){
             
             this.user.status = 1;
-            getApi(this.$hostname+'/api/v1/role/index/',0,"")
+            getApi('api/v1/role/index/',0,"")
                 .then(res => {
                     this.optionsRoles[0].libs = res.data
             })

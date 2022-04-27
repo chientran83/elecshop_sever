@@ -133,7 +133,7 @@ export default {
         },
         mounted(){
            
-            getApi(this.$hostname+'/api/v1/product/index/',this.product_record_number)
+            getApi('api/v1/product/index/',this.product_record_number)
                 .then(res => {
                     this.products = res.data;
                     var link_page = res.meta.links.filter(function(index){

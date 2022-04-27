@@ -120,7 +120,7 @@ import axios from "axios"
         mounted(){
           
             // fetch data slider
-            getApi(this.$hostname+'/api/v1/slider/index/',this.slider_record_number)
+            getApi('api/v1/slider/index/',this.slider_record_number)
                 .then(res => {
                 this.sliders = res.data;
                 var links = res.meta.links;

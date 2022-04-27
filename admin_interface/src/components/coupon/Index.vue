@@ -121,7 +121,7 @@ import {getApi} from '../component/getApi'
         },
         mounted(){
             
-            getApi(this.$hostname+'/api/v1/coupon/index/',this.record_number,this.userLogin.token)
+            getApi('api/v1/coupon/index/',this.record_number,this.userLogin.token)
                 .then(res => {
                     this.coupons = res.data;
                     var links = res.meta.links;

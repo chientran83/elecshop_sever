@@ -209,11 +209,11 @@ Vue.use( CKEditor );
                 }
         },
         mounted(){
-            getApi(this.$hostname+'/api/v1/category/index/', this.category_record_number)
+            getApi('api/v1/category/index/', this.category_record_number)
             .then(res => {
                     this.categories = res.data
                 })
-            getApi(this.$hostname+'/api/v1/product/index/',0)
+            getApi('api/v1/product/index/',0)
                 .then(res => {
                     this.optionsAccessories[0].libs = res.data;
                 })

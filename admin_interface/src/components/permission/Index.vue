@@ -120,7 +120,7 @@ import {getApi} from '../component/getApi'
         mounted(){
           
             // fetch data resource
-            getApi(this.$hostname+'/api/v1/resource/index/',this.resource_record_number)
+            getApi('api/v1/resource/index/',this.resource_record_number)
                 .then(res => {
                         this.resources = res.data;
                         var links = res.meta.links;

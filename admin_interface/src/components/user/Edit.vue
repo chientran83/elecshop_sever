@@ -110,11 +110,11 @@ import {getApi} from '../component/getApi'
         },
         mounted(){
  
-            getApi(this.$hostname+'/api/v1/role/index/',0)
+            getApi('api/v1/role/index/',0)
                 .then(res => {
                     this.optionsRoles[0].libs = res.data
                 });
-            getApi(this.$hostname+'/api/v1/users/',this.$route.params.id)
+            getApi('api/v1/users/',this.$route.params.id)
                 .then(res => {
                     this.user.name = res.data.name
                     this.user.location = res.data.location

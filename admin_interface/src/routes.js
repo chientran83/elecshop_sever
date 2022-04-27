@@ -28,7 +28,6 @@ import Permission_create from './components/permission/Create'
 import Permission_edit from './components/permission/Edit'
 import Order from './components/order/Order'
 import Order_index from './components/order/Index'
-import Order_edit from './components/order/Edit'
 import Coupon from './components/coupon/Coupon'
 import Coupon_index from './components/coupon/Index'
 import Coupon_create from './components/coupon/Create'
@@ -124,8 +123,7 @@ export const routes = [
             'header': Header,
             'sideBar':Sidebar
         }, children:[
-            {path:'',name:'order_index',component:Order_index},
-            {path:'edit/:id',name:'order_edit',component:Order_edit}
+            {path:'',name:'order_index',component:Order_index}
         ]}
     ]}
 ]
