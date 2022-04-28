@@ -51,8 +51,8 @@ class cartResource extends JsonResource
                     'name' => $memoryItem->name
                 ];
             }
-
             $products[] = [
+                'cartProductId' => $value->id,
                 'product' => $product,
                 'color' => $color,
                 'memory' => $memory,

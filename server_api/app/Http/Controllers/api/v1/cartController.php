@@ -23,6 +23,22 @@ class cartController extends Controller
         $cart =  $user_login->cart;
         return new cartResource($cart);
     }
+    public function accessoriesPrice($request){
+        $accessoryPrice = 0;
+            $color = DB::table('tbl_colors')->where('id',$request->color_id)->where('product_id',$request->product_id)->first();
+            if($color){
+                $accessoryPrice += $color->price;
+            }
+            $memory = DB::table('tbl_product_memory')->where('memory_id',$request->memory_id)->where('product_id',$request->product_id)->first();
+            if($memory){
+                $accessoryPrice += $memory->price;
+            }
+            $tag = DB::table('tbl_product_tag')->where('tag_id',$request->tag_id)->where('product_id',$request->product_id)->first();
+            if($tag){
+                $accessoryPrice += $tag->price;
+            }
+            return $accessoryPrice;
+    }
 
     public function add_product(Request $request){
         $user_login = auth()->user();
@@ -37,21 +53,8 @@ class cartController extends Controller
         $product = DB::table('tbl_product')->where('id',$request->product_id)->first();
         if($table_cart_product && $orderId != 0){
             $productUpdateId  = DB::table('tbl_cart_product')->where('id',$orderId)->first();
-            DB::table('tbl_cart_product')->where('id',$productUpdateId->id)->update(['quantity' => $productUpdateId->quantity + $request->quantity]);
-            $accessoryPrice = 0;
-            $color = DB::table('tbl_colors')->where('id',$request->color_id)->where('product_id',$request->product_id)->first();
-            if($color){
-                $accessoryPrice += $color->price;
-            }
-            $memory = DB::table('tbl_product_memory')->where('memory_id',$request->memory_id)->where('product_id',$request->product_id)->first();
-            if($memory){
-                $accessoryPrice += $memory->price;
-            }
-            $tag = DB::table('tbl_product_tag')->where('tag_id',$request->tag_id)->where('product_id',$request->product_id)->first();
-            if($tag){
-                $accessoryPrice += $tag->price;
-            }
-            $cart->update(['price_total' => $cart->price_total + ($request->quantity * ($product->current_price + $accessoryPrice))]);
+            DB::table('tbl_cart_product')->where('id',$productUpdateId->id)->update(['quantity' => $productUpdateId->quantity + $request->quantity]);    
+            $cart->update(['price_total' => $cart->price_total + ($request->quantity * ($product->current_price + $this->accessoriesPrice($request)))]);
         }else{
             $cart->product()->attach($request->product_id,[
                 'quantity' => $request->quantity,
@@ -59,20 +62,8 @@ class cartController extends Controller
                 'memory_id' => $request->memory_id,
                 'tag_id' => $request->tag_id
             ]);
-            $accessoryPrice = 0;
-            $color = DB::table('tbl_colors')->where('id',$request->color_id)->where('product_id',$request->product_id)->first();
-            if($color){
-                $accessoryPrice += $color->price;
-            }
-            $memory = DB::table('tbl_product_memory')->where('memory_id',$request->memory_id)->where('product_id',$request->product_id)->first();
-            if($memory){
-                $accessoryPrice += $memory->price;
-            }
-            $tag = DB::table('tbl_product_tag')->where('tag_id',$request->tag_id)->where('product_id',$request->product_id)->first();
-            if($tag){
-                $accessoryPrice += $tag->price;
-            }
-            $cart->update(['quantity'=>$cart->quantity+1,'price_total' => $cart->price_total + ($request->quantity * ($product->current_price + $accessoryPrice ))]);
+             
+            $cart->update(['quantity'=>$cart->quantity+1,'price_total' => $cart->price_total + ($request->quantity * ($product->current_price + $this->accessoriesPrice($request) ))]);
         }
         $user_login = auth()->user();
         $cart =  $user_login->cart;
@@ -85,21 +76,8 @@ class cartController extends Controller
         $orderProduct = DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('id',$request->cartProductId)->first();
         if($orderProduct){
             $cartProduct = DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('id',$request->cartProductId)->first();
-            $accessoryPrice = 0;
-            $color = DB::table('tbl_colors')->where('id',$cartProduct->color_id)->where('product_id',$cartProduct->product_id)->first();
-            if($color){
-                $accessoryPrice += $color->price;
-            }
-            $memory = DB::table('tbl_product_memory')->where('memory_id',$cartProduct->memory_id)->where('product_id',$cartProduct->product_id)->first();
-            if($memory){
-                $accessoryPrice += $memory->price;
-            }
-            $tag = DB::table('tbl_product_tag')->where('tag_id',$cartProduct->tag_id)->where('product_id',$cartProduct->product_id)->first();
-            if($tag){
-                $accessoryPrice += $tag->price;
-            }
             $product = DB::table('tbl_product')->where('id',$cartProduct->product_id)->first();
-            $cart->update(['price_total' => ($cart->price_total - ($cartProduct->quantity * ($product->current_price + $accessoryPrice))) + $request->quantity * ($product->current_price + $accessoryPrice)]);
+            $cart->update(['price_total' => ($cart->price_total - ($cartProduct->quantity * ($product->current_price + $this->accessoriesPrice($cartProduct)))) + $request->quantity * ($product->current_price + $this->accessoriesPrice($cartProduct))]);
             DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('id',$request->cartProductId)->update(['quantity' => $request->quantity]);
            $cart =  $userLogin->cart;
            return new cartResource($cart);
@@ -110,7 +88,6 @@ class cartController extends Controller
             ],403);
         }
     }
-
     public function delete_product(Request $request){
         $userLogin = auth()->user();
         $cart =  $userLogin->cart;
@@ -118,21 +95,8 @@ class cartController extends Controller
         if($orderProduct){
             $cartProduct = DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('id',$request->cartProductId)->first();
            DB::table('tbl_cart_product')->where('cart_id',$cart->id)->where('id',$request->cartProductId)->delete();
-           $accessoryPrice = 0;
-            $color = DB::table('tbl_colors')->where('id',$cartProduct->color_id)->where('product_id',$cartProduct->product_id)->first();
-            if($color){
-                $accessoryPrice += $color->price;
-            }
-            $memory = DB::table('tbl_product_memory')->where('memory_id',$cartProduct->memory_id)->where('product_id',$cartProduct->product_id)->first();
-            if($memory){
-                $accessoryPrice += $memory->price;
-            }
-            $tag = DB::table('tbl_product_tag')->where('tag_id',$cartProduct->tag_id)->where('product_id',$cartProduct->product_id)->first();
-            if($tag){
-                $accessoryPrice += $tag->price;
-            }
             $product = DB::table('tbl_product')->where('id',$cartProduct->product_id)->first();
-           $cart->update(['price_total' => ($cart->price_total - ($cartProduct->quantity * ($product->current_price + $accessoryPrice)))]);
+           $cart->update(['price_total' => ($cart->price_total - ($cartProduct->quantity * ($product->current_price + $this->accessoriesPrice($cartProduct))))]);
            $cart =  $userLogin->cart;
            return new cartResource($cart);
         }else{
