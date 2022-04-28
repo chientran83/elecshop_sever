@@ -40,15 +40,15 @@ class cartResource extends JsonResource
                 }
             }
             $productMemory =  DB::table('tbl_product_memory')->where('product_id',$value->product_id)->where('memory_id',$value->memory_id)->first();
- 
             if(empty($productMemory)){
                 $memory = null;
             }else{
+                $memory = "";
                 $memoryItem = DB::table('tbl_memories')->where('id',$productMemory->memory_id)->first();
                 $memory = [
                     'id' => $productMemory->id,
-                    'name' => $memoryItem->name,
-                    'price' => $productMemory->price
+                    'price' => $productMemory->price,
+                    'name' => $memoryItem->name
                 ];
             }
 
@@ -56,14 +56,16 @@ class cartResource extends JsonResource
                 'product' => $product,
                 'color' => $color,
                 'memory' => $memory,
-                'tag' => $tag
+                'tag' => $tag,
+                'quantity' =>  $value->quantity
             ];
         }
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'quantity' => $this->quantity,
-            'products' => $products
+            'products' => $products,
+            'price' => $this->price_total
         ];
     }
 }
