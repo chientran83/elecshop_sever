@@ -18,7 +18,46 @@ class cartResource extends JsonResource
         $products = [];
         $getAllProductInCart = DB::table('tbl_cart_product')->where('cart_id',$this->id)->get();
         foreach ($getAllProductInCart as $key => $value) {
-            $products[] = $value;
+            
+            $product = DB::table('tbl_product')->where('id',$value->product_id)->first();
+            $color =  DB::table('tbl_colors')->where('id',$value->color_id)->first();
+            if(empty($color)){
+                $color = null;
+            }
+            $productTag =  DB::table('tbl_product_tag')->where('product_id',$value->product_id)->where('tag_id',$value->tag_id)->first();
+            if(empty($productTag)){
+                $tag = null;
+            }else{
+                $tagItem = DB::table('tbl_tags')->where('id',$productTag->tag_id)->first();
+                if($tagItem){
+                    $tag = [
+                        'id' => $productTag->id,
+                        'name' => $tagItem->name,
+                        'price' => $productTag->price
+                    ];
+                }else{
+                    $tag = null;
+                }
+            }
+            $productMemory =  DB::table('tbl_product_memory')->where('product_id',$value->product_id)->where('memory_id',$value->memory_id)->first();
+ 
+            if(empty($productMemory)){
+                $memory = null;
+            }else{
+                $memoryItem = DB::table('tbl_memories')->where('id',$productMemory->memory_id)->first();
+                $memory = [
+                    'id' => $productMemory->id,
+                    'name' => $memoryItem->name,
+                    'price' => $productMemory->price
+                ];
+            }
+
+            $products[] = [
+                'product' => $product,
+                'color' => $color,
+                'memory' => $memory,
+                'tag' => $tag
+            ];
         }
         return [
             'id' => $this->id,

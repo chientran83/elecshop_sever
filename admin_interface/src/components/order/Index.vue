@@ -83,7 +83,7 @@
                                                                     <h6 class="mb-1">{{orderItem.price_total}} $</h6>
                                                                 </td>
                                                                 <td>
-                                                                    <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{orderItem.date}}</h6>
+                                                                    <h6 class="text-muted">{{orderItem.date}}</h6>
                                                                 </td>
                                                                 <td>
                                                                     <h6 class="text-muted">{{orderItem.method_payment}}</h6>
@@ -93,7 +93,7 @@
                                                                         <i class="fas fa-circle text-c-yellow f-10 m-r-15"></i>Wait confirm
                                                                     </h6>
                                                                     <h6 class="text-muted" v-if="orderItem.status == 1">
-                                                                        <i class="fas fa-circle text-c-green f-10 m-r-15"></i>Wait get product
+                                                                        <i class="fas fa-circle text-c-purple f-10 m-r-15"></i>Wait get product
                                                                     </h6>
                                                                     <h6 class="text-muted" v-if="orderItem.status == 2">
                                                                         <i class="fas fa-circle text-c-blue f-10 m-r-15"></i>Product has been sent

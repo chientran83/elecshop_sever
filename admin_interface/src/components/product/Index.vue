@@ -159,11 +159,11 @@ export default {
         methods:{
             load_data_product:function(url){
                 if(url == ''){
-                    var link = this.$hostname+'/api/v1/product/index/' + this.product_record_number;
+                    var link = 'api/v1/product/index/' + this.product_record_number;
                 }else{
                     var link = url
                 }
-                getApi(link,"")
+                getApi(link,'')
                     .then(res => {
                         this.products = res.data;
                         var link_page = res.meta.links.filter(function(index){

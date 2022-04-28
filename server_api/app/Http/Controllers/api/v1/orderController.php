@@ -69,6 +69,7 @@ class orderController extends Controller
                         $price_total += $color->price;
                     }
                 }
+
                 if($request->memory_id){
                     $memory = DB::table('tbl_product_memory')->where('memory_id',$request->memory_id)->where('product_id',$request->product_id)->first();
                     if($memory){
@@ -100,6 +101,7 @@ class orderController extends Controller
                                 ],403);
                             }
                         }
+
                         if($coupon){
                             $usedUser = explode(",", $coupon->usedUser);
                             foreach ($usedUser as $key => $userItem) {
@@ -160,9 +162,8 @@ class orderController extends Controller
                 }
                 $arr['price_total'] = $price_total;
                 $newOrder = $this->order->create($arr);
-
+ 
                 // save profit
-
                 $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
                 $getStatistic = $this->statistic->where('date',$timeNow)->first();
                 if($getStatistic){
@@ -176,6 +177,7 @@ class orderController extends Controller
                         $StaticDataArr['paymentOnline'] =  $getStatistic->paymentOnline + 1;
                     }
                     $getStatistic->update($StaticDataArr);
+
                 }else{
                     $StaticDataArr = array(
                         'date' => $timeNow,
