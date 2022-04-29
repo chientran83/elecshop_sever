@@ -16,6 +16,7 @@
 </template>
 <script>
 import {getApi} from './components/component/getApi'
+
 export default {
   name: 'App',
   components: {

@@ -3,7 +3,7 @@
     <nav class="pcoded-navbar" v-if="userLogin">
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
-                <a href="index.html" class="b-brand">
+                <a class="b-brand">
                     <div class="b-bg">
                         <i class="feather icon-trending-up"></i>
                     </div>

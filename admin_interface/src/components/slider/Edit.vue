@@ -44,10 +44,21 @@
                                                 <input type="text" class="form-control" placeholder="Enter name" v-model="slider.link">
                                             </div>
                                             <div class="form-group">
+                                                <label>Detail information link</label>
+                                                <input type="text" class="form-control" placeholder="Enter detail information link " v-model="slider.linkInformation">
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Status</label>
                                                 <select class="form-control" id="exampleFormControlSelect1" v-model="slider.status">
                                                     <option value="0">Hidden</option>
                                                     <option value="1">Display</option>
+                                                </select>
+                                            </div>
+                                             <div class="form-group">
+                                                <label>Affiliate products</label>
+                                                <select class="form-control" id="exampleFormControlSelect1" v-model="slider.productId">
+                                                    <option value="0">Choose product</option>
+                                                    <option :value="productItem.id" v-for="(productItem,key) in products" v-bind:key="key">{{productItem.name}}</option>
                                                 </select>
                                             </div>
                                              <div class="form-group">
@@ -80,6 +91,7 @@
 import axios from 'axios';
 import {getApi} from '../component/getApi'
     export default {
+        props:['userLogin'],
         data(){
             return {
                 slider:{
@@ -87,22 +99,29 @@ import {getApi} from '../component/getApi'
                     desc:"",
                     status:"",
                     link:"",
-                    image_path:""
-                }
+                    image_path:"",
+                    linkInformation:"",
+                    productId:""
+                },
+                products:[]
             }
         },
         mounted(){
-           
-            getApi('api/v1/slider/',this.$route.params.id)
-                .then(res => res.json())
+            getApi('api/v1/product/index/0',"")
                 .then(res => {
-                    this.slider.name = res.data.name,
-                    this.slider.link = res.data.link,
+                    this.products = res.data
+                })
+            getApi('api/v1/slider/',this.$route.params.id)
+                .then(res => {
+                    this.slider.name = res.data.name
+                    this.slider.link = res.data.link
                     this.slider.desc = res.data.desc
                     this.slider.status = res.data.status
                     this.slider.image_path = res.data.image_path
+                    this.slider.linkInformation = res.data.linkInformation
+                    this.slider.productId = res.data.products.id
                 })
-           
+
             .catch(err => {
                 console.log(err)
             })
@@ -125,6 +144,8 @@ import {getApi} from '../component/getApi'
                     form_data.append('link',this.slider.link);
                     form_data.append('desc',this.slider.desc);
                     form_data.append('status',this.slider.status);
+                    form_data.append('linkInformation',this.slider.linkInformation);
+                    form_data.append('productId',this.slider.productId);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
                     form_data.append('_method',"PUT");
                     axios.post(this.$hostname+'/api/v1/slider/'+this.$route.params.id,form_data,{

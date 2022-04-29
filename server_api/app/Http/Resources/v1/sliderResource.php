@@ -3,6 +3,7 @@
 namespace App\Http\Resources\v1;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class sliderResource extends JsonResource
 {
@@ -14,6 +15,16 @@ class sliderResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'desc' => $this->desc,
+            'image_path' => $this->image_path,
+            'link' => $this->link,
+            'linkInformation' => $this->linkInformation,
+            'name' => $this->name,
+            'status' => $this->status,
+            'products' => DB::table('tbl_product')->where('id',$this->product_id)->first()
+            
+        ];
     }
 }

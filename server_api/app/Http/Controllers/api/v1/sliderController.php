@@ -47,6 +47,8 @@ class sliderController extends Controller
         $data = array(
             'name' => $request->name,
             'link' => $request->link,
+            'linkInformation' => $request->linkInformation,
+            'product_id' => $request->productId,
             'desc' => $request->desc,
             'status' => $request->status,
             'image_path' => 'https://i.ytimg.com/vi/8IM82rdy3Dc/maxresdefault.jpg'
@@ -90,7 +92,9 @@ class sliderController extends Controller
             'name' => $request->name,
             'desc' => $request->desc,
             'link' => $request->link,
-            'status' => $request->status
+            'status' => $request->status,
+            'linkInformation' => $request->linkInformation,
+            'product_id' => $request->productId,
         );
         if($request->hasFile('image')){
             $file = $request->file('image');

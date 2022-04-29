@@ -44,10 +44,21 @@
                                                 <input type="text" class="form-control" placeholder="Enter link" v-model="slider.link">
                                             </div>
                                             <div class="form-group">
+                                                <label>Detail information link</label>
+                                                <input type="text" class="form-control" placeholder="Enter detail information link " v-model="slider.linkInformation">
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Status</label>
                                                 <select class="form-control" id="exampleFormControlSelect1" v-model="slider.status">
                                                     <option value="0">Hidden</option>
                                                     <option value="1">Display</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Affiliate products</label>
+                                                <select class="form-control" id="exampleFormControlSelect1" v-model="slider.productId">
+                                                    <option value="0">Choose product</option>
+                                                    <option :value="productItem.id" v-for="(productItem,key) in products" v-bind:key="key">{{productItem.name}}</option>
                                                 </select>
                                             </div>
                                              <div class="form-group">
@@ -78,6 +89,7 @@
 </template>
 <script>
     import axios from 'axios'
+    import {getApi} from '../component/getApi'
     export default {
         props:['userLogin'],
         data(){
@@ -87,14 +99,20 @@
                     desc:"",
                     status:"",
                     link:"",
-                }
+                    linkInformation:"",
+                    productId:""
+                },
+                products:[]
             }
         },
         mounted(){
-            
-          
             this.slider.status = 1;
-          
+            this.slider.productId = 0;
+          getApi('api/v1/product/index/0',"")
+            .then(res => {
+                this.products = res.data
+            })
+
         },
         methods:{
             slider_store:function(){
@@ -113,6 +131,8 @@
                     form_data.append('desc',this.slider.desc);
                     form_data.append('status',this.slider.status);
                     form_data.append('link',this.slider.link);
+                    form_data.append('linkInformation',this.slider.linkInformation);
+                    form_data.append('productId',this.slider.productId);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
                     axios.post(this.$hostname+'/api/v1/slider',form_data,{
                         headers:{
@@ -123,6 +143,7 @@
                         this.slider.name = "";
                         this.slider.desc = "";
                         this.slider.link = "";
+                        this.slider.linkInformation = "";
                         Swal.fire(
                         'Added new!',
                         'New slider has been added.',
