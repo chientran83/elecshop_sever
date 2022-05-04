@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('statistic:run')->withoutOverlapping()->timezone('Asia/Ho_Chi_Minh')->dailyAt('11:59');/* ->everyMinute() */
     }
 
     /**
@@ -26,7 +27,6 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
 }

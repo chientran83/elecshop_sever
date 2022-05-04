@@ -67,22 +67,7 @@ class userController extends Controller
                 'image_path' => $image_path,
                 'phoneNumber' => $request->phoneNumber,
                 'location' => $request->location]);
-
-            if($new_user){
-                if($new_user){
                 
-                    $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
-                    $getStatistic = $this->statistic->where('date',$timeNow)->first();
-                    // save profit
-                    if($getStatistic){
-                        $getStatistic->update(['newUser' => $getStatistic->newUser + 1]);
-                    }else{
-                        $this->statistic->create(['date' => $timeNow ,'newUser' => 1]);
-                    }
-    
-                    // end save statistic
-                }
-            }    
             $list_role = json_decode($request->roles);
             $this->cart->create(['user_id'=>$new_user->id,'quantity'=>0]);
             if(!empty($list_role)){

@@ -42,6 +42,19 @@ class couponController extends Controller
         return new Resource($this->coupon->find($id));
     }
 
+    public function couponExists(Request $request)
+    {
+        $coupon = $this->coupon->where('code',$request->key)->first();
+        if($coupon){
+            return new Resource($coupon);
+        }else{
+            return response()->json([
+                'code' => 404,
+                'message' => 'coupon not exist !',
+            ],404);
+        }
+    }
+
  
     public function update(Request $request, $id)
     {

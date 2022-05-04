@@ -18,11 +18,13 @@ class cartResource extends JsonResource
         $products = [];
         $getAllProductInCart = DB::table('tbl_cart_product')->where('cart_id',$this->id)->get();
         foreach ($getAllProductInCart as $key => $value) {
-            
+            $accessoryPrice = 0;
             $product = DB::table('tbl_product')->where('id',$value->product_id)->first();
             $color =  DB::table('tbl_colors')->where('id',$value->color_id)->first();
             if(empty($color)){
                 $color = null;
+            }else{
+                $accessoryPrice += $color->price;
             }
             $productTag =  DB::table('tbl_product_tag')->where('product_id',$value->product_id)->where('tag_id',$value->tag_id)->first();
             if(empty($productTag)){
@@ -30,6 +32,7 @@ class cartResource extends JsonResource
             }else{
                 $tagItem = DB::table('tbl_tags')->where('id',$productTag->tag_id)->first();
                 if($tagItem){
+                    $accessoryPrice += $productTag->price;
                     $tag = [
                         'id' => $productTag->id,
                         'name' => $tagItem->name,
@@ -45,6 +48,7 @@ class cartResource extends JsonResource
             }else{
                 $memory = "";
                 $memoryItem = DB::table('tbl_memories')->where('id',$productMemory->memory_id)->first();
+                $accessoryPrice += $productMemory->price;
                 $memory = [
                     'id' => $productMemory->id,
                     'price' => $productMemory->price,
@@ -57,7 +61,8 @@ class cartResource extends JsonResource
                 'color' => $color,
                 'memory' => $memory,
                 'tag' => $tag,
-                'quantity' =>  $value->quantity
+                'quantity' =>  $value->quantity,
+                'priceTotal' => ($product->current_price + $accessoryPrice) * $value->quantity
             ];
         }
         return [
@@ -65,7 +70,7 @@ class cartResource extends JsonResource
             'user_id' => $this->user_id,
             'quantity' => $this->quantity,
             'products' => $products,
-            'price' => $this->price_total
+            'totalCartPrice' => $this->price_total
         ];
     }
 }

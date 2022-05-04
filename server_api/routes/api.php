@@ -111,6 +111,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('resource/{id}',[resourceController::class,'show']);
     //router coupon
     Route::get('coupon/{id}',[couponController::class,'show']);
+    Route::post('coupon/couponExist',[couponController::class,'couponExists']);
     //router order
     Route::post('order',[orderController::class,'store']); 
 });

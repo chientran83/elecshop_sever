@@ -57,10 +57,9 @@ class orderController extends Controller
         if($request->product_id){
             $product = $this->product->find($request->product_id);
             if($product){
-                
                 $arr['product_id'] = $request->product_id;
                 $price_total = $product->current_price * $request->quantity;
-                $profit = $price_total - ($product->origin_price * $request->quantity);
+               
 
                 if($request->color_id){
                     $color = $this->color->where('id',$request->color_id)->where('product_id',$request->product_id)->first();
@@ -163,37 +162,7 @@ class orderController extends Controller
                 $arr['price_total'] = $price_total;
                 $newOrder = $this->order->create($arr);
  
-                // save profit
-                $timeNow =  Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
-                $getStatistic = $this->statistic->where('date',$timeNow)->first();
-                if($getStatistic){
-                    $StaticDataArr = array(
-                        'profit' =>  $getStatistic->profit + $profit,
-                        'quantitySold' => $getStatistic->quantitySold + $request->quantity
-                    );
-                    if($request->method_payment == 'postpaid'){
-                        $StaticDataArr['paymentLater'] =  $getStatistic->paymentLater + 1;
-                    }else{
-                        $StaticDataArr['paymentOnline'] =  $getStatistic->paymentOnline + 1;
-                    }
-                    $getStatistic->update($StaticDataArr);
-
-                }else{
-                    $StaticDataArr = array(
-                        'date' => $timeNow,
-                        'profit' => $profit,
-                        'quantitySold' => $request->quantity
-                    );
-                    if($request->method_payment == 'postpaid'){
-                        $StaticDataArr['paymentLater'] = 1;
-                    }else{
-                        $StaticDataArr['paymentOnline'] = 1;
-
-                    }
-                    $this->statistic->create($StaticDataArr);
-                }
-
-                // end save statistic
+                
 
                 return response()->json([
                     'code' => 200,
