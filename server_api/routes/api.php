@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\api\v1\cartController;
 use App\Http\Controllers\api\v1\categoryController;
 use App\Http\Controllers\api\v1\couponController;
@@ -9,6 +8,7 @@ use App\Http\Controllers\api\v1\productController;
 use App\Http\Controllers\api\v1\resourceController;
 use App\Http\Controllers\api\v1\roleController;
 use App\Http\Controllers\api\v1\sliderController;
+use App\Http\Controllers\api\v1\statisticController;
 use App\Http\Controllers\api\v1\userController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -85,6 +85,10 @@ use Illuminate\Support\Facades\Route;
         Route::delete('order/rejectOrder/{id}',[orderController::class,'rejectOrder']);
         Route::post('order/cancelOrder',[orderController::class,'cancelOrder']);
         Route::post('order/acceptOrder',[orderController::class,'acceptOrder']);
+        //router statistic
+        Route::post('statistic/filterBySelect',[statisticController::class,'filterBySelect']);
+        Route::post('statistic/filterByDate',[statisticController::class,'filterByDate']);
+        Route::post('statistic/profitData',[statisticController::class,'profitData']);
     });
 
     // NOT REQUIRE LOGIN
@@ -113,6 +117,6 @@ use Illuminate\Support\Facades\Route;
     Route::get('coupon/{id}',[couponController::class,'show']);
     Route::post('coupon/couponExist',[couponController::class,'couponExists']);
     //router order
-    Route::post('order',[orderController::class,'store']); 
+    Route::post('order',[orderController::class,'store']);
 });
 
