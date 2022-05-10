@@ -161,8 +161,6 @@ class orderController extends Controller
                 }
                 $arr['price_total'] = $price_total;
                 $newOrder = $this->order->create($arr);
- 
-                
 
                 return response()->json([
                     'code' => 200,

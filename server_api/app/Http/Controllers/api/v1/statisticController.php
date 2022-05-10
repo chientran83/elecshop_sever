@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\api\v1;
-
 use App\Http\Controllers\Controller;
 use App\Models\statistic;
 use Illuminate\Http\Request;
@@ -126,21 +125,27 @@ class statisticController extends Controller
         $paymentOnline = 0;
         $paymentLater = 0;
         foreach ($statistics as $key => $statistic) {
-            $dataLineChart[] = array(
-                'year' => $statistic->date,
-                'profit' => $statistic->profit,
-                'quantitySold' => $statistic->quantitySold,
-                'quantityPurchased' => $statistic->quantityPurchased,
-                'newUser' => $statistic->newUser
-            );
+            $dataLineChart['profit']['chartLabel'][] = $statistic->date;
+            $dataLineChart['profit']['chartData'][] = $statistic->profit;
+            
+            $dataLineChart['quantitySoldAndPurchased']['chartLabel'][] = $statistic->date;
+            $dataLineChart['quantitySold']['chartData'][] = $statistic->quantitySold;
+            $dataLineChart['quantityPurchased']['chartData'][] = $statistic->quantityPurchased;
+            
+            $dataLineChart['newUser']['chartLabel'][] = $statistic->date;
+            $dataLineChart['newUser']['chartData'][] = $statistic->newUser;
+          
             $paymentOnline += $statistic->paymentOnline;
             $paymentLater += $statistic->paymentLater;
         }
         $chartData['dataLineChart'] = $dataLineChart;
-        $paymentOnlinePercent = round(($paymentOnline / ($paymentOnline + $paymentLater)) * 100 , 1);
-        $dataDonutChart[] = array('label' => 'payment Online','value' => $paymentOnlinePercent);
-        $dataDonutChart[] = array('label' => 'payment Later' ,'value' => round(100 - $paymentOnlinePercent, 1) );
+
+        $dataDonutChart['payment']['chartLabel'][] = 'payment Online';
+        $dataDonutChart['payment']['chartLabel'][] = 'payment Later';
+        $dataDonutChart['payment']['chartData'][] = $paymentOnline;
+        $dataDonutChart['payment']['chartData'][] = $paymentLater;
         $chartData['dataDonutChart'] = $dataDonutChart;
+        
         return $chartData;
     }
 }
