@@ -107,8 +107,8 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12">
-                            <div id="myfirstchart" style="height: 250px;"></div>
+                        <div class="col-11 ml-auto mr-auto">
+                            <canvas id="profitStatisticChart"></canvas>
                         </div>
                     </div>
                     <!-- end Profit statistic -->
@@ -118,8 +118,8 @@
                         <h3>Statistic quantity sold and purchased</h3>
                     </div>
                     <div class="row">
-                        <div class="col-12">
-                            <div id="mySecondaryChart" style="height: 250px;"></div>
+                        <div class="col-11 ml-auto mr-auto">
+                            <canvas id="soldAndPurchaseStatisticChart"></canvas>
                         </div>
                     </div>
                     <!-- end Statistic quantity sold and purchased -->
@@ -129,8 +129,8 @@
                         <h3>New user statistic</h3>
                     </div>
                     <div class="row">
-                        <div class="col-12">
-                            <div id="newUserChart" style="height: 250px;"></div>
+                        <div class="col-11 ml-auto mr-auto">
+                            <canvas id="newUserStatisticChart"></canvas>
                         </div>
                     </div>
                     <!-- end Statistic new user -->
@@ -139,9 +139,9 @@
                     <div class="col-12 text-center mt-4">
                         <h3>payment statistic</h3>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div id="paymentStatisticChart" style="height: 250px;"></div>
+                    <div class="row ">
+                        <div class="col-6 ml-auto mr-auto">
+                            <canvas id="paymentStatisticChart"></canvas>
                         </div>
                     </div>
                     <!-- end Statistic payment -->
@@ -174,67 +174,127 @@ import axios from "axios"
             $( "#datepickerStart" ).datepicker("option", "dateFormat",'yy-mm-dd');
             $( "#datepickerEnd" ).datepicker();
             $( "#datepickerEnd" ).datepicker("option", "dateFormat",'yy-mm-dd');
-            this.profitStatisticChart = new Morris.Line({
-                // ID of the element in which to draw the chart.
-                element: 'myfirstchart',
-                // Chart data records -- each entry in this array corresponds to a point on
-                // the chart.
-                data: [],
-                // The name of the data record attribute that contains x-values.
-                xkey: 'year',
-                // A list of names of data record attributes that contain y-values.
-                ykeys: ['profit'],
-                // Labels for the ykeys -- will be displayed when you hover over the
-                // chart.
-                labels: ['profit'],
-                parseTime:false
+        
+            // profit statistic
+                this.profitStatisticChart = new Chart(
+                    document.getElementById('profitStatisticChart'),
+                        {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                'January',
+                                'February',
+                                'March',
+                                'April',
+                                'May',
+                                'June',
+                            ],
+                        datasets: [{
+                            label: 'profit',
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                        }]
+                    },
+                        options: {}
+                    }
+                );
 
-            }),
-            this.soldAndPurchaseStatisticChart = new Morris.Line({
-                // ID of the element in which to draw the chart.
-                element: 'mySecondaryChart',
-                // Chart data records -- each entry in this array corresponds to a point on
-                // the chart.
-                data: [],
-                // The name of the data record attribute that contains x-values.
-                xkey: 'year',
-                // A list of names of data record attributes that contain y-values.
-                ykeys: ['quantitySold','quantityPurchased'],
-                // Labels for the ykeys -- will be displayed when you hover over the
-                // chart.
-                labels: ['quantity Sold','quantity Purchased'],
-                parseTime:false
+            //end profit statistic
+            
+            // quantity sold and purchased statistic
+                this.soldAndPurchaseStatisticChart = new Chart(
+                    document.getElementById('soldAndPurchaseStatisticChart'),
+                        {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                'January',
+                                'February',
+                                'March',
+                                'April',
+                                'May',
+                                'June',
+                            ],
+                        datasets:[{
+                            label: 'quantity sold',
+                            backgroundColor: '#99ff99',
+                            borderColor: '#99ff99',
+                            data: [0, 0, 0, 0, 0, 0, 0]
+                        },{
+                            label: 'quantity purchased',
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: [0, 0, 0, 0, 0, 0, 0]
+                        }]
+                    },
+                        options: {}
+                    }
+                );
 
-            }),
-            this.newUserStatisticChart = new Morris.Line({
-                // ID of the element in which to draw the chart.
-                element: 'newUserChart',
-                // Chart data records -- each entry in this array corresponds to a point on
-                // the chart.
-                data: [],
-                // The name of the data record attribute that contains x-values.
-                xkey: 'year',
-                // A list of names of data record attributes that contain y-values.
-                ykeys: ['newUser'],
-                // Labels for the ykeys -- will be displayed when you hover over the
-                // chart.
-                labels: ['new user'],
-                parseTime:false
+            //end quantity sold and purchased statistic
 
-            }),
-            this.paymentStatisticChart = new Morris.Donut({
-                element: 'paymentStatisticChart',
-                data: [
-                    {label: "", value: 0}
-                ]
-            });
+            // new User statistic
+                this.newUserStatisticChart = new Chart(
+                    document.getElementById('newUserStatisticChart'),
+                        {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                'January',
+                                'February',
+                                'March',
+                                'April',
+                                'May',
+                                'June',
+                            ],
+                        datasets: [{
+                            label: 'profit',
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                        }]
+                    },
+                        options: {}
+                    }
+                );
+
+            //new User statistic
+
+            // payment method statistic
+                this.paymentStatisticChart = new Chart(
+                    document.getElementById('paymentStatisticChart'),
+                        {
+                        type: 'pie',
+                        data: {
+                            labels: [
+                                'payment online',
+                                'payment later'
+                            ],
+                            datasets: [{
+                                label: 'My First Dataset',
+                                data: [0, 100],
+                                backgroundColor: [
+                                'rgb(255, 99, 132)',
+                                'rgb(54, 162, 235)',
+                                'rgb(255, 205, 86)'
+                                ],
+                                hoverOffset: 4
+                            }]
+                    },
+                        options: {}
+                    }
+                            
+                      
+                );
+
+            // payment method statistic
 
             this.filterBySelect();
 
             axios.post(this.$hostname +'/api/v1/statistic/profitData',{value:this.filter},{headers:{"Authorization" : "Bearer " + this.userLogin.token,'Content-Type': 'application/json','Accept': 'application/json'}})
                 .then(res => {
                     this.profitData = res.data;
-                    // console.log(this.profitData.profitOfWeek.profit)
                 })
             
         },
@@ -242,10 +302,22 @@ import axios from "axios"
             filterBySelect:function (){
                 axios.post(this.$hostname +'/api/v1/statistic/filterBySelect',{value:this.filter},{headers:{"Authorization" : "Bearer " + this.userLogin.token,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => {
-                        this.profitStatisticChart.setData(res.data.dataLineChart)
-                        this.soldAndPurchaseStatisticChart.setData(res.data.dataLineChart)
-                        this.newUserStatisticChart.setData(res.data.dataLineChart)
-                        this.paymentStatisticChart.setData(res.data.dataDonutChart)
+                        /* this.profitStatisticChart.setData(res.data.dataLineChart) */
+                        /* 
+                        this.paymentStatisticChart.setData(res.data.dataDonutChart) */
+
+                        // profit statistic chart
+                        this.updateLineChart(res.data.dataLineChart.profit,res.data.dataLineChart.profit.chartLabel,this.profitStatisticChart);
+                        // new user statistic chart
+                        this.updateLineChart(res.data.dataLineChart.newUser,res.data.dataLineChart.newUser.chartLabel,this.newUserStatisticChart);
+                        // payment statistic chart
+                        this.updateLineChart(res.data.dataDonutChart.payment,res.data.dataDonutChart.payment.chartLabel,this.paymentStatisticChart);
+                        // quantity sold and quantity purchase statistic
+                        var data =  this.soldAndPurchaseStatisticChart.config.data;
+                        data.datasets[0].data = res.data.dataLineChart.quantitySold.chartData;
+                        data.datasets[1].data = res.data.dataLineChart.quantityPurchased.chartData;
+                        data.labels = res.data.dataLineChart.quantitySoldAndPurchased.chartLabel;
+                         this.soldAndPurchaseStatisticChart.update();
                     })
             },
             filterByDate:function (){
@@ -253,11 +325,27 @@ import axios from "axios"
                 this.toDate = $( ".toDate" ).val();
                 axios.post(this.$hostname +'/api/v1/statistic/filterByDate',{fromDate:this.fromDate,toDate:this.toDate},{headers:{"Authorization" : "Bearer " + this.userLogin.token,'Content-Type': 'application/json','Accept': 'application/json'}})
                     .then(res => {
-                        this.profitStatisticChart.setData(res.data.dataLineChart)
-                        this.soldAndPurchaseStatisticChart.setData(res.data.dataLineChart)
-                        this.newUserStatisticChart.setData(res.data.dataLineChart)
-                        this.paymentStatisticChart.setData(res.data.dataDonutChart)
+                        // profit statistic chart
+                        this.updateLineChart(res.data.dataLineChart.profit,res.data.dataLineChart.profit.chartLabel,this.profitStatisticChart);
+                        // new user statistic chart
+                        this.updateLineChart(res.data.dataLineChart.newUser,res.data.dataLineChart.newUser.chartLabel,this.newUserStatisticChart);
+                        // payment statistic chart
+                        this.updateLineChart(res.data.dataDonutChart.payment,res.data.dataDonutChart.payment.chartLabel,this.paymentStatisticChart);
+                        // quantity sold and quantity purchase statistic
+                        var data =  this.soldAndPurchaseStatisticChart.config.data;
+                        data.datasets[0].data = res.data.dataLineChart.quantitySold.chartData;
+                        data.datasets[1].data = res.data.dataLineChart.quantityPurchased.chartData;
+                        data.labels = res.data.dataLineChart.quantitySoldAndPurchased.chartLabel;
+                         this.soldAndPurchaseStatisticChart.update();
+                        /* 
+                        this.paymentStatisticChart.setData(res.data.dataDonutChart) */
                     })
+            },
+            updateLineChart:function (value,label,chart) {
+                var data = chart.config.data;
+                data.datasets[0].data = value.chartData;
+                data.labels = label;
+                chart.update();
             }
         },
     }
