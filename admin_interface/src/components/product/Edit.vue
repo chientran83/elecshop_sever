@@ -386,6 +386,7 @@ Vue.use( CKEditor );
                         formData.append('quantity',this.product.quantity);
                         formData.append('tags', JSON.stringify(this.product.tags));
                         formData.append('colors',JSON.stringify(this.product.colors));
+                        console.log(JSON.stringify(this.product.colors));
                         formData.append('countColorsImage',JSON.stringify(this.product.colorsImage.length));
                         for (let i = 0; i < this.product.colorsImage.length; i++) {
                             formData.append('file'+i, this.product.colorsImage[i])

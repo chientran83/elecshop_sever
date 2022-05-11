@@ -127,6 +127,7 @@ import axios from "axios"
                 links = links.filter(function(item){
                     return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
                 })
+
                 this.paginate = {
                     first:res.links.first,
                     last:res.links.last,
@@ -153,11 +154,11 @@ import axios from "axios"
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = this.$hostname+'/api/v1/slider/index/'+this.slider_record_number;
+                    var link = 'api/v1/slider/index/'+this.slider_record_number;
                 }
                     getApi(link,"")
                         .then(res => {
-                        this.slider = res.data;
+                            this.sliders = res.data;
                         var links = res.meta.links;
                         links = links.filter(function(item,key){
                             return item.label != "&laquo; Previous" && item.label != "Next &raquo;";

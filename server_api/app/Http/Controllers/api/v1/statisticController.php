@@ -13,10 +13,8 @@ class statisticController extends Controller
     public function __construct(statistic $statistic){
         $this->statistic = $statistic;
     }
-
     public function profitData(){
         $timeNow = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
-
         /* this week's profit compare with last week */
         $startOfWeek = Carbon::now('Asia/Ho_Chi_Minh')->startOfWeek()->toDateString();
         $profitOfWeek = $this->getProfit($startOfWeek,$timeNow);
@@ -139,13 +137,11 @@ class statisticController extends Controller
             $paymentLater += $statistic->paymentLater;
         }
         $chartData['dataLineChart'] = $dataLineChart;
-
         $dataDonutChart['payment']['chartLabel'][] = 'payment Online';
         $dataDonutChart['payment']['chartLabel'][] = 'payment Later';
         $dataDonutChart['payment']['chartData'][] = $paymentOnline;
         $dataDonutChart['payment']['chartData'][] = $paymentLater;
         $chartData['dataDonutChart'] = $dataDonutChart;
-        
         return $chartData;
     }
 }

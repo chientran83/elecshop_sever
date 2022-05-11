@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class orderController extends Controller
 {
@@ -47,7 +48,7 @@ class orderController extends Controller
             'product_id' => 'required',
             'quantity' => 'required|min:1|max:10'
         ]);
-
+        
         $arr = array(
             'quantity' => $request->quantity,
             'method_payment' => $request->method_payment,
@@ -160,6 +161,59 @@ class orderController extends Controller
                     ],403);
                 }
                 $arr['price_total'] = $price_total;
+                //check payment
+
+                if($request->method_payment == 'paypal'){
+                    $provider = new PayPalClient;
+                    $provider->setApiCredentials(config('paypal'));
+                    $paypalToken = $provider->getAccessToken();
+
+                    $response = $provider->createOrder([
+                        "intent" => "CAPTURE",
+                        "application_context" => [
+                            "return_url" => route('successTransaction',['orderData' => $arr]),
+                            "cancel_url" => route('cancelTransaction'),
+                        ],
+                        "purchase_units" => [
+                            0 => [
+                                "amount" => [
+                                    "currency_code" => "USD",
+                                    "value" => "10"
+                                ]
+                            ]
+                        ]
+                    ]);
+
+                    if (isset($response['id']) && $response['id'] != null) {
+                        // redirect to approve href
+                        foreach ($response['links'] as $links) {
+                            
+                            if ($links['rel'] == 'approve') {
+
+                                //link payment
+                                return response()->json([
+                                    'code' => 200,
+                                    'data' => $links['href']
+                                ],200);
+                                // return redirect()->away($links['href']);
+                            }
+                        }
+
+
+                        return response()->json([
+                            'code' => 500,
+                            'data' => 'Something went wrong.'
+                        ],500);
+                    } else {
+                        return response()->json([
+                            'code' => 500,
+                            'data' => $response['message'] ?? 'Something went wrong.'
+                        ],500);
+                    }   
+                }else{
+                    $arr['method_payment'] = 'postpaid';
+                }
+
                 $newOrder = $this->order->create($arr);
 
                 return response()->json([
@@ -179,6 +233,40 @@ class orderController extends Controller
             ],403);
         }
     }
+
+    public function successTransaction(Request $request)
+    {
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $provider->getAccessToken();
+        $response = $provider->capturePaymentOrder($request['token']);
+        if (isset($response['status']) && $response['status'] == 'COMPLETED') {
+            
+            $newOrder = $this->order->create($request->orderData);
+ 
+            /* return response()->json([
+                'code' => 200,
+                'message' => 'Transaction complete.',
+                'data' => new orderResource($newOrder)
+            ],200); */
+
+
+        } else {
+            return response()->json([
+                'code' => 500,
+                'message' => $response['message'] ?? 'Something went wrong.'
+            ],500);
+        }
+    }
+
+    public function cancelTransaction(Request $request)
+    {
+        return response()->json([
+            'code' => 500,
+            'message' => 'You have canceled the transaction.'
+        ],500);
+    }
+
     public function index($recordNumber){
         $userLogin = auth()->user();
         if($recordNumber == 0){
@@ -197,6 +285,7 @@ class orderController extends Controller
     public function show(Request $request){
         return new orderResource($this->order->where('id',$request->id)->first());
     }
+
     public function changeStatusOrder(Request $request){
         $orderItem = $this->order->where('id',$request->id)->first();
         if($orderItem){

@@ -157,10 +157,10 @@ import {getApi} from '../component/getApi'
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = this.$hostname+'/api/v1/users/index/' + this.user_record_number;
+                    var link = 'api/v1/users/index/' + this.user_record_number;
                 }
                 getApi(link,"").then(res => {
-                    this.user = res.data;
+                    this.users = res.data;
                     var links = res.meta.links;
                     links = links.filter(function(item,key){
                         return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
@@ -188,7 +188,7 @@ import {getApi} from '../component/getApi'
                 confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete(this.$hostname+'/api/v1/users/'+id,{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
+                    axios.delete(this.$hostname+'/api/v1/user/'+id,{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
                     .then(res => {
                         Swal.fire(
                         'Deleted!',

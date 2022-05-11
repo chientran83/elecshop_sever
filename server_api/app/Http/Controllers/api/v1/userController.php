@@ -70,6 +70,7 @@ class userController extends Controller
                 
             $list_role = json_decode($request->roles);
             $this->cart->create(['user_id'=>$new_user->id,'quantity'=>0]);
+
             if(!empty($list_role)){
                foreach($list_role as $item_role){
                 $new_user->role()->attach($item_role->id);
@@ -218,12 +219,14 @@ class userController extends Controller
         $list_role = json_decode($request->roles);
         $roles_id = [];
         $item_user = User::find($id);
-        if(!empty($list_role)){
-           foreach($list_role as $item_role){
-                $roles_id[] = $item_role->id;
-            }
-            $item_user->role()->sync($roles_id);
+
+
+        foreach($list_role as $item_role){
+            $roles_id[] = $item_role->id;
         }
+
+        $item_user->role()->sync($roles_id);
+    
         return response()->json([
             'code' => 201,
             'data' => new userResource($item_user)

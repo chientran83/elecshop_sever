@@ -208,12 +208,13 @@ class productController extends Controller
             $this->product->find($id)->update($data);
 
             $product_item= $this->product->find($id);
-            $product_item->tags()->delete();
+            $tagData = array();
             foreach(json_decode($request->tags) as $tag_item){
-                $new_tag = $this->tags->firstOrcreate(['name' => $tag_item->name]);
-                $product_item->tags()->attach($new_tag->id,['price' => $tag_item->pivot->price]);
+                $new_tag = $this->tags->firstOrCreate(['name' => $tag_item->name]);
+                $tagData[$new_tag->id] = array('price' => $tag_item->pivot->price);
             }
-
+            $product_item->tags()->sync($tagData);
+            
             if($request->colors){
                 foreach($this->product->find($id)->color as $value){
                     $abc = json_decode($request->colors);
@@ -225,8 +226,9 @@ class productController extends Controller
                     }
                     
                 }
+                
                 foreach(json_decode($request->colors) as $key => $color_item){
-                    $product_color = $this->color->where('name', $color_item->name)->first();
+                    $product_color = $this->product->find($id)->color()->where('name', $color_item->name)->first();
                     if($product_color){
                         $arr = array(
                             'name' => $color_item->name,
@@ -258,12 +260,12 @@ class productController extends Controller
                     }
                 }
             }
-
-            $product_item->memory()->delete();
+            $memoryData = array();
             foreach(json_decode($request->memory) as $memory_item){
-                $new_memory = $this->memory->firstOrcreate(['name' => $memory_item->name]);
-                $product_item->memory()->attach($new_memory,['price' => $memory_item->pivot->price]);
+                $new_memory = $this->memory->firstOrCreate(['name' => $memory_item->name]);
+                $memoryData[$new_memory->id] = array('price' => $memory_item->pivot->price);
             }
+            $product_item->memory()->sync($memoryData);
 
             $accessories = [];
             foreach(json_decode($request->accessories) as $accessories_item){

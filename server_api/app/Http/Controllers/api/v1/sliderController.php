@@ -25,9 +25,8 @@ class sliderController extends Controller
     {
         if($record_number == 0){
             return new sliderCollection($this->slider->where('status','<>',0)->get());
-            
         }else{
-            return new sliderCollection($this->slider->where('status','<>',0)->paginate($record_number));
+            return new sliderCollection($this->slider->paginate($record_number));
             
         }
     }
@@ -81,7 +80,7 @@ class sliderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,$id)
     {
         $slider_item = $this->slider->find($id);
         $request->validate([
@@ -96,12 +95,14 @@ class sliderController extends Controller
             'linkInformation' => $request->linkInformation,
             'product_id' => $request->productId,
         );
+
         if($request->hasFile('image')){
             $file = $request->file('image');
             $image_hash_name = Str::random(20).'.'.$file->extension();
             $store = $file->storeAs('public/product/1',$image_hash_name);
             $data['image_path'] = Storage::url($store);
         }  
+
         $this->slider->find($id)->update($data);
         $slider_item = $this->slider->find($id);
         return new sliderResource($slider_item);

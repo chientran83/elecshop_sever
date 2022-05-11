@@ -114,7 +114,7 @@ import {getApi} from '../component/getApi'
                 .then(res => {
                     this.optionsRoles[0].libs = res.data
                 });
-            getApi('api/v1/users/',this.$route.params.id)
+            getApi('api/v1/user/',this.$route.params.id)
                 .then(res => {
                     this.user.name = res.data.name
                     this.user.location = res.data.location
@@ -152,7 +152,7 @@ import {getApi} from '../component/getApi'
                     form_data.append('passwordAgain',this.user.passwordAgain);
                     form_data.append('image',document.getElementById('imgInp').files[0]);
                     form_data.append('_method',"PUT");
-                    axios.post(this.$hostname+'/api/v1/users/'+this.$route.params.id,form_data,{
+                    axios.post(this.$hostname+'/api/v1/user/'+this.$route.params.id,form_data,{
                         headers:{
                             'Content-Type' : 'multipart/form-data',
                             "Authorization" : "Bearer " + this.userLogin.token

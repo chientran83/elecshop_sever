@@ -3,6 +3,7 @@ use App\Http\Controllers\api\v1\cartController;
 use App\Http\Controllers\api\v1\categoryController;
 use App\Http\Controllers\api\v1\couponController;
 use App\Http\Controllers\api\v1\orderController;
+use App\Http\Controllers\api\v1\PayPalController;
 use App\Http\Controllers\api\v1\permissionController;
 use App\Http\Controllers\api\v1\productController;
 use App\Http\Controllers\api\v1\resourceController;
@@ -29,8 +30,6 @@ use Illuminate\Support\Facades\Route;
     return $request->user();
 });
  */
-
- /*  $this->middleware('auth:api', ['except' => ['login', 'store','paginate']]); */
 
  Route::prefix('v1')->group(function(){
     Route::middleware('auth:api')->group(function(){
@@ -118,5 +117,10 @@ use Illuminate\Support\Facades\Route;
     Route::post('coupon/couponExist',[couponController::class,'couponExists']);
     //router order
     Route::post('order',[orderController::class,'store']);
+    //router payment paypal
+    Route::get('create-transaction', [orderController::class, 'createTransaction'])->name('createTransaction');
+    Route::get('process-transaction', [orderController::class, 'processTransaction'])->name('processTransaction');
+    Route::get('success-transaction', [orderController::class, 'successTransaction'])->name('successTransaction');
+    Route::get('cancel-transaction', [orderController::class, 'cancelTransaction'])->name('cancelTransaction');
 });
 

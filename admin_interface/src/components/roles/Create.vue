@@ -114,16 +114,16 @@
             }
         },
         mounted(){
-            getApi('api/v1/resource/index',0)
+            getApi('api/v1/resource/index/',0)
                 .then(res => {
                     res.data.forEach(item => {
-                    this.resources.push({
+                        this.resources.push({
                             id:item.id,
                             alias:item.alias,
                             permissions:item.permissions,
                             permissionsDefaults:item.permissionsDefaults,
                             checked:false
-                    }) 
+                        })
                     })
                 })
             
