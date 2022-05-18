@@ -209,7 +209,7 @@ Vue.use( CKEditor );
                 accessories_record_number: 0
             }
         },
-        mounted(){
+        created(){
           
             this.product_id = this.$route.params.id
             getApi('api/v1/category/index/',this.category_record_number)

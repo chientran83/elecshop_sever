@@ -3,12 +3,15 @@
     <nav class="pcoded-navbar" v-if="userLogin">
         <div class="navbar-wrapper">
             <div class="navbar-brand header-logo">
-                <a class="b-brand">
+                <router-link 
+                tag="a"
+                to="/"
+                class="b-brand">
                     <div class="b-bg">
                         <i class="feather icon-trending-up"></i>
                     </div>
                     <span class="b-title">Elecshop</span>
-                </a>
+                </router-link>
                 <a class="mobile-menu" id="mobile-collapse" href="javascript:" v-on:click="reponsive_content()"><span></span></a>
             </div>
             <div class="navbar-content scroll-div">

@@ -18,86 +18,50 @@
                 <li><a href="javascript:" class="full-screen" onclick="javascript:toggleFullScreen()"><i class="feather icon-maximize"></i></a></li>
                 <li class="nav-item">
                     <div class="main-search">
-                        <div class="input-group">
-                            <input type="text" id="m-search" class="form-control" placeholder="Search . . .">
-                            <a href="javascript:" class="input-group-append search-close">
-                                <i class="feather icon-x input-group-text"></i>
-                            </a>
-                            <span class="input-group-append search-btn btn btn-primary">
-                                <i class="feather icon-search input-group-text"></i>
-                            </span>
-                        </div>
+                           <form class="form-inline my-2 my-lg-0" >
+                                <input class="form-control mr-sm-2" placeholder="Search" aria-label="Search" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-on:click="getOption" v-on:keyup="getOption" ref="getOption" autocomplete="off">
+                                <div class="dropdown-menu ml-5" aria-labelledby="dropdownMenuLink" >
+                                    <a class="dropdown-item" 
+                                        :href="option.type == 'category' ? $hostnameInterface + '/category/edit/' + option.id 
+                                            : option.type == 'coupon' ? $hostnameInterface + '/coupon/edit/' + option.id 
+                                            : option.type == 'product' ? $hostnameInterface + '/product/edit/' + option.id
+                                            : option.type == 'slider' ? $hostnameInterface + '/slider/edit/' + option.id
+                                            : option.type == 'user' ? $hostnameInterface + '/user/edit/' + option.id
+                                            :  $hostnameInterface + '/roles/edit/' + option.id" 
+                                            v-for="(option,key) in searchOption" v-bind:key="key">{{ option.name }} - {{ option.type }}</a>
+                                </div>
+                            </form>
                     </div>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <li>
-                    <div class="dropdown">
-                        <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown"><i class="icon feather icon-bell"></i></a>
-                        <div class="dropdown-menu dropdown-menu-right notification">
-                            <div class="noti-head">
-                                <h6 class="d-inline-block m-b-0">Notifications</h6>
-                                <div class="float-right">
-                                    <a href="javascript:" class="m-r-10">mark as read</a>
-                                    <a href="javascript:">clear all</a>
-                                </div>
-                            </div>
-                            <ul class="noti-body">
-                                <li class="n-title">
-                                    <p class="m-b-0">NEW</p>
-                                </li>
-                                <li class="notification">
-                                    <div class="media">
-                                        <img class="img-radius" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-1.jpg" alt="Generic placeholder image">
-                                        <div class="media-body">
-                                            <p><strong>John Doe</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
-                                            <p>New ticket Added</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="n-title">
-                                    <p class="m-b-0">EARLIER</p>
-                                </li>
-                                <li class="notification">
-                                    <div class="media">
-                                        <img class="img-radius" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-2.jpg" alt="Generic placeholder image">
-                                        <div class="media-body">
-                                            <p><strong>Joseph William</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
-                                            <p>Prchace New Theme and make payment</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="notification">
-                                    <div class="media">
-                                        <img class="img-radius" src="datta-able-bootstrap-dashboard-master/template/assets/images/user/avatar-3.jpg" alt="Generic placeholder image">
-                                        <div class="media-body">
-                                            <p><strong>Sara Soudein</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
-                                            <p>currently login</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                            <div class="noti-footer">
-                                <a href="javascript:">show all</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
                 <li>
                     <div class="dropdown drp-user">
                         <a href="javascript:" class="dropdown-toggle" data-toggle="dropdown">
                             <i class="icon feather icon-settings"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
-                            <div class="pro-head">
-                                <img :src="$hostname+'' + userLogin.data.image_path" class="img-radius">
-                                <span>{{userLogin.data.name}}</span>
+                                <li
+                                class="pro-head">
+                                <router-link 
+                                tag="a"
+                                to="/userProfile">
+                                    <img :src="$hostname+''+ userLogin.data.image_path" class="img-radius">
+                                    <span>{{userLogin.data.name}}</span>
+                                </router-link>
                                 <a class="dud-logout" v-on:click="logOut()" style="cursor: pointer">
                                     <i class="feather icon-log-out"></i>
                                 </a>
-                            </div>
+                            </li>
                             <ul class="pro-body">
-                                <li><a href="javascript:" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
+                                <li>
+                                    <router-link
+                                        tag="a"
+                                        to="/userProfile"
+                                        class="dropdown-item">
+                                        <i class="feather icon-user"></i> Profile
+                                    </router-link>
+                                </li>
                                 <!-- <li><a href="javascript:" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li> -->
                             </ul>
                         </div>
@@ -114,7 +78,7 @@ import axios from 'axios';
         props:['userLogin'],
         data(){
             return {
-              
+                searchOption : []
             }
         },
 
@@ -129,9 +93,16 @@ import axios from 'axios';
                         this.$emit('updateUserLogin', null)
                         this.$router.push({ path: '/sign-in' })
                     })
+            },
+            getOption(){
+                 axios.post(this.$hostname+'/api/v1/search',{keyWord:this.$refs.getOption.value},{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
+                    .then((res) => {
+                        this.searchOption = res.data;
+                    })
             }
         }
     }
+
 </script>
 <style>
 </style>

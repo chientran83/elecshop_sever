@@ -13,6 +13,59 @@ class statisticController extends Controller
     public function __construct(statistic $statistic){
         $this->statistic = $statistic;
     }
+    public function search(Request $request){
+        $categoryList = DB::table('tbl_category')->where('name','like','%'.$request->keyWord.'%')->get();
+        $couponList = DB::table('tbl_coupons')->where('code','like','%'.$request->keyWord.'%')->get();
+        $productList = DB::table('tbl_product')->where('name','like','%'.$request->keyWord.'%')->get();
+        $roleList = DB::table('tbl_roles')->where('name','like','%'.$request->keyWord.'%')->get();
+        $sliderList = DB::table('tbl_slider')->where('name','like','%'.$request->keyWord.'%')->get();
+        $userList = DB::table('users')->where('name','like','%'.$request->keyWord.'%')->get();
+        $data = [];
+        foreach ($categoryList as $category) {
+            $data[] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'type' => 'category'
+            ];
+        }
+        foreach ($couponList as $coupon) {
+            $data[] = [
+                'id' => $coupon->id,
+                'name' => $coupon->code,
+                'type' => 'coupon'
+            ];
+        }
+        foreach ($productList as $product) {
+            $data[] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => 'product'
+            ];
+        }
+        foreach ($roleList as $role) {
+            $data[] = [
+                'id' => $role->id,
+                'name' => $role->name,
+                'type' => 'role'
+            ];
+        }
+        foreach ($sliderList as $slider) {
+            $data[] = [
+                'id' => $slider->id,
+                'name' => $slider->name,
+                'type' => 'slider'
+            ];
+        }
+        foreach ($userList as $user) {
+            $data[] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'type' => 'user'
+            ];
+        }
+        array_splice($data, 5);
+        return $data;
+    }
     public function profitData(){
         $timeNow = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
         /* this week's profit compare with last week */

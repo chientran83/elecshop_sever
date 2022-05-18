@@ -8,6 +8,7 @@ import {getApi} from './components/component/getApi'
 Vue.config.productionTip = false
 
 Vue.prototype.$hostname = 'http://localhost:8000'
+Vue.prototype.$hostnameInterface = 'http://localhost:8080/#'
 
 Vue.prototype.$verifyLogin = ()=>{
   var getCookies = getCookie.getCookie('elecshop_login');

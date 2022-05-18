@@ -60,6 +60,7 @@
                                                         <tr v-for="(resource,key) in resources" v-bind:key="key">
                                                             <td class="col-2" > {{ resource.id }} </td>
                                                             <td>{{ resource.alias }}</td>
+                                                        
                                                             <td class="">
                                                                 <ul>
                                                                     <li v-for="(permission,key) in resource.permissionsDefaults" v-bind:key="key">{{permission.allow}}</li>
@@ -149,7 +150,7 @@ import {getApi} from '../component/getApi'
                 if(url != ''){
                     var link = url;
                 }else{
-                    var link = this.$hostname+'/api/v1/resource/index/' + this.resource_record_number;
+                    var link ='api/v1/resource/index/' + this.resource_record_number;
                 }
                   getApi(link,"")
                     .then(res => {

@@ -131,7 +131,7 @@ export default {
             product_record_number:6
         }
         },
-        mounted(){
+        created(){
            
             getApi('api/v1/product/index/',this.product_record_number)
                 .then(res => {

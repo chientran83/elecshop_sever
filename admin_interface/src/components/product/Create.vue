@@ -208,7 +208,7 @@ Vue.use( CKEditor );
                 product_record_number:6
                 }
         },
-        mounted(){
+        created(){
             getApi('api/v1/category/index/', this.category_record_number)
             .then(res => {
                     this.categories = res.data

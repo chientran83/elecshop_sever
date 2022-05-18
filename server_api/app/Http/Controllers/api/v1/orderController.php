@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\api\v1;
 
+use App\Exports\orderExport;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\orderCollection;
 use App\Http\Resources\v1\orderResource;
 use App\Http\Resources\v1\Resource;
+use App\Imports\orderImport;
 use App\Models\color;
 use App\Models\coupon;
 use App\Models\deliveryInformation;
@@ -18,6 +20,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class orderController extends Controller
@@ -164,7 +168,10 @@ class orderController extends Controller
                 //check payment
 
                 if($request->method_payment == 'paypal'){
-                    $provider = new PayPalClient;
+                    $arr['method_payment'] = 'paypal';
+
+                    
+                    /* $provider = new PayPalClient;
                     $provider->setApiCredentials(config('paypal'));
                     $paypalToken = $provider->getAccessToken();
 
@@ -209,7 +216,7 @@ class orderController extends Controller
                             'code' => 500,
                             'data' => $response['message'] ?? 'Something went wrong.'
                         ],500);
-                    }   
+                    }  */  
                 }else{
                     $arr['method_payment'] = 'postpaid';
                 }
@@ -232,6 +239,20 @@ class orderController extends Controller
                 'message' => 'invalid product information !'
             ],403);
         }
+    }
+
+    public function exportExcel(Request $request)
+    {
+        return Excel::download(new orderExport($request->sort), 'order.xlsx');
+    }
+
+    public function importExcel(Request $request)
+    {
+        Excel::import(new orderImport,request()->file('file'));
+        return response()->json([
+            'code' => 200,
+            'message' => 'import success !'
+        ],200);
     }
 
     public function successTransaction(Request $request)
@@ -275,9 +296,17 @@ class orderController extends Controller
             return new orderCollection($this->order->where('user_id',$userLogin->id)->paginate($recordNumber));
         }
     }
-    public function indexForAdmin($recordNumber){
+    public function indexForAdmin(request $request,$recordNumber){
         if($recordNumber == 0){
-            return new orderCollection($this->order->all());
+            if($request->sort == 'all'){
+                return new orderCollection($this->order->all());
+            }else if($request->sort == 'waitAccept') {
+                return new orderCollection($this->order->where('status',0)->get());
+            }else if($request->sort == 'success') {
+                return new orderCollection($this->order->where('status',3)->get());
+            }else{
+                return new orderCollection($this->order->where('status','!=',0)->where('status','!=',3)->get());
+            }
         }else{
             return new orderCollection($this->order->paginate($recordNumber));
         }

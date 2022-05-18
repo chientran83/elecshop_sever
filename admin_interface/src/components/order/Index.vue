@@ -34,6 +34,22 @@
                                             <div class="card-header">
                                                 <h5>Order</h5>
                                             </div>
+                                            <div class="col-6">
+                                                
+                                                   <!--  <input type="file" ref="importExcel">
+                                                    <button type="button" class="btn btn-outline-warning" v-on:click="importExcel()" >Import excel</button> -->
+
+                                                    <a :href="$hostname+'/api/v1/order/export/excel?sort=' + filter"><button type="button" class="btn btn-outline-secondary" v-on:click="exportExcel()">exportExcel</button></a>
+                                                <div class="form-group">
+                                                    <label for="exampleFormControlSelect1">Filter</label>
+                                                    <select class="form-control" id="exampleFormControlSelect1" v-on:change="filterOrder" v-model="filter">
+                                                        <option value="all">All order</option>
+                                                        <option value="waitAccept">Wait accept</option>
+                                                        <option value="productSent">Product sent</option>
+                                                        <option value="success">Success delivery</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="card-block px-0 py-3">
                                                 <div class="table-responsive">
                                                     <table class="table table-hover">
@@ -165,58 +181,25 @@ import axios from "axios"
                     desc:""
                 },
                 record_number:0,
-                paginate:{}
+                paginate:{},
+                filter:""
             }
         },
         mounted(){
-            // fetch data order
-            getApi('api/v1/order/indexForAdmin/',this.record_number)
-                .then(res => {
-                    this.orders = res.data;
-                    var links = res.meta.links;
-                    links = links.filter(function(item){
-                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                    })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        next:res.links.next,
-                        prev:res.links.prev,
-                        links:links,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-             
+            this.filter = 'all';
+            this.load_data_order('',this.filter);
         },
         methods:{
-            load_data_order:function(url){
+            load_data_order:function(url,sort){
                 if(url != ''){
                     var link = url;
                 }else{
                     var link = 'api/v1/order/indexForAdmin/' + this.record_number;
                 }
-                getApi(link,"")
+                getApi(link,"?sort="+sort)
+                // getApi(link,"")
                   .then(res => {
                     this.orders = res.data;
-                    var links = res.meta.links;
-                    links = links.filter(function(item,key){
-                        return item.label != "&laquo; Previous" && item.label != "Next &raquo;";
-                    })
-                    this.paginate = {
-                        first:res.links.first,
-                        last:res.links.last,
-                        prev:res.links.prev,
-                        next:res.links.next,
-                        links:links,
-                        current_page:res.meta.current_page,
-                        from:res.meta.from,
-                        last_page:res.meta.last_page
-                    }
                 })
             },
             rejectOrder:function(id){
@@ -237,7 +220,7 @@ import axios from "axios"
                         'Your file has been deleted.',
                         'success'
                         );
-                        this.load_data_order('');
+                        this.load_data_order('',this.filter);
                     })
                    
                 }
@@ -261,7 +244,7 @@ import axios from "axios"
                         'Your file has accept order.',
                         'success'
                         );
-                        this.load_data_order('');
+                       this.load_data_order('',this.filter);;
                     })
                    
                 }
@@ -285,11 +268,32 @@ import axios from "axios"
                         'Your file has change status order.',
                         'success'
                         );
-                        this.load_data_order('');
+                        this.load_data_order('',this.filter);
                     })
                    
                 }
                 })
+            },
+            filterOrder:function(){
+                this.load_data_order('',this.filter);
+            },
+            exportExcel:function(){
+                axios.get(this.$hostname + '/api/v1/order/export/excel?sort='+this.filter,{headers:{"Authorization" : "Bearer " + this.userLogin.token}})
+                    .then(res => {
+                        console.log('oke')
+                    })
+                    .catch(function(error){ console.log(error);})
+            },
+            
+            importExcel:function(){
+                // console.log(this.$refs.importExcel.files[0]);
+                var formData = new FormData();
+                formData.append('file',this.$refs.importExcel.files[0]);
+                axios.post(this.$hostname + '/api/v1/order/import/excel',formData,{headers:{ "Authorization" : "Bearer " + this.userLogin.token,'Content-Type': 'multipart/form-data'}})
+                    .then(res => {
+                        console.log(res)
+                    })
+                    .catch(function(error){ console.log(error);})
             }
         }
     }

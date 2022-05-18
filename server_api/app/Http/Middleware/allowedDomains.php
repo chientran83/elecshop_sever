@@ -16,10 +16,29 @@ class allowedDomains
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request)
-            ->header('Access-Control-Allow-Origin', 'http://localhost:8080')
-            ->header('Access-Control-Allow-Methods', '*')
-            ->header('Access-Control-Allow-Credentials', 'true')
-            ->header('Access-Control-Allow-Headers', 'X-CSRF-Token');
+
+        $allowedOrigins = ['abc', 'http://localhost:8080/'];
+        if($request->server('HTTP_REFERER')){
+            if (in_array($request->server('HTTP_REFERER'),$allowedOrigins)) {
+                $headers = [
+                    'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS',
+                    'Access-Control-Allow-Credentials' => 'true',
+                    'Access-Control-Max-Age'           => '86400',
+                    'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+                ];
+                
+                if ($request->isMethod('OPTIONS')) {
+                    return response()->json('{"method":"OPTIONS"}', 200, $headers);
+                }
+                
+                $response = $next($request);
+                foreach($headers as $key => $value) {
+                    $response->headers->set($key, $value);
+                }
+                return $response;
+            }
+        }
+
+
     }
 }

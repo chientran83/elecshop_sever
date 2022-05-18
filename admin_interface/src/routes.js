@@ -33,6 +33,7 @@ import Coupon_index from './components/coupon/Index'
 import Coupon_create from './components/coupon/Create'
 import Coupon_edit from './components/coupon/Edit'
 import SignIn from './components/login/SignIn'
+import userProfile from './components/user/userProfile'
 import App from './App'
 
 export const routes = [
@@ -57,7 +58,13 @@ export const routes = [
             { path:'create',name:'Category_create',component:Category_create},
             { path:'edit/:id',name:'Category_edit',component:Category_edit}
         ]},
-    
+
+        { path:'userProfile',name:'userProfile',components:{
+            default:userProfile,
+            'header': Header,
+            'sideBar':Sidebar
+        }},
+        
         {path:'/product',name:'Product',components:{
             default:Product,
             'header': Header,
