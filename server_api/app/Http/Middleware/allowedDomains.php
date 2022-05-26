@@ -17,7 +17,7 @@ class allowedDomains
     public function handle(Request $request, Closure $next)
     {
 
-        $allowedOrigins = ['abc', 'http://localhost:8080/'];
+        $allowedOrigins = ['http://localhost:3000/', 'http://localhost:8080/'];
         if($request->server('HTTP_REFERER')){
             if (in_array($request->server('HTTP_REFERER'),$allowedOrigins)) {
                 $headers = [

@@ -27,6 +27,7 @@ class CreateOrdersTable extends Migration
             $table->bigInteger('memory_id')->nullable();
             $table->date('date');
             $table->string('status')->default(0);
+            $table->string('reference_number')->nullable();
             $table->timestamps();
         });
     }

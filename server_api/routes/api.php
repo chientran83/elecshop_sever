@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Route;
  */
 
  Route::prefix('v1')->group(function(){
-    Route::middleware('allowedDomains')->group(function(){
+    // Route::middleware('allowedDomains')->group(function(){
         Route::middleware('auth:api')->group(function(){
             //search
             Route::post('search',[statisticController::class,'search'])/* ->middleware('checkPermission:statistic,filterBySelect') */;
@@ -123,10 +123,8 @@ use Illuminate\Support\Facades\Route;
         //router order
         Route::post('order',[orderController::class,'store']);
         //router payment paypal
-        Route::get('create-transaction', [orderController::class, 'createTransaction'])->name('createTransaction');
-        Route::get('process-transaction', [orderController::class, 'processTransaction'])->name('processTransaction');
-        Route::get('success-transaction', [orderController::class, 'successTransaction'])->name('successTransaction');
-        Route::get('cancel-transaction', [orderController::class, 'cancelTransaction'])->name('cancelTransaction');
-    });
+        Route::post('success-transaction', [orderController::class, 'successTransaction'])->name('successTransaction');
+        Route::post('cancel-transaction', [orderController::class, 'cancelTransaction'])->name('cancelTransaction');
+    // });
 });
 

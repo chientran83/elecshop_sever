@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
         return view('welcome');
     });
 
+    Route::post('success-transaction', [orderController::class, 'successTransaction'])->name('successTransaction');
+    Route::post('cancel-transaction', [orderController::class, 'cancelTransaction'])->name('cancelTransaction');
+
     
 
  

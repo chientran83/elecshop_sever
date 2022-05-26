@@ -168,17 +168,17 @@ class orderController extends Controller
                 //check payment
 
                 if($request->method_payment == 'paypal'){
-                    $arr['method_payment'] = 'paypal';
+                    // $arr['method_payment'] = 'paypal';
 
+// ------------------------------------------------------------------------------------------------------------------
                     
-                    /* $provider = new PayPalClient;
+                    $provider = new PayPalClient;
                     $provider->setApiCredentials(config('paypal'));
                     $paypalToken = $provider->getAccessToken();
-
                     $response = $provider->createOrder([
                         "intent" => "CAPTURE",
                         "application_context" => [
-                            "return_url" => route('successTransaction',['orderData' => $arr]),
+                            "return_url" => route('successTransaction'),
                             "cancel_url" => route('cancelTransaction'),
                         ],
                         "purchase_units" => [
@@ -190,7 +190,10 @@ class orderController extends Controller
                             ]
                         ]
                     ]);
-
+                    
+                    $arr['reference_number'] = $response['id'];
+                    $this->order->create($arr);
+                    return response()->json($response);
                     if (isset($response['id']) && $response['id'] != null) {
                         // redirect to approve href
                         foreach ($response['links'] as $links) {
@@ -198,15 +201,18 @@ class orderController extends Controller
                             if ($links['rel'] == 'approve') {
 
                                 //link payment
-                                return response()->json([
+                                /* return response()->json([
                                     'code' => 200,
                                     'data' => $links['href']
-                                ],200);
+                                ],200); */
                                 // return redirect()->away($links['href']);
+
+                                $arr['reference_number'] = $response['id'];
+                                $this->order->create($arr);
+                                return response()->json($response);
                             }
                         }
-
-
+                        
                         return response()->json([
                             'code' => 500,
                             'data' => 'Something went wrong.'
@@ -216,8 +222,11 @@ class orderController extends Controller
                             'code' => 500,
                             'data' => $response['message'] ?? 'Something went wrong.'
                         ],500);
-                    }  */  
+                    }   
+
+                    // ------------------------------------------------------------------------------------------------------------------
                 }else{
+                    $arr['reference_number'] = null;
                     $arr['method_payment'] = 'postpaid';
                 }
 
@@ -263,8 +272,8 @@ class orderController extends Controller
         $response = $provider->capturePaymentOrder($request['token']);
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             
-            $newOrder = $this->order->create($request->orderData);
- 
+            $this->order->where('reference_number',$response['id'])->update(['method_payment' => 'paypal']);
+            return response()->json($response);
             /* return response()->json([
                 'code' => 200,
                 'message' => 'Transaction complete.',
