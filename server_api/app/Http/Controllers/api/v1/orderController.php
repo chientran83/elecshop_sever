@@ -168,11 +168,11 @@ class orderController extends Controller
                 //check payment
 
                 if($request->method_payment == 'paypal'){
-                    // $arr['method_payment'] = 'paypal';
+                    $arr['method_payment'] = 'paypal';
 
 // ------------------------------------------------------------------------------------------------------------------
                     
-                    $provider = new PayPalClient;
+                   /*  $provider = new PayPalClient;
                     $provider->setApiCredentials(config('paypal'));
                     $paypalToken = $provider->getAccessToken();
                     $response = $provider->createOrder([
@@ -199,13 +199,11 @@ class orderController extends Controller
                         foreach ($response['links'] as $links) {
                             
                             if ($links['rel'] == 'approve') {
-
-                                //link payment
-                                /* return response()->json([
+                                return response()->json([
                                     'code' => 200,
                                     'data' => $links['href']
-                                ],200); */
-                                // return redirect()->away($links['href']);
+                                ],200);
+                                return redirect()->away($links['href']);
 
                                 $arr['reference_number'] = $response['id'];
                                 $this->order->create($arr);
@@ -223,7 +221,7 @@ class orderController extends Controller
                             'data' => $response['message'] ?? 'Something went wrong.'
                         ],500);
                     }   
-
+ */
                     // ------------------------------------------------------------------------------------------------------------------
                 }else{
                     $arr['reference_number'] = null;

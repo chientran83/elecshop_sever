@@ -426,7 +426,7 @@ Vue.use( CKEditor );
                 var image_preview_colors = document.getElementById('image_preview_colors' + key);
                 image_preview_colors.src = URL.createObjectURL(imageColors);
                 image_preview_colors.onload = function() {
-                URL.revokeObjectURL(image_preview_colors.src) // free memory
+                    URL.revokeObjectURL(image_preview_colors.src) // free memory
                 }
             }
         }
