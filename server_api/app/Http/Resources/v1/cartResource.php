@@ -55,6 +55,7 @@ class cartResource extends JsonResource
                     'name' => $memoryItem->name
                 ];
             }
+            $product = DB::table('tbl_product')->where('id',$value->product_id)->first();
             $products[] = [
                 'cartProductId' => $value->id,
                 'product' => $product,
