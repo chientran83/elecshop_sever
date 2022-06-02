@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\v1;
 
+use App\Models\product;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
@@ -55,7 +56,7 @@ class cartResource extends JsonResource
                     'name' => $memoryItem->name
                 ];
             }
-            $product = DB::table('tbl_product')->where('id',$value->product_id)->first();
+            $product = product::find($value->product_id);
             $products[] = [
                 'cartProductId' => $value->id,
                 'product' => $product,
